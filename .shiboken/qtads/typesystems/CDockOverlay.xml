@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<typesystem package="ShibokenQtAds">
+    <namespace-type name="ads">
+	    <object-type name="CDockOverlay">
+	        <enum-type name="eMode" />
+	    </object-type>
+	    <object-type name="CDockOverlayCross">
+	        <enum-type name="eIconColor" />
+	    </object-type>
+    </namespace-type>
+</typesystem>

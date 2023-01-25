@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<typesystem package="ShibokenQtAds">
+    <namespace-type name="ads">
+	    <object-type name="CDockWidget">
+	        <enum-type name="DockWidgetFeature" />
+	        <enum-type name="eState" />
+	        <enum-type name="eInsertMode" />
+	        <enum-type name="eMinimumSizeHintMode" />
+	        <enum-type name="eToggleViewActionMode" />
+	    </object-type>
+    </namespace-type>
+</typesystem>

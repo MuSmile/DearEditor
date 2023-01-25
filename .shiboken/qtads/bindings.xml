@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<typesystem package="ShibokenQtAds">
+    <load-typesystem name="typesystem_core.xml" generate="no"/>
+    <load-typesystem name="typesystem_widgets.xml" generate="no"/>
+
+    <load-typesystem name="typesystems/ads_global.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CAutoHideDockContainer.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CAutoHideSideBar.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CAutoHideTab.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockAreaTabBar.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockAreaTitleBar.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockAreaTitleBar_p.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockAreaWidget.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockComponentsFactory.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockContainerWidget.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockFocusController.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockManager.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockOverlay.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockSplitter.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockWidget.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CDockWidgetTab.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CElidingLabel.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CFloatingDockContainer.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CFloatingDragPreview.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CIconProvider.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CPushButton.xml" generate="yes"/>
+    <load-typesystem name="typesystems/CResizeHandle.xml" generate="yes"/>
+    <?if linux?>
+    <load-typesystem name="typesystems/linux/FloatingWidgetTitleBar.xml" generate="yes"/>
+    <?endif?>
+</typesystem>
