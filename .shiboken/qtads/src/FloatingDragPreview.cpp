@@ -157,6 +157,14 @@ void FloatingDragPreviewPrivate::updateDropOverlays(const QPoint &GlobalPos)
 		}
 		ContainerOverlay->showOverlay(TopContainer);
 	}
+	// handle drop into a empty area
+	else if (!DockArea && TopContainer->openedDockWidgets().count() == 0)
+	{
+		ContainerOverlay->enableDropPreview(true);
+		DockAreaOverlay->enableDropPreview(false);
+		DockAreaOverlay->setAllowedAreas(NoDockWidgetArea);
+		ContainerOverlay->showOverlay(TopContainer);
+	}
 	else
 	{
 		DockAreaOverlay->hideOverlay();

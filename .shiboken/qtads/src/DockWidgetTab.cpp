@@ -519,13 +519,15 @@ void CDockWidgetTab::contextMenuEvent(QContextMenuEvent* ev)
 	d->saveDragStartMousePosition(ev->globalPos());
 
     const bool isFloatable = d->DockWidget->features().testFlag(CDockWidget::DockWidgetFloatable);
+    const bool isFloating = d->DockArea->dockContainer()->isFloating();
     const bool isNotOnlyTabInContainer =  !d->DockArea->dockContainer()->hasTopLevelDockWidget();
     const bool isTopLevelArea = d->DockArea->isTopLevelArea();
-    const bool isDetachable = isFloatable && isNotOnlyTabInContainer;
+    const bool isDetachable = isFloatable; // && isNotOnlyTabInContainer;
 	QAction* Action;
 	QMenu Menu(this);
 
-    if (!isTopLevelArea)
+    // if (!isTopLevelArea)
+    if (!isTopLevelArea || !isFloating)
     {
 		Action = Menu.addAction(tr("Detach"), this, SLOT(detachDockWidget()));
 		Action->setEnabled(isDetachable);
