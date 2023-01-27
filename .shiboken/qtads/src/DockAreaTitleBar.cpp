@@ -800,6 +800,18 @@ void CTitleBarButton::setVisible(bool visible)
 }
 
 //============================================================================
+void CTitleBarButton::forceVisible(bool visible)
+{
+	// 'visible' can stay 'true' unless: this button is configured to be invisible when it is disabled and it is currently disabled:
+	if (visible && HideWhenDisabled)
+	{
+		visible = isEnabled();
+	}
+
+	Super::setVisible(visible);
+}
+
+//============================================================================
 bool CTitleBarButton::event(QEvent *ev)
 {
 	if (QEvent::EnabledChange == ev->type() && HideWhenDisabled)

@@ -51,6 +51,7 @@
 #include "DockAreaTabBar.h"
 #include "DockSplitter.h"
 #include "DockAreaTitleBar.h"
+#include "DockAreaTitleBar_p.h"
 #include "DockComponentsFactory.h"
 #include "DockWidgetTab.h"
 #include "DockingStateReader.h"
@@ -397,6 +398,7 @@ void DockAreaWidgetPrivate::updateTitleBarButtonVisibility(bool IsTopLevel)
 	{
 		TitleBar->button(TitleBarButtonClose)->setVisible(!container->isFloating());
 		TitleBar->button(TitleBarButtonAutoHide)->setVisible(!container->isFloating());
+		// TitleBar->button(TitleBarButtonAutoHide)->setVisible(!container->isFloating());
         // Undock and tabs should never show when auto hidden
 		TitleBar->button(TitleBarButtonUndock)->setVisible(!container->isFloating() && !_this->isAutoHide());
         TitleBar->button(TitleBarButtonTabsMenu)->setVisible(!_this->isAutoHide());
@@ -865,6 +867,12 @@ void CDockAreaWidget::updateTitleBarVisibility()
 		tabBar->setVisible(!IsAutoHide);  // Never show tab bar when auto hidden
 		d->TitleBar->autoHideTitleLabel()->setVisible(IsAutoHide);  // Always show when auto hidden, never otherwise
 		updateTitleBarButtonVisibility(Container->topLevelDockArea() == this);
+		
+		if (IsAutoHide && CDockManager::testAutoHideConfigFlag(CDockManager::AutoHideTitleBarForceCloseBtn))
+		{
+			auto closeBtn = d->TitleBar->button(TitleBarButtonClose);
+			dynamic_cast<CTitleBarButton*>(closeBtn)->forceVisible(true);
+		}
 	}
 }
 

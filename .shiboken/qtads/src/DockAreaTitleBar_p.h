@@ -61,6 +61,7 @@ public:
 	* Adjust this visibility change request with our internal settings:
 	*/
 	virtual void setVisible(bool visible) override;
+	void forceVisible(bool visible);
 
 protected:
 	/**
