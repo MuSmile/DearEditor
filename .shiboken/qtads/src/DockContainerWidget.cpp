@@ -1718,6 +1718,7 @@ void CDockContainerWidget::dropFloatingWidget(CFloatingDockContainer* FloatingWi
 	{
 		auto SideBar = sideTabBar(AutohideWidget->sideBarLocation());
 		SideBar->addAutoHideWidget(AutohideWidget);
+		AutohideWidget->dockAreaWidget()->updateTitleBarVisibility();
 	}
 
 	if (Dropped)
@@ -2121,6 +2122,29 @@ QRect CDockContainerWidget::contentRect() const
 	if (!d->RootSplitter)
 	{
 		return QRect();
+	}
+
+	if (openedDockWidgets().count() == 0)
+	{
+		auto rect = geometry();
+		rect.moveTo(0, 0);
+
+		auto leftBar = sideTabBar(SideBarLocation::SideBarLeft);
+		auto rightBar = sideTabBar(SideBarLocation::SideBarRight);
+		auto topBar = sideTabBar(SideBarLocation::SideBarTop);
+		auto bottomBar = sideTabBar(SideBarLocation::SideBarBottom);
+
+		int lw = 0;
+		int rw = 0;
+		int th = 0;
+		int bh = 0;
+		if (leftBar->isVisible()) lw = leftBar->width();
+		if (rightBar->isVisible()) rw = rightBar->width();
+		if (topBar->isVisible()) th = topBar->height();
+		if (bottomBar->isVisible()) bh = bottomBar->height();
+
+		rect.adjust(lw, th, -rw, -bh);
+		return rect;
 	}
 
 	return d->RootSplitter->geometry();
