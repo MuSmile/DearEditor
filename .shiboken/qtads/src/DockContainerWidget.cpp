@@ -496,6 +496,11 @@ void DockContainerWidgetPrivate::dropIntoContainer(CFloatingDockContainer* Float
     }
 
 	RootSplitter = Splitter;
+	for (int i = NewDockAreas.count() - 1; i >= 0; i--)
+	{
+		if (NewDockAreas[i]->isAutoHide())
+			NewDockAreas.removeAt(i);
+	}
 	addDockAreasToList(NewDockAreas);
 
 	// If we dropped the floating widget into the main dock container that does
