@@ -1,0 +1,14 @@
+QMenuBar
+{
+	/*color: #ccc;*/
+	/*background-color: #222;*/
+	min-height: 18;
+	/*spacing: 0px;*/
+	font-size: &[Font/sizeMenuBar];
+}
+
+QMenu
+{
+	min-width: 80px;
+	font-size: &[Font/sizeMenuItem];
+}

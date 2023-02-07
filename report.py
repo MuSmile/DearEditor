@@ -20,7 +20,8 @@ acceptFile = [
 
 scanTarget = [
 	'editor',
-	'native',
+	'engine',
+	'themes',
 ]
 
 context = {

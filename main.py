@@ -1,6 +1,7 @@
-import sys, os
+import sys, os, warnings
 from editor.ide import Ide
-from editor.tools import argparse
+from editor.common import argparse
+warnings.filterwarnings("ignore")
 
 def hello():
 	# generated from:
@@ -13,12 +14,12 @@ def hello():
 	/_____/\___/\__,_/_/     /_____/\__,_/_/\__/\____/_/     
 	---------------------------------------------------------
 
-	usage: hna {ide, run, build} [-p PRJ] [-t TAR] [--theme THEME] ...
+	usage: dear {ide, run, build} [-p PRJ] [-t TAR] [--theme THEME] ...
 
 	commands:
-	   ide             start with Hna editor
+	   ide             start Dear Editor ide
 	   run             run game without editor
-	   build           build binaries
+	   build           build game binaries
 	   -----           -----------------------
 	   install         check/install required py pkgs
 	   python          exec python script with ide env
@@ -52,9 +53,9 @@ if __name__ == '__main__':
 		os._exit(0)
 
 	# process args
-	parser = argparse.ArgumentParser(prog = 'hna')
+	parser = argparse.ArgumentParser(prog = 'dear')
 	# Required positional argument
-	parser.add_argument('command', choices=['ide','run','build','python'], help='select hna command')
+	parser.add_argument('command', choices=['ide','run','build','python'], help='select command')
 	parser.add_argument('-p', '--prj', help='specify working prject path')
 	parser.add_argument('-t', '--tar', help='specify runtime target {release, debug}', default='debug')
 

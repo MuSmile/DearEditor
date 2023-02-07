@@ -1,0 +1,46 @@
+QToolBar
+{
+	border: 0px;
+	padding: 0px 6px 0px 6px;
+	background: &[toolbar/colorBg];
+	min-height: &[toolbar/height];
+}
+
+QToolBar QToolButton
+{
+	border: 0px;
+	min-width: 26px;
+	height: 15px;
+	border-radius: 1px;
+	margin-right: 1;
+}
+
+QToolBar #Center QToolButton
+{
+	min-width: 32px;
+}
+
+QToolBar QPushButton
+{
+	background-color: #444;
+	border: 0px solid &[toolbar/colorBg];
+	border-radius: 1px;
+	color: &[toolbar/colorLabel];
+	padding: 4px 6 3 4;
+	margin-left: -1;
+
+	height: 15px;
+	min-width: 24px;
+}
+
+QToolBar QPushButton::hover
+{
+	background-color: #555;
+	color: &[toolbar/colorLabel];
+}
+
+QToolBar QPushButton:checked, QToolBar QPushButton::pressed
+{
+	background-color: #777;
+	color: &[toolbar/colorLabel];
+}

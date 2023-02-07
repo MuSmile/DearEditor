@@ -1,0 +1,5 @@
+ConsoleView > ConsoleWidget
+{
+	color: #fff;
+	background: #1a1a1a;
+}

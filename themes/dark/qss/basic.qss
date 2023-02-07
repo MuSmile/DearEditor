@@ -1,0 +1,275 @@
+*{outline: none;}
+
+QWidget
+{
+	font-size: &[Font/sizeNormal];
+	font-family: &[Font/familyNormal];
+    outline: 0;
+}
+
+QFrame
+{
+	border: 0;
+	color: #ccc;
+	background-color: &[toolbar/colorBg];
+}
+
+QLabel
+{
+	background-color: none;
+	color: &[Palette/labelColor];
+}
+
+QToolTip
+{
+    background: #555;
+    border: 1px solid #111;
+    color: #ddd;
+    padding: 2px;
+}
+
+QLineEdit
+{
+	background: #555;
+	border: 1px solid #333;
+	border-radius: 2px;
+	padding-right: 2px;
+	padding-left: 2px;
+	height: 18px;
+	font-size: 12px;
+	color: #eee;
+}
+QLineEdit:hover
+{
+	border: 1px solid #222;
+}
+QLineEdit:focus
+{
+	border: 1px solid #5ae;
+}
+
+SearchField
+{
+	background: #555;
+	border: 1px solid #222;
+	border-radius: 2px;
+	padding-right: 12px;
+	padding-left: 16px;
+	height: 16px;
+	font-size: 11px;
+	color: #eee;
+}
+/*SearchField:focus
+{
+	border: 1px solid #5af;
+}*/
+
+/*
+Slider
+{
+	qproperty-grooveHeight: 2;
+	qproperty-grooveRoundRadius: 0;
+}*/
+
+
+QToolButton
+{
+	background-color: #444;
+	border: 1px solid &[toolbar/colorBg];
+	border-radius: 2px;
+	color: &[toolbar/colorLabel];
+	padding: 2px 0 2 0;
+}
+
+QToolButton:hover
+{
+	background-color: #555;
+	color: &[toolbar/colorLabel];
+}
+
+QToolButton:checked, QToolButton:pressed
+{
+	background-color: #777;
+	color: &[toolbar/colorLabel];
+}
+
+QToolButton:disabled
+{
+	background-color: #303030;
+	color: &[toolbar/colorLabel];
+}
+
+
+QToolButton[popupMode="1"]
+{
+    padding-right: 10px;
+}
+
+QToolButton::menu-arrow
+{
+    /*image: url(downarrow.png);*/
+    top: 1px;
+    left: -2px;
+}
+
+QToolButton::menu-arrow:open
+{
+    top: 0px;
+    left: -3px;
+}
+
+QToolButton::menu-button
+{
+    border: 0;
+    width: 16px;
+}
+
+
+QPushButton
+{
+	background-color: #555;
+	border: 1px solid #3c3c3c;
+	border-radius: 2px;
+	color: &[Palette/labelDeactive];
+	padding: 4px;
+}
+
+QPushButton:hover/*, QPushButton:focus*/
+{
+	background-color: #666;
+	color: &[Palette/labelColor];
+}
+
+QPushButton:pressed
+{
+	background-color: #777;
+	color: &[Palette/labelColor];
+}
+
+QPushButton#popup
+{
+	padding-left: 10px;
+}
+QPushButton#popup::menu-indicator
+{
+    top: -4px;
+    right: 5px;
+    /*width: 10px;*/
+    /*height: 10px;*/
+}
+
+QCheckBox
+{
+	margin-bottom: 1px;
+	margin-top: 4px;
+	background-color: none;
+}
+
+QCheckBox:focus
+{
+	background-color: #444;
+	border: 1px dotted #777;
+}
+
+
+QSplitter::handle
+{
+	border: 0;
+}
+
+QSplitter::handle:horizontal
+{
+	background-color: #252525;
+	width: 3px;
+}
+
+QSplitter::handle:vertical
+{
+	background-color: #252525;
+	height: 3px;
+}
+
+Blackboard
+{
+	qproperty-border: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4af,stop:1 #4bb);
+	qproperty-background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #3344aaff,stop:1 #3344bbbb);
+}
+
+Blackboard QSizeGrip
+{
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0.5 transparent, stop:0.501 #3a44bbbb);
+	border-bottom-right-radius: 4px;
+}
+Blackboard QSizeGrip:hover
+{
+	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0.5 transparent, stop:0.501 #4bb);
+}
+
+/*QGraphicsView
+{
+	selection-background-color: #4bf;
+}*/
+
+DropDownMenu
+{
+	border: 1px solid #333;
+	border-radius: 2px;
+	background: #555;
+}
+
+DropDownMenuPage > QPushButton,
+DropDownMenuPage > QPushButton:hover
+{
+	margin: 0px;
+	border: 0px;
+	border-top: 1px solid #444;
+	border-bottom: 1px solid #444;
+	border-radius: 0px;
+	background: #777;
+	/*font-weight: bold;*/
+	font-size: 12px;
+	padding: 0 0 1 0;
+	color: #fff;
+	height: 16px;
+}
+
+DropDownMenuPage > QListView
+{
+	margin: 0px;
+	border: 0px;
+	background: #585858;
+}
+DropDownMenuPage QScrollBar,
+DropDownMenuPage QScrollBar::add-line,
+DropDownMenuPage QScrollBar::sub-line
+{
+	border-left: 1px solid #444;
+}
+DropDownMenuPage QScrollBar::handle
+{
+	border-radius: 4px;
+}
+
+QCheckBox
+{
+	margin: 0px;
+}
+
+QCheckBox::indicator:unchecked
+{
+	background-color: #555;
+	border: 1px solid #333;
+	border-radius: 2px;
+}
+
+QCheckBox::indicator:unchecked:hover
+{
+	border: 1px solid #222;
+	border-radius: 2px;
+}
+
+QCheckBox::indicator:checked
+{
+	border: 1px solid #5ae;
+	border-radius: 2px;
+}

@@ -1,0 +1,46 @@
+TreeView
+{
+	qproperty-background: #404040;
+	qproperty-backgroundAlternate: #474747;
+	qproperty-backgroundRootRow: #5a5a5a;
+	qproperty-itemHover: #454768;
+	qproperty-itemSelect: #515c84;
+	qproperty-itemSelectDeactive: #4d5260;
+	/*qproperty-dropIndicator: #8af;*/
+	/*qproperty-dropIndicatorWidth: 2;*/
+	qproperty-branchOpened: url(img/arrow_down.png);
+	qproperty-branchClosed: url(img/arrow_right.png);
+}
+TreeItemEditor:focus
+{
+	background: transparent;
+    border: 2px solid #3ac;
+	
+	color: white;
+}
+
+ProjectView QSplitter::handle:horizontal
+{
+	background-color: #333;
+}
+ProjectView QSplitter::handle:vertical
+{
+	height: 2px;
+}
+HierarchyView > SearchField,
+ProjectView > SearchField
+{
+	margin-right: -2px;
+}
+
+HierarchyTreeView
+{
+	qproperty-viewHandler: url(img/tool_view_orbit.png);
+	qproperty-lockHandler: url(img/tool_viewmove.png);
+}
+
+HierarchyView > QPushButton,
+ProjectView > QPushButton
+{
+	margin: 1px;
+}

@@ -1,6 +1,6 @@
 @echo off
 set curdir=%cd%
-set idedir=C:/HnaEditor/
+set idedir=C:/DearEditor/
 set  pybin=python
 rem set  pybin=C:/Python39/python
 

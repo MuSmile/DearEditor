@@ -1,0 +1,25 @@
+[Font]
+sizeNormal = 13px
+sizeMenuBar = 13px
+sizeMenuItem = 12px
+familyNormal = consolas
+
+[Palette]
+bgDeactive = #303030
+bgActive = #404040
+bgToolBar = #222
+
+labelColor = #fff
+labelDeactive = #aaa
+
+[toolbar]
+height = 32px
+colorBg = #222
+colorLabel = #ccc
+
+[scrollbar]
+size         = 10px
+colorBg      = #555
+colorHandler = #777
+colorHover   = #888
+colorPressed = #888
