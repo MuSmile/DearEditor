@@ -21,7 +21,7 @@
 
 
 ####################### qtads #######################
-from .ShibokenQtAds import ads
+from .PySide6QtAds import ads
 
 CDockWidget               =   ads.CDockWidget
 CDockManager              =   ads.CDockManager

@@ -1,0 +1,3 @@
+[submodule ".support/pyside6_qtads/Qt-Advanced-Docking-System"]
+	path = .support/pyside6_qtads/Qt-Advanced-Docking-System
+	url = https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System.git

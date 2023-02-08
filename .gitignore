@@ -1,0 +1,14 @@
+/.screenshots
+/.test
+
+__qsscache__
+__pycache__
+
+# /engine/.build/
+# /engine/.vs/
+
+*.sublime-project
+*.sublime-workspace
+
+prefs.db
+BUILD_RESULT
