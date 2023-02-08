@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<typesystem package="PySide6QtAds">
+    <namespace-type name="ads">
+	    <object-type name="CDockFocusController">
+	    </object-type>
+    </namespace-type>
+</typesystem>

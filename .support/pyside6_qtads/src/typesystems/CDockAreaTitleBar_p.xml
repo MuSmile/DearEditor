@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<typesystem package="PySide6QtAds">
+    <namespace-type name="ads">
+        <object-type name="CTitleBarButton">
+        </object-type>
+        <object-type name="CSpacerWidget">
+        </object-type>
+    </namespace-type>
+</typesystem>

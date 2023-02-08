@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>fileTypes</key>
+	<array>
+		<string>logging</string>
+		<string>BUILD_RESULT</string>
+	</array>
+	<key>name</key>
+	<string>Logging</string>
+	
+	<key>patterns</key>
+	<array>
+		<dict>
+			<key>match</key>
+			<string>\'(.*?)\'</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.content.log</string>
+				</dict>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>\[Execution Finished in (.*)s\]</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>string.content.log</string>
+				</dict>
+			</dict>
+			<key>name</key>
+			<string>entry.finish</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>(\[(WARN *:.*|WARNING)\])(.*)</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>invalid.illegal.warning.log</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>string.content.log</string>
+				</dict>
+			</dict>
+			<key>name</key>
+			<string>entry.warning.log</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>TypeError:\s*(.*)</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>invalid.illegal.error.log</string>
+				</dict>
+			</dict>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>(\[ERROR\s*(:.*)?\])(.*)</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>invalid.illegal.error.log</string>
+				</dict>
+				<key>3</key>
+				<dict>
+					<key>name</key>
+					<string>string.content.log</string>
+				</dict>
+			</dict>
+			<key>name</key>
+			<string>entry.error.log</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>^(\[(\w+)\s*(:.*)?\])(.*)</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>keyword.info.log</string>
+				</dict>
+				<key>4</key>
+				<dict>
+					<key>name</key>
+					<string>string.content.log</string>
+				</dict>
+			</dict>	
+		</dict>
+
+		<dict>
+			<key>begin</key>
+			<string>(Traceback\s*\(.*\)):</string>
+			<key>beginCaptures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.traceback.log</string>
+				</dict>
+			</dict>
+
+			<key>patterns</key>
+			<array>
+				<dict>
+					<key>match</key>
+					<string>^\s+File "(.*)", line ([0-9]*)(?:, in (.*))?</string>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.path.log</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>constant.line.log</string>
+						</dict>
+						<key>3</key>
+						<dict>
+							<key>name</key>
+							<string>entity.module.log</string>
+						</dict>
+					</dict>
+				</dict>
+				<dict>
+					<key>match</key>
+					<string>^\s+from (\S*) import (.*)</string>
+					<key>captures</key>
+					<dict>
+						<key>1</key>
+						<dict>
+							<key>name</key>
+							<string>entity.path.log</string>
+						</dict>
+						<key>2</key>
+						<dict>
+							<key>name</key>
+							<string>entity.module.log</string>
+						</dict>
+					</dict>
+				</dict>
+			</array>
+			
+			<key>end</key>
+			<string>^(?!\s+)</string>
+			<key>endCaptures</key>
+			<dict>
+				<key>0</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.block.end</string>
+				</dict>
+			</dict>
+			<key>name</key>
+			<string>support.block</string>
+		</dict>
+
+
+		<dict>
+			<key>match</key>
+			<string>SyntaxError: (.*)</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>support.traceback.log</string>
+				</dict>
+			</dict>
+		</dict>
+
+<!--
+ 		<dict>
+			<key>match</key>
+			<string>^Exception in.*(\(.*)$</string>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>comment.info.log</string>
+				</dict>
+			</dict>
+			<key>name</key>
+			<string>invalid.illegal.exception.log</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>(stack traceback:|Traceback\s*\(.*\):)</string>
+			<key>name</key>
+			<string>support.traceback.log</string>
+		</dict>
+-->
+
+		<dict>
+			<key>match</key>
+			<string>\-&gt;</string>
+			<key>name</key>
+			<string>keyword.arrow.log</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>&lt;[\s\w]*&gt;</string>
+			<key>name</key>
+			<string>support.tag.log</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>(?&lt;!\w)(true|false|True|False|nil|None)(?!\w)</string>
+			<key>name</key>
+			<string>constant.value.log</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>(?&lt;![\d.])\s0x[a-fA-F\d]+|\b\d+(\.\d+)?([eE]-?\d+)?|\.\d+([eE]-?\d+)?</string>
+			<key>name</key>
+			<string>constant.numeric.log</string>
+		</dict>
+
+		<dict>
+			<key>match</key>
+			<string>|\[|\]|"|'|:|=|\+|-|%|#|\*|\/|\^|==?|~=|&lt;=?|&gt;=?|(?&lt;!\.)\.{2}(?!\.)</string>
+			<key>name</key>
+			<string>keyword.operator.log</string>
+		</dict>
+
+	</array>
+	
+	<key>scopeName</key>
+	<string>source</string>
+	<key>uuid</key>
+	<string>321006af-1831-4994-977d-16a726af99bb</string>
+</dict>
+</plist>

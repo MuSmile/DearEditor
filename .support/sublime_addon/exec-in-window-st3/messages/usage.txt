@@ -1,0 +1,18 @@
+Exec In Window Usage
+====================
+
+modify build settings for desired language
+
+for example for `Ruby` you need to modify file `Packages/Ruby/Ruby.sublime-build` and add line `"target": "exec_in_window"`
+
+whole file should look like this
+
+{
+  "cmd": ["/Users/vhyza/.rvm/bin/rvm-auto-ruby", "$file"],
+  "target": "exec_in_window",
+  "selector": "source.ruby"
+}
+
+to disable output panel add `"show_panel_on_build": false` into your preferences (`Command+,`)
+
+press `Command+B` to build file (unnamed files should have set proper syntax)

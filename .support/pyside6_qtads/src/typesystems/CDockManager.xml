@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<typesystem package="PySide6QtAds">
+    <namespace-type name="ads">
+	    <object-type name="CDockManager">
+	        <enum-type name="eViewMenuInsertionOrder" />
+	        <enum-type name="eConfigFlag" />
+	        <enum-type name="eAutoHideFlag" />
+	    </object-type>
+    </namespace-type>
+</typesystem>
