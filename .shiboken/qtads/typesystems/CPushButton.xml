@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<typesystem package="ShibokenQtAds">
-    <namespace-type name="ads">
-	    <object-type name="CPushButton">
-	        <enum-type name="Orientation" />
-	    </object-type>
-    </namespace-type>
-</typesystem>

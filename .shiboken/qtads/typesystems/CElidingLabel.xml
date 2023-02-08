@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<typesystem package="ShibokenQtAds">
-    <namespace-type name="ads">
-	    <object-type name="CElidingLabel">
-	    </object-type>
-    </namespace-type>
-</typesystem>
