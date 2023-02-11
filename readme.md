@@ -5,9 +5,9 @@ Welcom to DearEditor!
 
 DearEditor is a PySide6 based **WIP** game editor. The aim of DearEditor is to create a open and unite editor solution for all game engines (especially for in-house engines).
 
-![screenshot](.shiboken/qtads/img/p1.png)
-![screenshot](.shiboken/qtads/img/p2.png)
-![screenshot](.shiboken/qtads/img/p3.png)
+![screenshot](.support/pyside6_qtads/img/p1.png)
+![screenshot](.support/pyside6_qtads/img/p2.png)
+![screenshot](.support/pyside6_qtads/img/p3.png)
 
 
 ## Requirements
