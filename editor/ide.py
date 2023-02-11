@@ -15,14 +15,23 @@ def _init_platform(system):
 		ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
 	elif system == 'Darwin':
-		# handle taskbar icon issue
+		# required:
+		# pip3 install pyobjc-framework-Cocoa
+		try:
+			from Foundation import NSBundle
+			bundle = NSBundle.mainBundle()
+			if not bundle: return
+			app_info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+			if app_info: app_info['CFBundleName'] = 'Dear'
+		except ImportError:
+			pass
 		pass
 
 
 class Ide(QApplication):
 	def __init__(self, *args):
-		super().__init__(*args)
 		_init_platform(platform.system())
+		super().__init__(*args)
 		self.setAttribute(Qt.AA_EnableHighDpiScaling)
 		self.setWindowIcon(QIcon('logo.png'))
 		self.setApplicationName('Dear Editor')
@@ -43,4 +52,3 @@ class Ide(QApplication):
 	def onAboutToQuit(self):
 		IdePrefs.close()
 		log('bye!')
-		

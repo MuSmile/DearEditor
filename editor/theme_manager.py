@@ -14,6 +14,8 @@ def _gatherStyleSheets(name):
 	for currDir, dirs, files in os.walk(qssDir):
 		if currDir.endswith('__qsscache__'): continue
 		for f in files: qssFiles[f] = os.path.join(currDir, f)
+
+	qssFiles = dict(sorted(qssFiles.items(), key = lambda kv: kv[1]))
 	return qssFiles
 
 def _parseSingleQss(srcPath, cachePath, macroParser, urlParser):
@@ -114,7 +116,7 @@ def _onThemeModified(evt):
 	if currTime - _lastModifyTime <= 0.1: return
 
 	log('theme modify checked, reloading theme...')
-	rootPath = Path(activeThemeFolder())
+	rootPath = Path(os.path.abspath(activeThemeFolder()))
 	mfilePath = Path(evt.src_path)
 	if rootPath in mfilePath.parents: loadTheme(_activeTheme)
 

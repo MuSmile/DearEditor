@@ -1,0 +1,29 @@
+# @echo off
+curdir=$(pwd)
+idedir=/Users/kakiko/projects/DearEditor
+ pybin=python
+   pip=pip
+ # pybin=/Library/Frameworks/Python.framework/Versions/3.9/bin/python
+
+# show hello and help
+if [[ $1 == "" ]]; then
+	arch -arm64 $pybin -u ${idedir}/main.py
+	exit
+
+# install all required py pkgs
+elif [[ $1 == "install" ]]; then
+	arch -arm64 $pip install -r ${idedir}/requirements.txt
+	exit
+
+# report prj summary
+elif [[ $1 == "report" ]]; then
+	cd $idedir
+	$pybin -u report.py
+	cd $curdir
+	exit
+fi
+
+# raise ide window
+cd $idedir
+arch -arm64 $pybin -u main.py $1 $2 $3 $4 $5 $6 $7 $8
+cd $curdir

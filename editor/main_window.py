@@ -34,6 +34,27 @@ class MainWindow(QMainWindow):
         self.setGeometry(1000, 300, 800, 600)
         self.setFocus()
 
+        menubar = QMenuBar()
+        actionFile = menubar.addMenu("_File")
+        actionFile.addAction("New")
+        actionFile.addAction("Open")
+        a = actionFile.addAction("test")
+        a.setMenuRole(QAction.ApplicationSpecificRole)
+        actionFile.addSeparator()
+        actionFile.addAction("_Quit")
+        actionEdit = menubar.addMenu("_Edit")
+        actionEdit.addAction("Save")
+        actionView = menubar.addMenu("_View")
+        actionView.addAction("Save")
+        actionHelp = menubar.addMenu("Help")
+        actionHelp.addAction("About")
+        actionHelp.addAction("Preferences")
+        actionHelp.addAction("foo")
+        actionHelp.addAction("bar")
+        quit = actionHelp.addAction("Quit")
+        quit.triggered.connect(self.close)
+        self.setMenuBar(menubar)
+
     def setupToolBar(self):
         toolbar = createMainToolBar(self)
         self.addToolBar(toolbar)
@@ -42,10 +63,10 @@ class MainWindow(QMainWindow):
         statusbar = createMainStatusBar(self)
         self.setStatusBar(statusbar)
 
-    # def closeEvent(self, evt):
-    #     self.closed.emit()
-    #     super().closeEvent(evt)
-    #     for fw in self.dockManager.floatingWidgets(): fw.close()
+    def closeEvent(self, evt):
+        self.closed.emit()
+        super().closeEvent(evt)
+        for fw in self.dockManager.floatingWidgets(): fw.close()
 
     # def changeEvent(self, evt):
     #     super().changeEvent(evt)
@@ -123,10 +144,10 @@ class MainWindow(QMainWindow):
         dock4 = DockView(dockManager, 'dock4')
         dock4.addIntoEditor('bottom')
 
-        dock5 = DockView(dockManager, 'preview')
-        dock5.setWidget(PreviewWidget())
-        dock5.resize(500, 800)
-        dock5.addIntoEditorAsFloating()
+        # dock5 = DockView(dockManager, 'preview')
+        # dock5.setWidget(PreviewWidget())
+        # dock5.resize(500, 800)
+        # dock5.addIntoEditorAsFloating()
 
         # # rootarea = showEditorView('opengl', 'left')
         # area1 = showEditorView('Imgui', 'left')

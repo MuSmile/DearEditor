@@ -19,9 +19,14 @@
 # 	QApplication.addLibraryPath(_plugin_dir)
 # 	# set env var: QT_PLUGIN_PATH = C:\Users{YOUR_USERNAME}\Anaconda3\Library\plugins
 
-
 ####################### qtads #######################
-from .PySide6QtAds import ads
+import platform
+_sys = platform.system()
+if _sys == 'Windows':
+	from .win.PySide6QtAds import ads
+elif _sys == 'Darwin':
+	from .osx.PySide6QtAds import ads
+
 
 CDockWidget               =   ads.CDockWidget
 CDockManager              =   ads.CDockManager

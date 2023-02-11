@@ -250,7 +250,7 @@ endif()
 
 # Make sure the linker doesn't complain about not finding Python symbols on macOS.
 if(APPLE)
-  set_target_properties(${bindings_library} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  set_target_properties(${bindings_library} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -Wl,-rpath,./editor/common/pyqtads/osx")
 endif(APPLE)
 
 # Find and link to the python import library only on Windows.
@@ -313,6 +313,24 @@ install(TARGETS ${project_library}
         )
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/__init__.py
         DESTINATION ${install_dest_dir}
+        )
+
+
+# ================================= deploy ================================
+if(APPLE)
+    set(deploy_dest_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../editor/common/pyqtads/osx)
+endif()
+if (WIN32)
+    set(deploy_dest_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../editor/common/pyqtads/win)
+endif()
+
+install(TARGETS ${bindings_library}
+        LIBRARY DESTINATION ${deploy_dest_dir}
+        RUNTIME DESTINATION ${deploy_dest_dir}
+        )
+install(TARGETS ${project_library}
+        LIBRARY DESTINATION ${deploy_dest_dir}
+        RUNTIME DESTINATION ${deploy_dest_dir}
         )
 
 # install(FILES ${windows_shiboken_shared_libraries} DESTINATION ${install_dest_dir})

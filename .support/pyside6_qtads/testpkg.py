@@ -12,8 +12,13 @@ class _DockWidget(CDockWidget):
 		super().mousePressEvent(evt)
 		print('mouse pressed')
 
+class _QMainWindow(QMainWindow):
+	def closeEvent(self, evt):
+		for fw in self.dockMgr.floatingWidgets(): fw.close()
+		super().closeEvent(evt)
+
 app = QApplication(sys.argv)
-win = QMainWindow()
+win = _QMainWindow()
 win.resize(600, 400)
 
 toolBar = QToolBar()
@@ -49,8 +54,6 @@ dockMgr.addDockWidget(DockWidgetArea.LeftDockWidgetArea, dock1)
 # dockMgr.addAutoHideDockWidget(SideBarLocation.SideBarLeft, dock1)
 
 dock2 = _DockWidget('press me')
-dockContainer = dockMgr.addDockWidgetFloating(dock2)
-dockContainer.resize(300, 200)
 
 dock3 = CDockWidget('dock 3')
 dock3.setFeature(CDockWidget.DockWidgetDeleteOnClose, True)
@@ -62,5 +65,11 @@ dockMgr.addDockWidget(DockWidgetArea.RightDockWidgetArea, dock3)
 label1.clicked.connect(lambda: (dock1.toggleView(True), dockMgr.addDockWidget(DockWidgetArea.LeftDockWidgetArea, dock1)))
 label2.clicked.connect(lambda: (dock2.toggleView(True), dockMgr.addDockWidget(DockWidgetArea.LeftDockWidgetArea, dock2)))
 
+win.dockMgr = dockMgr
+
 win.show()
+dockContainer = dockMgr.addDockWidgetFloating(dock2)
+dockContainer.resize(300, 200)
+# dock2.activateWindow()
+
 app.exec()
