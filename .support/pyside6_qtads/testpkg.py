@@ -45,7 +45,7 @@ CDockManager.setConfigFlag(CDockManager.DockAreaHasTabsMenuButton, False)
 CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideFeatureEnabled, True)
 CDockManager.setAutoHideConfigFlag(CDockManager.DockAreaHasAutoHideButton, True)
 # CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideShowOnMouseOver, True)
-CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideTitleBarForceCloseBtn, True)
+CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideTitleForceHasCloseBtn, True)
 
 dockMgr = CDockManager(win)
 

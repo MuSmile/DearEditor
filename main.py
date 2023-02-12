@@ -1,7 +1,5 @@
 import sys, os, warnings
-from editor.ide import Ide
-from editor.common import argparse
-warnings.filterwarnings("ignore")
+warnings.filterwarnings('ignore')
 
 def hello():
 	# generated from:
@@ -38,6 +36,7 @@ def hello():
 		''')
 
 def startIde(prj):
+	from editor.ide import Ide
 	ide = Ide(sys.argv)
 	ide.raiseWindow(prj)
 
@@ -52,7 +51,7 @@ if __name__ == '__main__':
 		hello()
 		os._exit(0)
 
-	# process args
+	from editor.common import argparse
 	parser = argparse.ArgumentParser(prog = 'dear')
 	# Required positional argument
 	parser.add_argument('command', choices=['ide','run','build','python'], help='select command')

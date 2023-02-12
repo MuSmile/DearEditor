@@ -1,5 +1,4 @@
-QMenuBar
-{
+QMenuBar {
 	/*color: #ccc;*/
 	/*background-color: #222;*/
 	min-height: 18;
@@ -7,8 +6,89 @@ QMenuBar
 	font-size: &[Font/sizeMenuBar];
 }
 
-QMenu
-{
-	min-width: 80px;
-	font-size: &[Font/sizeMenuItem];
+#if Windows
+QMenu {
+    min-width: 80px;
+    font-size: &[Font/sizeMenuItem];
 }
+#end
+
+#if Darwin
+QMenu {
+	min-width: 10px;
+	font-size: &[Font/sizeMenuItem];
+    background-color: #eee;
+    padding: 5px 5px 5px 5px;
+    border-top: 2px solid transparent;
+    border-radius: 6px;
+}
+
+QMenu::item {
+    background-color: transparent;
+    padding: 3px 20px 4px 10px;
+    color: #000;
+}
+
+QMenu::item:selected { /* when user selects item using mouse or keyboard */
+    background-color: #4999FD;
+    border-radius: 4px;
+    color: #fff;
+}
+
+QMenu::separator {
+    background-color: #cfcfcf;
+    margin: 3px 10px 4px 10px;
+    height: 1px;
+}
+
+QMenu::indicator {
+    width: 6px;
+    height: 12px;
+}
+
+/* non-exclusive indicator = check box style indicator (see QActionGroup::setExclusive) */
+QMenu::indicator:non-exclusive:unchecked {
+    padding-left: 4px;
+    padding-right: -10px;
+    width: 12px;
+}
+
+/*QMenu::indicator:non-exclusive:unchecked:selected {
+    image: url(:/images/checkbox_unchecked_hover.png);
+}*/
+
+QMenu::indicator:non-exclusive:checked {
+    image: url(img/arrow_left.png);
+    padding-left: 2px;
+    padding-right: -8px;
+    padding-top: 1px;
+    width: 12px;
+}
+
+/*QMenu::indicator:non-exclusive:checked:selected {
+    image: url(:/images/checkbox_checked_hover.png);
+}*/
+
+/* exclusive indicator = radio button style indicator (see QActionGroup::setExclusive) */
+/*QMenu::indicator:exclusive:unchecked {
+    image: url(:/images/radiobutton_unchecked.png);
+}
+
+QMenu::indicator:exclusive:unchecked:selected {
+    image: url(:/images/radiobutton_unchecked_hover.png);
+}
+
+QMenu::indicator:exclusive:checked {
+    image: url(:/images/radiobutton_checked.png);
+}
+
+QMenu::indicator:exclusive:checked:selected {
+    image: url(:/images/radiobutton_checked_hover.png);
+}*/
+
+
+QMenu::right-arrow {
+    image: url(img/arrow_right.png);
+    margin-right: 5px;
+}
+#end

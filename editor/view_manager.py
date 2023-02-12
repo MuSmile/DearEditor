@@ -1,4 +1,4 @@
-import os, json
+import os, json, platform
 import xml.etree.ElementTree as ET
 from PySide6.QtWidgets import QWidget
 from PySide6.QtCore import Qt, QEvent, QSettings, QTimer, QSize
@@ -132,15 +132,16 @@ def createDockManager(parent):
 	CDockManager.setConfigFlag(CDockManager.AlwaysShowTabs, True)
 	CDockManager.setConfigFlag(CDockManager.FocusHighlighting, True)
 	CDockManager.setConfigFlag(CDockManager.MiddleMouseButtonClosesTab, True)
+	if platform.system() == 'Darwin': CDockManager.setConfigFlag(CDockManager.AllMenusHaveCustomStyle, True)
 
 	CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideFeatureEnabled, True)
 	CDockManager.setAutoHideConfigFlag(CDockManager.DockAreaHasAutoHideButton, True)
-	CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideTitleBarForceCloseBtn, True)
+	CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideTitleForceHasCloseBtn, True)
 
 	global _dockManager
 	_dockManager = CDockManager(parent)
 	_dockManager.setStyleSheet(None)
-	_dockManager.floatingWidgetCreated.connect(lambda f: f.layout().setContentsMargins(0, 1, 0, 0))
+	# _dockManager.floatingWidgetCreated.connect(lambda f: f.layout().setContentsMargins(0, 1, 0, 0))
 	_dockManager.focusedDockWidgetChanged.connect(lambda old, now: now.setFocus())
 	return _dockManager
 

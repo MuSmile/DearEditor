@@ -39,6 +39,8 @@ class MainWindow(QMainWindow):
         actionFile.addAction("New")
         actionFile.addAction("Open")
         a = actionFile.addAction("test")
+        # a.setCheckable(True)
+        # a.setChecked(True)
         a.setMenuRole(QAction.ApplicationSpecificRole)
         actionFile.addSeparator()
         actionFile.addAction("_Quit")
@@ -141,7 +143,7 @@ class MainWindow(QMainWindow):
         dock3 = DockView(dockManager, 'dock3')
         dock3.addIntoEditor('right')
 
-        dock4 = DockView(dockManager, 'dock4')
+        dock4 = DockView(dockManager, 'gdock4')
         dock4.addIntoEditor('bottom')
 
         # dock5 = DockView(dockManager, 'preview')

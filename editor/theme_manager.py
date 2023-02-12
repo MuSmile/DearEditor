@@ -1,4 +1,4 @@
-import os, re, time
+import os, re, time, platform
 from PySide6.QtCore import QSettings, QFile, QTextStream
 from PySide6.QtWidgets import QApplication
 
@@ -18,16 +18,17 @@ def _gatherStyleSheets(name):
 	qssFiles = dict(sorted(qssFiles.items(), key = lambda kv: kv[1]))
 	return qssFiles
 
-def _parseSingleQss(srcPath, cachePath, macroParser, urlParser):
+def _parseSingleQss(srcPath, cachePath, sysParser, macroParser, urlParser):
 	srcFile = QFile(srcPath)
 	srcFile.open(QFile.ReadOnly | QFile.Text)
 	srcText = QTextStream(srcFile).readAll()
 	srcFile.close()
 
-	parsed = re.sub(r'&\[(.*)\]', macroParser, srcText)
-	parsed = re.sub(r'url\((.*)\)', urlParser, parsed)
-	parsed = re.sub(r'/\*.*?\*/', '', parsed, flags = re.S)
+	parsed = re.sub(r'/\*.*?\*/', '', srcText, flags = re.S)
 	parsed = re.sub(r'\n+', '\n', parsed, flags = re.S)
+	parsed = re.sub(r'#if\s+(\S+)\s*\n(.*?)\n\s*#end', sysParser, parsed, flags = re.S)
+	parsed = re.sub(r'&\[(.*)\]', macroParser, parsed)
+	parsed = re.sub(r'url\((.*)\)', urlParser, parsed)
 
 	cacheFile = QFile(cachePath)
 	cacheFile.open(QFile.WriteOnly | QFile.Text)
@@ -83,10 +84,11 @@ def _parseTheme(name):
 
 		macroParser = lambda m: themeSetting.value(m.group(1))
 		urlParser = lambda m: f'url({_themeFolder}/{name}/{m.group(1)})'
+		sysParser = lambda m: m.group(2) if m.group(1) == platform.system() else ''
 
 		for qssName, qssPath in items.items():
 			cachePath = f'{_themeFolder}/{name}/qss/__qsscache__/{qssName}'
-			_parseSingleQss(qssPath, cachePath, macroParser, urlParser)
+			_parseSingleQss(qssPath, cachePath, sysParser, macroParser, urlParser)
 
 	return _mergeGeneratedQss(name)
 
@@ -117,7 +119,7 @@ def _onThemeModified(evt):
 
 	log('theme modify checked, reloading theme...')
 	rootPath = Path(os.path.abspath(activeThemeFolder()))
-	mfilePath = Path(evt.src_path)
+	mfilePath = Path(os.path.abspath(evt.src_path))
 	if rootPath in mfilePath.parents: loadTheme(_activeTheme)
 
 	_lastModifyTime = currTime

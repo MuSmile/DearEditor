@@ -1,7 +1,6 @@
 /*ADS*/
 ads--CDockContainerWidget
 {
-    /*background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:0.5, stop:0 #555, stop:1 #222);*/
     background: #333;
 }
 ads--CDockContainerWidget > QWidget
@@ -9,55 +8,89 @@ ads--CDockContainerWidget > QWidget
     background: #222;
 }
 
-/*ads--CDockContainerWidget QSplitter::handle
-{
-    background: palette(dark);
-}*/
-
-ads--CDockAreaWidget
-{
-    background: &[Palette/bgActive];
-    border: 0px;
-}
-
-/*ads--CDockContainerWidget#none
-{
-    background: &[Palette/bgActive];
-}*/
-
-/*ads--CDockAreaWidget #tabsMenuButton::menu-indicator
-{
-    image: none;
-}
-*/
-
 ads--CDockAreaTitleBar
 {
     background: &[Palette/bgDeactive];
     min-height: 22px;
-    padding-right: 8px;
+    max-height: 22px;
+    padding-right: 6px;
 }
-
-ads--CFloatingDockContainer
-{
-    background: &[Palette/bgDeactive];
-}
-
-/*
-ads--CFloatingDockContainer ads--CDockAreaTitleBar
-{
-    min-height: 25;
-}
-*/
 
 ads--CDockAreaTitleBar QToolButton
 {
     background: none;
     border: none;
-    /*border-radius: 9px;*/
     border-radius: 0px;
-    width: 12;
-    height: 12;
+    width: 12px;
+    height: 16px;
+}
+
+#tabsMenuButton
+{
+	border: none;
+	background: none;
+    width: 12px;
+    height: 12px;
+	qproperty-icon: url(img/tabs-menu-button.svg);
+}
+#tabsMenuButton:hover
+{
+	background: #555;
+}
+#tabsMenuButton:pressed
+{
+	background: #777;
+}
+#tabsMenuButton::menu-indicator
+{
+    image: none;
+}
+#detachGroupButton
+{
+	border: none;
+	background: none;
+	width: 12px;
+	height: 12px;
+	qproperty-icon: url(img/detach-button.svg);
+}
+#detachGroupButton:hover
+{
+	background: #555;
+}
+#detachGroupButton:pressed
+{
+	background: #777;
+}
+#dockAreaCloseButton
+{
+	border: none;
+	background: none;
+	width: 12px;
+	height: 12px;
+	qproperty-icon: url(img/close-button.svg);
+}
+#dockAreaCloseButton:hover
+{
+	background: #555;
+}
+#dockAreaCloseButton:pressed
+{
+	background: #777;
+}
+
+#tabCloseButton
+{
+	border: none;
+	padding: 0px;
+	/*width: 16px;*/
+	height: 16px;
+	width: 0px;
+}
+
+QScrollArea#dockWidgetScrollArea
+{
+	padding: 0px;
+	border: none;
 }
 
 ads--CDockAreaTitleBar > QFrame QWidget
@@ -68,15 +101,8 @@ ads--CDockAreaTitleBar > QFrame QWidget
 ads--CDockWidgetTab
 {
     background: &[Palette/bgDeactive];
-    border-style: solid;
-    border-color: &[Palette/bgDeactive];
-    border-width: 0px;
-    padding: 2px 2px 4px 0px;
-}
-
-ads--CDockWidgetTab QAbstractButton
-{
-	max-width: 0;
+    border: none;
+    padding: 0px 2px 1px 2px;
 }
 
 ads--CDockWidgetTab[activeTab="true"]
@@ -88,7 +114,7 @@ ads--CDockWidgetTab[activeTab="true"]
 
 ads--CDockWidgetTab[activeTab="true"] > QFrame
 {
-    background: &[Palette/bgActive];
+    background: none;
 }
 
 ads--CDockWidgetTab[activeTab="true"] QLabel
@@ -99,73 +125,18 @@ ads--CDockWidgetTab[activeTab="true"] QLabel
 ads--CDockWidgetTab[focused="true"]
 {
 	border-radius: 0;
-	background: qlineargradient(x1:0,y1:0,x2:0,y2:0.08,stop:0#ccf,stop:0.1#ccf,stop:1&[Palette/bgActive]);
+	background: qlineargradient(x1:0,y1:0,x2:0,y2:0.1,stop:0#4999FD,stop:0.99#4999FD,stop:1&[Palette/bgActive]);
 }
 
 ads--CDockWidget
 {
     background: &[Palette/bgActive];
-    border-color: &[Palette/bgActive];
-    border-style: solid;
-    border-width: 0px;
+    border: none;
 }
 ads--CDockWidget QFrame
 {
 	color: #ccc;
 	background-color: &[Palette/bgActive];
-}
-
-#tabsMenuButton
-{
-	border: none;
-	background: none;
-	padding: 0px -4px, 2px, 0px;
-	qproperty-icon: url(img/tabs-menu-button.svg);
-}
-#detachGroupButton
-{
-	border: none;
-	background: none;
-	padding: 0px;
-	width: 14px;
-	height: 14px;
-	qproperty-icon: url(img/detach-button.svg);
-}
-#dockAreaCloseButton
-{
-	border: none;
-	background: none;
-	padding: 0px 5 0 -4;
-	qproperty-icon: url(img/close-button.svg);
-}
-
-QScrollArea#dockWidgetScrollArea
-{
-	padding: 0px;
-	border: none;
-}
-
-
-#tabCloseButton
-{
-	background: none;
-	border: none;
-	padding: 0px;
-	/*width: 16px;*/
-	width: 6px;
-	height: 16px;
-}
-
-#tabCloseButton:hover
-{
-	background: rgba(0, 0, 0, 16);
-	border-radius: 8px;
-}
-
-#tabCloseButton:pressed
-{
-	background: rgba(0, 0, 0, 32);
-	border-radius: 8px;
 }
 
 /*ads--CDockOverlayCross
@@ -198,16 +169,10 @@ ads--CAutoHideTab {
 	qproperty-iconSize: 16px 16px;/* this is optional in case you would like to change icon size*/
 	background: none;
 	border: none;
-	padding-left: 2px;
-	padding-right: 6px;
-	text-align: center;
-	min-height: 20px;
-	padding-top: 1px;
-	padding-bottom: 1px;
 	border-radius: 0px;
+	padding: 0px 6px 0px 6px;
+	height: 22px;
 }
-
-
 ads--CAutoHideTab:hover
 {
 	color: #fff;
@@ -227,13 +192,13 @@ ads--CAutoHideTab:hover[iconOnly="false"][sideBarLocation="0"],
 ads--CAutoHideTab:hover[iconOnly="false"][sideBarLocation="2"],
 ads--CAutoHideTab[iconOnly="false"][sideBarLocation="0"][activeTab="true"],
 ads--CAutoHideTab[iconOnly="false"][sideBarLocation="2"][activeTab="true"]  {
-	border-top: 4px solid #0078d7;
+	border-top: 4px solid #4999FD;
 }
 ads--CAutoHideTab:hover[iconOnly="false"][sideBarLocation="1"],
 ads--CAutoHideTab:hover[iconOnly="false"][sideBarLocation="3"],
 ads--CAutoHideTab[iconOnly="false"][sideBarLocation="1"][activeTab="true"],
 ads--CAutoHideTab[iconOnly="false"][sideBarLocation="3"][activeTab="true"] {
-	border-bottom: 4px solid #0078d7;
+	border-bottom: 4px solid #4999FD;
 }
 
 
@@ -243,15 +208,12 @@ ads--CAutoHideTab[iconOnly="false"][sideBarLocation="3"][activeTab="true"] {
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="0"] {
 	border-top: 4px solid #555;
 }
-
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="1"] {
 	border-left: 4px solid #555;
 }
-
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="2"] {
 	border-right: 4px solid #555;
 }
-
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="3"] {
 	border-bottom: 4px solid #555;
 }
@@ -262,22 +224,19 @@ ads--CAutoHideTab[iconOnly="true"][sideBarLocation="3"] {
  */
 ads--CAutoHideTab:hover[iconOnly="true"][sideBarLocation="0"],
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="0"][activeTab="true"] {
-	border-top: 4px solid #0078d7;
+	border-top: 4px solid #4999FD;
 }
-
 ads--CAutoHideTab:hover[iconOnly="true"][sideBarLocation="1"],
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="1"][activeTab="true"] {
-	border-left: 4px solid #0078d7;
+	border-left: 4px solid #4999FD;
 }
-
 ads--CAutoHideTab:hover[iconOnly="true"][sideBarLocation="2"],
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="2"][activeTab="true"] {
-	border-right: 4px solid #0078d7;
+	border-right: 4px solid #4999FD;
 }
-
 ads--CAutoHideTab:hover[iconOnly="true"][sideBarLocation="3"],
 ads--CAutoHideTab[iconOnly="true"][sideBarLocation="3"][activeTab="true"] {
-	border-bottom: 4px solid #0078d7;
+	border-bottom: 4px solid #4999FD;
 }
 
 
@@ -298,15 +257,12 @@ ads--CAutoHideSideBar{
 ads--CAutoHideSideBar[sideBarLocation="0"] {
 	border-bottom: 1px solid #222;
 }
-
 ads--CAutoHideSideBar[sideBarLocation="1"] {
 	border-right: 1px solid #222;
 }
-
 ads--CAutoHideSideBar[sideBarLocation="2"] {
 	border-left: 1px solid #222;
 }
-
 ads--CAutoHideSideBar[sideBarLocation="3"] {
 	border-top: 1px solid #222;
 }
@@ -318,7 +274,6 @@ ads--CAutoHideSideBar[sideBarLocation="3"] {
 ads--CAutoHideDockContainer {
 	background: #222;
 }
-
 
 ads--CAutoHideDockContainer ads--CDockAreaTitleBar {
 	background: #0078d7;
@@ -333,7 +288,7 @@ ads--CAutoHideDockContainer ads--CDockAreaTitleBar {
  */
 ads--CAutoHideDockContainer ads--CDockAreaWidget[focused="true"] ads--CDockAreaTitleBar {
 	background: #0078d7;
-	padding: 0px;
+	padding: 0px 4px 0px 0px;
 	border: none;
 }
 
@@ -350,12 +305,13 @@ ads--CAutoHideDockContainer ads--CDockAreaWidget[focused="true"] ads--CDockAreaT
 #dockAreaAutoHideButton {
 	qproperty-icon: url(img/vs-pin-button.svg);
 	qproperty-iconSize: 16px;
+	width: 12px;
 }
 
 ads--CAutoHideDockContainer #dockAreaAutoHideButton {
 	qproperty-icon: url(img/vs-pin-button-pinned-focused.svg);
 	qproperty-iconSize: 16px;
-	padding-right: 5px;
+	width: 14px;
 	background: #0078d7;
 }
 ads--CAutoHideDockContainer #dockAreaAutoHideButton:hover {
@@ -366,14 +322,26 @@ ads--CAutoHideDockContainer #dockAreaAutoHideButton:pressed {
 }
 
 ads--CAutoHideDockContainer #dockAreaCloseButton{
-	qproperty-icon: url(img/close-button.svg)
+	qproperty-icon: url(img/close-button.svg);
+	qproperty-iconSize: 16px;
+	width: 14px;
+}
+ads--CAutoHideDockContainer #dockAreaCloseButton:hover{
+	background: #1088e7;
+}
+ads--CAutoHideDockContainer #dockAreaCloseButton:pressed{
+	background: #2098f7;
 }
 
+ads--CAutoHideDockContainer ads--CTitleBarButton {
+	width: 14px;
+    height: 26px;
+}
 ads--CAutoHideDockContainer ads--CTitleBarButton:hover {
-	background: rgba(255, 0, 0, 48);
+	background: #1088e7;
 }
 ads--CAutoHideDockContainer ads--CTitleBarButton:pressed {
-	background: rgba(255, 0, 0, 96);
+	background: #2098f7;
 }
 
 /*****************************************************************************

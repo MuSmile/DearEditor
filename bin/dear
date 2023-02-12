@@ -1,4 +1,3 @@
-# @echo off
 curdir=$(pwd)
 idedir=/Users/kakiko/projects/DearEditor
  pybin=python
