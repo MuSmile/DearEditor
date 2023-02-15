@@ -152,6 +152,7 @@ QPushButton#popup
 }
 QPushButton#popup::menu-indicator
 {
+	/*image: none;*/
     top: -4px;
     right: 5px;
     /*width: 10px;*/
@@ -187,22 +188,6 @@ QSplitter::handle:vertical
 {
 	background-color: #252525;
 	height: 3px;
-}
-
-Blackboard
-{
-	qproperty-border: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4af,stop:1 #4bb);
-	qproperty-background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #3344aaff,stop:1 #3344bbbb);
-}
-
-Blackboard QSizeGrip
-{
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0.5 transparent, stop:0.501 #3a44bbbb);
-	border-bottom-right-radius: 4px;
-}
-Blackboard QSizeGrip:hover
-{
-	background: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0.5 transparent, stop:0.501 #4bb);
 }
 
 /*QGraphicsView

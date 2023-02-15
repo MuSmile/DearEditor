@@ -137,13 +137,13 @@ class MainWindow(QMainWindow):
         dock1 = DockView(dockManager, 'dock1')
         dock1.addIntoEditor('right')
 
-        dock2 = DockView(dockManager, 'dock2')
+        dock2 = DockView(dockManager, 'SDL dock', 'project.png')
         dock2.addIntoEditor('center')
 
-        dock3 = DockView(dockManager, 'dock3')
+        dock3 = DockView(dockManager, 'dock3', 'console.png')
         dock3.addIntoEditor('right')
 
-        dock4 = DockView(dockManager, 'gdock4')
+        dock4 = DockView(dockManager, 'gdock4', 'inspector.png')
         dock4.addIntoEditor('bottom')
 
         # dock5 = DockView(dockManager, 'preview')

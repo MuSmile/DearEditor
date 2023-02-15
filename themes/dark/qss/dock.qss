@@ -23,6 +23,8 @@ ads--CDockAreaTitleBar QToolButton
     border-radius: 0px;
     width: 12px;
     height: 16px;
+	margin-bottom: 1px;
+	margin-top: 1px;
 }
 
 #tabsMenuButton
@@ -102,7 +104,7 @@ ads--CDockWidgetTab
 {
     background: &[Palette/bgDeactive];
     border: none;
-    padding: 0px 2px 1px 2px;
+    padding: 0px 2px 0px 2px;
 }
 
 ads--CDockWidgetTab[activeTab="true"]
@@ -117,10 +119,12 @@ ads--CDockWidgetTab[activeTab="true"] > QFrame
     background: none;
 }
 
-ads--CDockWidgetTab[activeTab="true"] QLabel
+/*ads--CDockWidgetTab[activeTab="true"] QLabel
 {
     color: &[Palette/labelColor];
-}
+    border: 1px solid rgb(255, 145, 0);
+	border-radius: 26px;
+}*/
 
 ads--CDockWidgetTab[focused="true"]
 {

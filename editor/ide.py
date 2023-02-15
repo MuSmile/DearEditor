@@ -1,5 +1,5 @@
 import sys, platform
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPalette
 from PySide6.QtCore import Qt, QCoreApplication
 from PySide6.QtWidgets import QApplication
 from editor.ide_prefs import IdePrefs
@@ -37,6 +37,12 @@ class Ide(QApplication):
 		self.setApplicationName('Dear Editor')
 		self.aboutToQuit.connect(self.onAboutToQuit)
 		IdePrefs.connect('prefs.db')
+		self.setupPalette()
+
+	def setupPalette(self):
+		self.palette = self.style().standardPalette()
+		self.palette.setColor(QPalette.Highlight, '#4999FD')
+		self.setPalette(self.palette)
 
 	def raiseWindow(self, prj):
 		log('hello!')

@@ -1,12 +1,12 @@
+#if Windows
 QMenuBar {
-	/*color: #ccc;*/
-	/*background-color: #222;*/
-	min-height: 18;
-	/*spacing: 0px;*/
-	font-size: &[Font/sizeMenuBar];
+    /*color: #ccc;*/
+    /*background-color: #222;*/
+    min-height: 18;
+    /*spacing: 0px;*/
+    font-size: &[Font/sizeMenuBar];
 }
 
-#if Windows
 QMenu {
     min-width: 80px;
     font-size: &[Font/sizeMenuItem];
@@ -17,15 +17,16 @@ QMenu {
 QMenu {
 	min-width: 10px;
 	font-size: &[Font/sizeMenuItem];
-    background-color: #eee;
-    padding: 5px 5px 5px 5px;
+    background-color: #E8E8E8;
+    padding: 5px 4px 5px 4px;
     border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
     border-radius: 6px;
 }
 
 QMenu::item {
     background-color: transparent;
-    padding: 3px 20px 4px 10px;
+    padding: 3px 15px 4px 14px;
     color: #000;
 }
 
@@ -36,21 +37,19 @@ QMenu::item:selected { /* when user selects item using mouse or keyboard */
 }
 
 QMenu::separator {
-    background-color: #cfcfcf;
-    margin: 3px 10px 4px 10px;
+    background-color: #CFCFCF;
+    margin: 3px 17px 4px 14px;
     height: 1px;
 }
 
 QMenu::indicator {
-    width: 6px;
+    width: 0px;
     height: 12px;
 }
 
 /* non-exclusive indicator = check box style indicator (see QActionGroup::setExclusive) */
 QMenu::indicator:non-exclusive:unchecked {
-    padding-left: 4px;
-    padding-right: -10px;
-    width: 12px;
+    width: 0px;
 }
 
 /*QMenu::indicator:non-exclusive:unchecked:selected {
@@ -58,16 +57,16 @@ QMenu::indicator:non-exclusive:unchecked {
 }*/
 
 QMenu::indicator:non-exclusive:checked {
-    image: url(img/arrow_left.png);
-    padding-left: 2px;
-    padding-right: -8px;
-    padding-top: 1px;
-    width: 12px;
+    image: url(img/check.png);
+    padding-left: 0px;
+    padding-right: -11px;
+    width: 11px;
+    height: 11px;
 }
 
-/*QMenu::indicator:non-exclusive:checked:selected {
-    image: url(:/images/checkbox_checked_hover.png);
-}*/
+QMenu::indicator:non-exclusive:checked:selected {
+    image: url(img/check2.png);
+}
 
 /* exclusive indicator = radio button style indicator (see QActionGroup::setExclusive) */
 /*QMenu::indicator:exclusive:unchecked {
@@ -88,7 +87,13 @@ QMenu::indicator:exclusive:checked:selected {
 
 
 QMenu::right-arrow {
-    image: url(img/arrow_right.png);
-    margin-right: 5px;
+    image: url(img/menu_expand.png);
+    margin-right: 2px;
+    width: 12px;
+    height: 12px;
+    /*margin-right: 8px;*/
+}
+QMenu::right-arrow:selected {
+    image: url(img/menu_expand2.png);
 }
 #end

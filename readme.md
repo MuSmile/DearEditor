@@ -24,8 +24,8 @@ or simply (need do setup work first)
 
 ## Setup
 1. Add `<your-path>/DearEditor/bin` into env-variables path.
-2. Find `<your-path>/DearEditor/bin/dear.bat` file (aka hna-bin later).
-3. Modify `idedir` and `pybin` path in hna-bin with your actual path.
+2. Find `<your-path>/DearEditor/bin/dear.bat` file (aka dear-bin later).
+3. Modify `idedir` and `pybin` path in dear-bin with your actual path.
 
 ## Enjoy and run
 use ↓
@@ -40,7 +40,7 @@ use ↓
 ```bat
 > dear ide
 ```
-to raise hna editor ide.
+to raise dear editor ide.
 
 ## Shiboken prj notes
 If need compile shiboken prjs like QtAds,
