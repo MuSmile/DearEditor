@@ -16,6 +16,21 @@ from editor.view_manager import createDockManager, DockView
 
 import editor.views
 
+class MyPopup(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlag(Qt.Popup, True)
+        self.setWindowFlag(Qt.FramelessWindowHint, True)
+        self.setAttribute(Qt.WA_NoSystemBackground, True)
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        # self.setWindowOpacity(0.1)
+        # self.setStyleSheet('QWidget { background-color: transparent; }')
+        self.btn = QPushButton('test', self)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.btn.resize(self.width(), self.height())
+
 # @addMenuItem('File/Restart', 55, 'Ctrl+R')
 def _restart_program():
     python = sys.executable
@@ -137,7 +152,7 @@ class MainWindow(QMainWindow):
         dock1 = DockView(dockManager, 'dock1')
         dock1.addIntoEditor('right')
 
-        dock2 = DockView(dockManager, 'SDL dock', 'project.png')
+        dock2 = DockView(dockManager, 'dock2', 'project.png')
         dock2.addIntoEditor('center')
 
         dock3 = DockView(dockManager, 'dock3', 'console.png')
@@ -146,6 +161,17 @@ class MainWindow(QMainWindow):
         dock4 = DockView(dockManager, 'gdock4', 'inspector.png')
         dock4.addIntoEditor('bottom')
 
+
+        self.btn = QPushButton("Click me")
+        self.btn.setGeometry(QRect(0, 0, 100, 30))
+        self.btn.clicked.connect(self.doit)
+        dock2.setWidget(self.btn)
+
+    def doit(self):
+        self.w = MyPopup()
+        self.w.show()
+        self.w.resize(200, 300)
+        self.w.move(QCursor.pos())
         # dock5 = DockView(dockManager, 'preview')
         # dock5.setWidget(PreviewWidget())
         # dock5.resize(500, 800)

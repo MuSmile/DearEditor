@@ -6,7 +6,7 @@ from pathlib import Path
 from editor.common.logger import log
 from editor.common.file_watcher import RegexWatcher
 
-_themeFolder = 'themes'
+_themeFolder = 'data/themes'
 
 def _gatherStyleSheets(name):
 	qssDir = f'{_themeFolder}/{name}/qss/'
