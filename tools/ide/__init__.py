@@ -1,14 +1,15 @@
-import sys, platform
-from PySide6.QtGui import QIcon, QPalette
-from PySide6.QtCore import Qt, QCoreApplication
+import os, sys, platform
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
-from editor.ide_prefs import IdePrefs
-from editor.main_window import MainWindow
-from editor.theme_manager import loadTheme, setupThemeWatcher
+from PySide6.QtGui import QIcon, QPalette
+from editor.common import argparse
 from editor.common.logger import log
+from editor.theme_manager import loadTheme, setupThemeWatcher
+from editor.editor_prefs import EditorPrefs
+from editor.main_window import MainWindow
 
-
-def _init_platform(system):
+def setupProcess():
+	system = platform.system()
 	if system == 'Windows':
 		import ctypes
 		appid = 'dear_editor.0.1'
@@ -30,13 +31,12 @@ def _init_platform(system):
 
 class Ide(QApplication):
 	def __init__(self, *args):
-		_init_platform(platform.system())
 		super().__init__(*args)
 		self.setAttribute(Qt.AA_EnableHighDpiScaling)
 		self.setWindowIcon(QIcon('logo.png'))
 		self.setApplicationName('Dear Editor')
 		self.aboutToQuit.connect(self.onAboutToQuit)
-		IdePrefs.connect('data/prefs.db')
+		EditorPrefs.connect(os.environ[ 'DE_PREFS_PATH' ])
 		self.setupPalette()
 
 	def setupPalette(self):
@@ -44,9 +44,9 @@ class Ide(QApplication):
 		self.palette.setColor(QPalette.Highlight, '#4999FD')
 		self.setPalette(self.palette)
 
-	def raiseWindow(self, prj):
+	def raiseWindow(self, prj, theme):
 		log('hello!')
-		loadTheme('dark')
+		loadTheme(theme)
 		setupThemeWatcher()
 
 		win = MainWindow()
@@ -56,5 +56,24 @@ class Ide(QApplication):
 		sys.exit(self.exec())
 
 	def onAboutToQuit(self):
-		IdePrefs.close()
+		EditorPrefs.close()
 		log('bye!')
+
+
+def description():
+	return 'raise editor ide'
+
+def main( argv ):
+	parser = argparse.ArgumentParser(prog = 'dear ide', description = description())
+	parser.add_argument('-p', '--prj', help='specify working prject path')
+	parser.add_argument('--theme', help='specify ide theme')
+	parser.add_argument('--host', action='store_true', help='start with host mode', default=False)
+	args = parser.parse_args(argv)
+
+	setupProcess()
+
+	prj = args.prj or 'none'
+	theme = args.theme or 'dark'
+
+	ide = Ide(argv)
+	ide.raiseWindow(prj, theme)

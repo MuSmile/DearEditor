@@ -1,84 +1,81 @@
-import sys, os, warnings
+import sys, os, importlib, warnings
 warnings.filterwarnings('ignore')
 
-def hello():
-	# generated from:
-	# http://patorjk.com/software/taag
-	print('''
-	    ____                     ______    ___ __            
-	   / __ \___  ____ ______   / ____/___/ (_) /_____  _____
-	  / / / / _ \/ __ `/ ___/  / __/ / __  / / __/ __ \/ ___/
-	 / /_/ /  __/ /_/ / /     / /___/ /_/ / / /_/ /_/ / /    
-	/_____/\___/\__,_/_/     /_____/\__,_/_/\__/\____/_/     
-	---------------------------------------------------------
 
-	usage: dear {ide, run, build} [-p PRJ] [-t TAR] [--theme THEME] ...
+def addEnvPath( key, entry, prepend = False ):
+	if not isinstance( entry, list ): entry = [ entry ]
+	processedEntry = entry
 
-	commands:
-	   ide             start Dear Editor ide
-	   run             run game without editor
-	   build           build game binaries
-	   -----           -----------------------
-	   install         check/install required py pkgs
-	   python          exec python script with ide env
+	try:
+		path0 = os.environ[ key ]
+		if prepend:
+			processedEntry = processedEntry + [ path0 ]
+		else:
+			processedEntry = [ path0 ] + processedEntry
+	except KeyError as e:
+		pass
 
-	ide:
-	  -p, --prj        specify working prject path
-	  --theme          specify ide theme to open with
+	path1 = os.pathsep.join( processedEntry )
+	os.environ[ key ] = path1
+	os.putenv( key, path1 )
+	return path1
 
-	run:
-	  -p, --prj        specify prject path to run
-	  -t, --tar        specify run target {release, debug}
 
-	build:
-	  -p, --prj        specify prject path to build
-	  -t, --tar        specify build target {release, debug}
-		''')
+def setupEnvironment():
+	basepath = os.path.dirname(__file__)
+	sys.path.insert(0, basepath)
 
-def startIde(prj):
-	from editor.ide import Ide
-	ide = Ide(sys.argv)
-	ide.raiseWindow(prj)
+	# addEnvPath( 'PATH', _path, True )
+	# addEnvPath( 'DYLD_FRAMEWORK_PATH', _path, True )
+	# addEnvPath( 'DYLD_LIBRARY_PATH', _path, True )
 
-def runGame():
-	pass
+	os.environ[ 'DE_ENV_SET'     ] = 'OK'
+	os.environ[ 'DE_CWD'         ] = os.getcwd();
+	os.environ[ 'DE_BASE_PATH'   ] = basepath
+	os.environ[ 'DE_THEME_PATH'  ] = basepath + '/data/themes'
+	os.environ[ 'DE_LAYOUT_PATH' ] = basepath + '/data/layouts'
+	os.environ[ 'DE_PREFS_PATH'  ] = basepath + '/data/prefs.db'
+	# os.environ[ 'DE_SUPPORT_PATH' ] = supportPath
+	# os.environ[ 'DE_NATIVE_SUPPORT_PATH' ] = supportPathNative
 
-def buildBin():
-	pass
+	# os.execv(sys.executable, [pyname] + sys.argv)
+
+
+def listEditorTool():
+	tooldir = os.environ[ 'DE_BASE_PATH' ] + '/tools'
+	return [ f.name for f in os.scandir(tooldir) if f.is_dir() ]
+
+def loadEditorTool(name):
+	# log(f'loading tool <{name}>')
+	module = 'tools.' + name
+	m = importlib.import_module(module)
+	if hasattr(m, 'main'): m.main(sys.argv[2:])
+
+
+def printEditorTools():
+	print('available commands:')
+	for name in listEditorTool():
+		m = importlib.import_module('tools.' + name)
+		desc = hasattr(m, 'description') and m.description() or 'none'
+		print('  - {:<16}  {}'.format(name, desc))
+	print(f'use \'dear <commmand> -h\' for detailed helps')
+
 
 if __name__ == '__main__':
+	setupEnvironment()
+
 	if len(sys.argv) == 1:
-		hello()
-		os._exit(0)
+		sys.argv.append('hello')
 
-	from editor.common import argparse
-	parser = argparse.ArgumentParser(prog = 'dear')
-	# Required positional argument
-	parser.add_argument('command', choices=['ide','run','build','python'], help='select command')
-	parser.add_argument('-p', '--prj', help='specify working prject path')
-	parser.add_argument('-t', '--tar', help='specify runtime target {release, debug}', default='debug')
+	command = sys.argv[1]
+	if command == 'list':
+		printEditorTools()
 
-	groupIde = parser.add_argument_group('ide')
-	groupIde.add_argument('--theme', help='specify ide theme')
-	groupIde.add_argument('--host', action='store_true', help='start with host mode', default=False)
-	
-	groupRun = parser.add_argument_group('run')
-	groupRun.add_argument('--dev', action='store_true', help='specify run with dev mode', default=True)
+	elif command in listEditorTool():
+		loadEditorTool(command)
 
-	groupBuild = parser.add_argument_group('build')
-	
-	groupPython = parser.add_argument_group('python')
-	groupPython.add_argument('--script', help='specify script file to exec')
+	else:
+		t = command[0] == '-' and 'argument' or 'command'
+		print(f'error: unrecognized {t} \'{command}\'')
+		print(f'use \'dear list\' to check available commands')
 
-	args = parser.parse_args()
-
-	if args.command == 'ide':
-		# print(args.cur)
-		startIde(args.prj)
-	elif args.command == 'run':
-		runGame()
-	elif args.command == 'build':
-		buildBin()
-	elif args.command == 'python':
-		# can't call in local scope like func
-		exec(open(args.script).read())

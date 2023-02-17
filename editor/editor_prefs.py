@@ -81,4 +81,4 @@ class _Prefs():
 	def clear(self, table):
 		self.doSql(f'DELETE FROM {table}')
 
-IdePrefs = _Prefs()
+EditorPrefs = _Prefs()
