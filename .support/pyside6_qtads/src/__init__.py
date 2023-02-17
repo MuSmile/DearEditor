@@ -21,7 +21,12 @@
 
 
 ####################### qtads #######################
+import os
+
+_cwd = os.getcwd()
+os.chdir(os.path.dirname(__file__))
 from .PySide6QtAds import ads
+os.chdir(_cwd)
 
 CDockWidget               =   ads.CDockWidget
 CDockManager              =   ads.CDockManager

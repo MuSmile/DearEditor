@@ -250,7 +250,7 @@ endif()
 
 # Make sure the linker doesn't complain about not finding Python symbols on macOS.
 if(APPLE)
-  set_target_properties(${bindings_library} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -Wl,-rpath,./editor/common/pyqtads/osx,-rpath,./dist")
+  set_target_properties(${bindings_library} PROPERTIES LINK_FLAGS "-undefined dynamic_lookup -Wl,-rpath,./")
 endif(APPLE)
 
 # Find and link to the python import library only on Windows.
