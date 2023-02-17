@@ -1,0 +1,184 @@
+{
+	"build_systems":
+	[
+		{
+			"cmd":
+			[
+				"dear",
+				"ide"
+			],
+			"name": "IDE",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path"
+		},
+		{
+			"cmd":
+			[
+				"explorer",
+				"$project_path",
+			],
+			"name": "Browse IDE",
+			"shell": true,
+			"target": "exec_in_window",
+		},
+		{
+			"cmd":
+			[
+				"dear",
+				"run"
+			],
+			"name": "Run",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path"
+		},
+		{
+			"cmd":
+			[
+				"dear",
+				"python",
+				"--script",
+				"$file"
+			],
+			"name": "Python with IDE",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path"
+		},
+		{
+			"cmd":
+			[
+				"python",
+				"-u",
+				"$file"
+			],
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Python",
+			"selector": "source.python",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path"
+		},
+		{
+			"cmd":
+			[
+				"cmake",
+				"-DCMAKE_BUILD_TYPE=Release",
+				"..",
+				"-DADS_VERSION=4.0.2"
+			],
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Config qtads",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path/.support/pyside6_qtads/build"
+		},
+		{
+			"cmd":
+			[
+				"cmake",
+				"--build",
+				".",
+				"--target",
+				"install",
+				"--config",
+				"Release",
+				"-j6"
+			],
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Compile qtads",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path/.support/pyside6_qtads/build"
+		},
+		{
+			"cmd":
+			[
+				"python",
+				"-u",
+				"testpkg.py"
+			],
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Test qtads",
+			"selector": "source.python",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path/.support/pyside6_qtads"
+		},
+		{
+			"cmd":
+			[
+				"del",
+				"/s/q",
+				"*"
+			],
+			"name": "Clear qtads",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path/.support/pyside6_qtads/build"
+		},
+	],
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.bank",
+				"*.psd",
+				"*.ogv",
+				"*.otf",
+				"*.tff",
+				"*.fnt",
+				"*.jpg",
+				"*.png",
+				"*.svg",
+				"*.l2",
+				"*.wav",
+				"*.aifc",
+				"*.caf",
+				"*.ogg",
+				"*.tmx",
+				"*.sxc",
+				"*.xls",
+				"*.ods",
+				"*.pyo",
+				"*.pyc",
+				"*.so",
+				"*.o",
+				"*.bat",
+				".git*",
+				"BUILD_RESULT"
+			],
+			"folder_exclude_patterns":
+			[
+				".*",
+				"bin",
+				"__pycache__",
+				"__qsscache__"
+			],
+			"path": "."
+		},
+		{
+			"path": ".shiboken/qtads/src"
+		}
+	],
+	"settings":
+	{
+		"build_switcher_systems":
+		[
+			"IDE",
+			"Browse IDE",
+			"-------------------------------------",
+			"Python",
+			"Python with IDE",
+			"-------------------------------------",
+			"Config qtads",
+			"Compile qtads",
+			"Test qtads",
+			"Clear qtads",
+		],
+		"show_panel_on_build": false,
+		"tab_size": 4
+	}
+}
