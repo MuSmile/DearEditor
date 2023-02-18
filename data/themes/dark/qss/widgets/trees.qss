@@ -18,8 +18,8 @@ QTreeView::branch:closed:has-children {
 TreeView
 {
 	qproperty-paddingLeft: 2;
-	qproperty-itemHeight: 22;
-	qproperty-indentation: 22;
+	qproperty-itemHeight: 20;
+	qproperty-indentation: 20;
 
 	qproperty-dropIndicatorMargin: 5;
 	qproperty-dropIndicatorColor: #8af;

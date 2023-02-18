@@ -1,8 +1,10 @@
 import sys, os, importlib, warnings
 warnings.filterwarnings('ignore')
 
+def fixPath(path):
+	return path.replace('\\', '/')
 
-def addEnvPath( key, entry, prepend = False ):
+def addEnvPath(key, entry, prepend = False):
 	if not isinstance( entry, list ): entry = [ entry ]
 	processedEntry = entry
 
@@ -22,7 +24,7 @@ def addEnvPath( key, entry, prepend = False ):
 
 
 def setupEnvironment():
-	basepath = os.path.dirname(__file__)
+	basepath = fixPath(os.path.dirname(__file__))
 	sys.path.insert(0, basepath)
 
 	# addEnvPath( 'PATH', _path, True )
@@ -30,7 +32,7 @@ def setupEnvironment():
 	# addEnvPath( 'DYLD_LIBRARY_PATH', _path, True )
 
 	os.environ[ 'DEAR_ENV_SET'     ] = 'OK'
-	os.environ[ 'DEAR_CWD'         ] = os.getcwd();
+	os.environ[ 'DEAR_CWD'         ] = fixPath(os.getcwd())
 	os.environ[ 'DEAR_BASE_PATH'   ] = basepath
 	os.environ[ 'DEAR_THEME_PATH'  ] = basepath + '/data/themes'
 	os.environ[ 'DEAR_LAYOUT_PATH' ] = basepath + '/data/layouts'
