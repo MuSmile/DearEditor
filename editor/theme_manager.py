@@ -6,8 +6,13 @@ from pathlib import Path
 from editor.common.logger import log
 from editor.common.file_watcher import RegexWatcher
 
-_themeFolder = os.environ[ 'DE_THEME_PATH' ]
 
+_themeFolder = os.environ[ 'DEAR_THEME_PATH' ]
+_activeTheme = None
+_lastModifyTime = 0
+
+
+#####################  UTILS  #####################
 def _gatherStyleSheets(name):
 	qssDir = f'{_themeFolder}/{name}/qss/'
 	qssFiles = {}
@@ -53,14 +58,14 @@ def _mergeGeneratedQss(name):
 
 	return mergedText
 
-def _gatherItemsNeedToReparse(name):
+def _gatherDirtyItems(name):
 	cacheDir = f'{_themeFolder}/{name}/qss/__qsscache__'
 	qssTable = _gatherStyleSheets(name)
 	if not os.path.isdir(cacheDir):
 		os.makedirs(cacheDir)
 		return qssTable
 
-	toReparse = {}
+	needReparse = {}
 	settingPath = f'{_themeFolder}/{name}/macro'
 	getmtime = os.path.getmtime
 	mtSetting = getmtime(settingPath)
@@ -68,16 +73,16 @@ def _gatherItemsNeedToReparse(name):
 	for qssName, qssPath in qssTable.items():
 		cachePath = f'{cacheDir}/{qssName}'
 		if not os.path.isfile(cachePath):
-			toReparse[qssName] = qssPath
+			needReparse[qssName] = qssPath
 		else:
 			mtSrc = getmtime(qssPath)
 			mtCache = getmtime(cachePath)
 			if mtCache < mtSrc or mtCache < mtSetting:
-				toReparse[qssName] = qssPath
-	return toReparse
+				needReparse[qssName] = qssPath
+	return needReparse
 
 def _parseTheme(name):
-	items = _gatherItemsNeedToReparse(name)
+	items = _gatherDirtyItems(name)
 	if items:
 		settingPath = f'{_themeFolder}/{name}/macro'
 		themeSetting = QSettings(settingPath, QSettings.IniFormat)
@@ -92,26 +97,6 @@ def _parseTheme(name):
 
 	return _mergeGeneratedQss(name)
 
-
-def listThemes():
-	return [ f.name for f in os.scandir(_themeFolder) if f.is_dir() ]
-
-_activeTheme = None
-def loadTheme(name):
-	assert name in listThemes()
-	global _activeTheme
-	_activeTheme = name
-	theme = _parseTheme(name)
-	qApp = QApplication.instance()
-	qApp.setStyleSheet(theme)
-
-def activeTheme():
-	return _activeTheme
-
-def activeThemeFolder():
-	return f'{_themeFolder}/{_activeTheme}'
-
-_lastModifyTime = 0
 def _onThemeModified(evt):
 	global _lastModifyTime
 	currTime = time.time()
@@ -124,12 +109,33 @@ def _onThemeModified(evt):
 
 	_lastModifyTime = currTime
 
+
+######################  APIS  #####################
+def listThemes():
+	return [ f.name for f in os.scandir(_themeFolder) if f.is_dir() ]
+
+def activeTheme():
+	return _activeTheme
+
+def activeThemeFolder():
+	return f'{_themeFolder}/{_activeTheme}'
+
+def loadTheme(name):
+	assert name in listThemes()
+	global _activeTheme
+	_activeTheme = name
+	theme = _parseTheme(name)
+	qApp = QApplication.instance()
+	qApp.setStyleSheet(theme)
+
 def setupThemeWatcher():
 	global watcher
 	ignores = ['.*__qsscache__.*', '.*img.*']
 	watcher = RegexWatcher(ignoreRegexes = ignores, onModified = _onThemeModified)
 	watcher.start(_themeFolder)
 
+
+######################  TEST  #####################
 if __name__ == '__main__':
 	print(_gatherStyleSheets('dark'))
 	# print(_parseTheme('dark'))

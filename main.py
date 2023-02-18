@@ -29,20 +29,20 @@ def setupEnvironment():
 	# addEnvPath( 'DYLD_FRAMEWORK_PATH', _path, True )
 	# addEnvPath( 'DYLD_LIBRARY_PATH', _path, True )
 
-	os.environ[ 'DE_ENV_SET'     ] = 'OK'
-	os.environ[ 'DE_CWD'         ] = os.getcwd();
-	os.environ[ 'DE_BASE_PATH'   ] = basepath
-	os.environ[ 'DE_THEME_PATH'  ] = basepath + '/data/themes'
-	os.environ[ 'DE_LAYOUT_PATH' ] = basepath + '/data/layouts'
-	os.environ[ 'DE_PREFS_PATH'  ] = basepath + '/data/prefs.db'
-	# os.environ[ 'DE_SUPPORT_PATH' ] = supportPath
-	# os.environ[ 'DE_NATIVE_SUPPORT_PATH' ] = supportPathNative
+	os.environ[ 'DEAR_ENV_SET'     ] = 'OK'
+	os.environ[ 'DEAR_CWD'         ] = os.getcwd();
+	os.environ[ 'DEAR_BASE_PATH'   ] = basepath
+	os.environ[ 'DEAR_THEME_PATH'  ] = basepath + '/data/themes'
+	os.environ[ 'DEAR_LAYOUT_PATH' ] = basepath + '/data/layouts'
+	os.environ[ 'DEAR_PREFS_PATH'  ] = basepath + '/data/prefs.db'
+	# os.environ[ 'DEAR_SUPPORT_PATH' ] = supportPath
+	# os.environ[ 'DEAR_NATIVE_SUPPORT_PATH' ] = supportPathNative
 
 	# os.execv(sys.executable, [pyname] + sys.argv)
 
 
 def listEditorTool():
-	tooldir = os.environ[ 'DE_BASE_PATH' ] + '/tools'
+	tooldir = os.environ[ 'DEAR_BASE_PATH' ] + '/tools'
 	return [ f.name for f in os.scandir(tooldir) if f.is_dir() ]
 
 def loadEditorTool(name):

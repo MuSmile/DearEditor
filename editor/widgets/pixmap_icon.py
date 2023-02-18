@@ -1,4 +1,4 @@
-from PySide6.QtGui import QPixmap, QPainter, QPainterPath
+from PySide6.QtGui import QPixmap, QPainter
 from PySide6.QtWidgets import QWidget
 from editor.tools.icon_cache import getThemePixmap
 

@@ -161,21 +161,23 @@ class MainWindow(QMainWindow):
         dock4 = DockView(dockManager, 'gdock4', 'inspector.png')
         dock4.addIntoEditor('bottom')
 
-
+        from editor.widgets.treeview import runTreeDemo
         self.btn = QPushButton("Click me")
         self.btn.setGeometry(QRect(0, 0, 100, 30))
-        self.btn.clicked.connect(self.doit)
+        # self.btn.clicked.connect(self.doit)
+        self.btn.clicked.connect(runTreeDemo)
         dock2.setWidget(self.btn)
+
+        dock5 = DockView(dockManager, 'preview')
+        dock5.setWidget(PreviewWidget())
+        dock5.resize(500, 800)
+        dock5.addIntoEditorAsFloating()
 
     def doit(self):
         self.w = MyPopup()
         self.w.show()
         self.w.resize(200, 300)
         self.w.move(QCursor.pos())
-        # dock5 = DockView(dockManager, 'preview')
-        # dock5.setWidget(PreviewWidget())
-        # dock5.resize(500, 800)
-        # dock5.addIntoEditorAsFloating()
 
         # # rootarea = showEditorView('opengl', 'left')
         # area1 = showEditorView('Imgui', 'left')

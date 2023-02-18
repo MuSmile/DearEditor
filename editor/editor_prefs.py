@@ -1,10 +1,15 @@
 import os, jsonpickle, sqlite3
 from PySide6.QtCore import QByteArray, QDataStream
 
-class _Prefs():
+class Preference:
 	def connect(self, path):
 		self.conn = sqlite3.connect(path)
 
+	def close(self):
+		self.conn.close()
+		del self.conn
+
+	####################  OPERATE  ###################
 	def doSql(self, cmd, commit = True):
 		c = self.conn.cursor()
 		c.execute(cmd)
@@ -31,10 +36,16 @@ class _Prefs():
 		if not self.hasTable(table):
 			self.createTable(table)
 
-	def close(self):
-		self.conn.close()
-		self.conn = None
+	def dropTable(self, table):
+		self.doSql(f'DROP TABLE {table}')
 
+	def clearTable(self, table):
+		self.doSql(f'DELETE FROM {table}')
+
+	def remove(self, name, table):
+		self.doSql(f'DELETE FROM {table} WHERE name == "{name}"')
+
+	####################  SETTERS  ####################
 	def set(self, name, data, table):
 		if isinstance(data, str): data = f'"{data}"'
 		self.doSql(f'INSERT OR REPLACE INTO {table} VALUES ("{name}", {data});')
@@ -53,6 +64,7 @@ class _Prefs():
 		data = jsonpickle.encode(obj, indent = None)
 		self.set(name, data, table)
 
+	####################  GETTERS  ####################
 	def get(self, name, table):
 		c = self.conn.cursor()
 		c.execute(f'SELECT data FROM {table} WHERE name == "{name}"')
@@ -75,10 +87,5 @@ class _Prefs():
 		if r: return jsonpickle.decode(r)
 		return None
 
-	def remove(self, name, table):
-		self.doSql(f'DELETE FROM {table} WHERE name == "{name}"')
 
-	def clear(self, table):
-		self.doSql(f'DELETE FROM {table}')
-
-EditorPrefs = _Prefs()
+EditorPrefs = Preference()

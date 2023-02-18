@@ -66,7 +66,7 @@ def main( argv ):
 	parser = argparse.ArgumentParser(prog = 'dear report', description = description())
 	args = parser.parse_args(argv)
 
-	basepath = os.environ[ 'DE_BASE_PATH' ] + '/'
+	basepath = os.environ[ 'DEAR_BASE_PATH' ] + '/'
 	for target in scanTarget: processDir( basepath + target )
 
 	print( 'report results:' )

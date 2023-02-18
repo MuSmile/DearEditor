@@ -36,7 +36,7 @@ class Ide(QApplication):
 		self.setWindowIcon(QIcon('logo.png'))
 		self.setApplicationName('Dear Editor')
 		self.aboutToQuit.connect(self.onAboutToQuit)
-		EditorPrefs.connect(os.environ[ 'DE_PREFS_PATH' ])
+		EditorPrefs.connect(os.environ[ 'DEAR_PREFS_PATH' ])
 		self.setupPalette()
 
 	def setupPalette(self):
