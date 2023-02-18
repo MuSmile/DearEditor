@@ -1,4 +1,41 @@
+/*QTreeView::branch:has-siblings:!adjoins-item {
+        background: cyan;
+}
+
+QTreeView
+{
+	qproperty-indentation: 20;
+	qproperty-alternatingRowColors: 0; 
+}*/
+
+/*QTreeView::branch:open:has-children {
+        image: url(img/arrow_down.png);
+}
+QTreeView::branch:closed:has-children {
+        image: url(img/arrow_right.png);
+}*/
+
 TreeView
+{
+	qproperty-paddingLeft: 2;
+	qproperty-itemHeight: 22;
+	qproperty-indentation: 22;
+
+	qproperty-dropIndicatorMargin: 5;
+	qproperty-dropIndicatorColor: #8af;
+	qproperty-dropIndicatorWidth: 2;
+
+	qproperty-customAnimated: true;
+	qproperty-customAnimDuration: 120;
+	qproperty-customAnimTickInterval: 10;
+	
+	qproperty-branchOpened: url(img/arrow_down.png);
+	qproperty-branchClosed: url(img/arrow_right.png);
+
+	min-width: 200;
+}
+
+TreeView_
 {
 	qproperty-background: #404040;
 	qproperty-backgroundAlternate: #474747;
