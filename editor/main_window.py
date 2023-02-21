@@ -168,10 +168,10 @@ class MainWindow(QMainWindow):
         self.btn.clicked.connect(runTreeDemo)
         dock2.setWidget(self.btn)
 
-        dock5 = DockView(dockManager, 'preview')
-        dock5.setWidget(PreviewWidget())
-        dock5.resize(500, 800)
-        dock5.addIntoEditorAsFloating()
+        # dock5 = DockView(dockManager, 'preview')
+        # dock5.setWidget(PreviewWidget())
+        # dock5.resize(500, 800)
+        # dock5.addIntoEditorAsFloating()
 
     def doit(self):
         self.w = MyPopup()
