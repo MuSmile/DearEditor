@@ -33,22 +33,30 @@ class TreeItemDelegate(QItemDelegate):
 		l, r = rect.left(), rect.right() + 1
 		t, h = rect.top(), rect.height()
 
-		self.drawBackground(painter, QRect(0, t, r, h), option.state, index)
-		self.drawBranches(painter, QRect(0, t, l, h), index)
+		ch = index.data(Qt.SizeHintRole)
+		if ch == None: ch = self.view.itemHeight
+		painter.setClipRect(QRect(0, t, r, ch))
+
+		bgRect = QRect(0, t, r, h)
+		branchRect = QRect(0, t, l, h)
+		self.drawBackground(painter, bgRect, option.state, index)
+		self.drawBranchLines(painter, branchRect, index)
+		self.drawBranchArrow(painter, branchRect, index)
 		self.drawContent(painter, rect, index)
 
 	def drawBackground(self, painter, rect, state, index):
+		view = self.view
 		selected = state & QStyle.State_Selected
-		hovered  = index == self.view.hoveredIndex # option.state & QStyle.State_MouseOver
+		hovered  = index == view.hoveredIndex # option.state & QStyle.State_MouseOver
 		bgColor  = None
 		if selected:
-			bgColor = QColor('#515c84')
-		elif hovered:
-			bgColor = QColor('#454768')
+			bgColor = view.backgroundSelected
+		elif hovered and view.dropIndicatorRect == None:
+			bgColor = view.backgroundHovered
 		else:
 			# alternate = option.features & QStyleOptionViewItem.Alternate
 			alternate = self._flatVisibleRowNumber(index, self.view.model()) % 2
-			bgColor = alternate and QColor('#404040') or QColor('#474747')
+			bgColor = alternate and view.background or view.backgroundAlternate
 		painter.fillRect(rect, bgColor)
 	def drawContent(self, painter, rect, index):
 		view = self.view
@@ -66,12 +74,12 @@ class TreeItemDelegate(QItemDelegate):
 			painter.drawPixmap(x + iconOffset, y, iconSize, iconSize, decoration)
 
 		painter.drawText(rect.adjusted(textOffset, -1, 0, 0), Qt.AlignVCenter, index.data())
-	
-	def drawBranches(self, painter, rect, index):
+	def drawBranchLines(self, painter, rect, index):
 		view = self.view
-		filterDepth = 1
+		if not view.drawBranchLine: return
+
 		itemDepth = self._depth(index)
-		drawDepth = itemDepth - filterDepth
+		drawDepth = itemDepth - view.branchLineFilterDepth
 		if drawDepth >= 0:
 			painter.setOpacity(0.4)
 			indentation = view.indentation()
@@ -92,7 +100,6 @@ class TreeItemDelegate(QItemDelegate):
 					painter.drawPixmap(x, t, indentation, h, getThemePixmap('icon_branch_L.png'))
 				curr = curr.parent()
 			painter.setOpacity(1)
-		self.drawBranchArrow(painter, rect, index)
 	def drawBranchArrow(self, painter, rect, index):
 		if not index.model().hasChildren(index): return
 
@@ -217,6 +224,44 @@ class TreeView(QTreeView):
 		if self._penDropIndicator.width() == value: return
 		self._penDropIndicator.setWidth(value)
 		self.repaint()
+
+	@Property(bool)
+	def drawBranchLine(self):
+		return self._drawBranchLine
+	@drawBranchLine.setter
+	def drawBranchLine(self, value):
+		self._drawBranchLine = value
+	@Property(int)
+	def branchLineFilterDepth(self):
+		return self._branchLineFilterDepth
+	@branchLineFilterDepth.setter
+	def branchLineFilterDepth(self, value):
+		self._branchLineFilterDepth = value
+
+	@Property(QColor)
+	def background(self):
+		return self._background
+	@background.setter
+	def background(self, value):
+		self._background = value
+	@Property(QColor)
+	def backgroundAlternate(self):
+		return self._backgroundAlternate
+	@backgroundAlternate.setter
+	def backgroundAlternate(self, value):
+		self._backgroundAlternate = value
+	@Property(QColor)
+	def backgroundSelected(self):
+		return self._backgroundSelected
+	@backgroundSelected.setter
+	def backgroundSelected(self, value):
+		self._backgroundSelected = value
+	@Property(QColor)
+	def backgroundHovered(self):
+		return self._backgroundHovered
+	@backgroundHovered.setter
+	def backgroundHovered(self, value):
+		self._backgroundHovered = value
 	
 	def __init__(self, parent = None):
 		super().__init__(parent)
@@ -229,7 +274,14 @@ class TreeView(QTreeView):
 		self._customAnimTickInterval = 10
 		self._dropIndicatorMargin = 5
 		self._itemHeight = 20
+		self._drawBranchLine = True
+		self._branchLineFilterDepth = 1
 		self.setIndentation(20)
+
+		self._background = QColor('#404040')
+		self._backgroundAlternate = QColor('#474747')
+		self._backgroundSelected = QColor('#515c84')
+		self._backgroundHovered = QColor('#454768')
 
 		self.hoveredIndex = None
 		self.underAnimating = None
@@ -255,10 +307,12 @@ class TreeView(QTreeView):
 		self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
 		# self.verticalScrollBar().setSingleStep(5)
 
+		self.verticalScrollBar().valueChanged.connect(self.onScrollerValueChange)
+
 
 	#################  EVENTS  #################
 	def testClickBranchArrow(self, evt):
-		if self.underAnimating: return True
+		# if self.underAnimating: return True
 		pos = evt.pos()
 		index = self.indexAt(pos)
 		if not self.model().hasChildren(index): return False
@@ -291,30 +345,102 @@ class TreeView(QTreeView):
 
 	def mouseMoveEvent(self, evt):
 		super().mouseMoveEvent(evt)
-		self.hoveredIndex = self.indexAt(evt.pos())
+		self.updateHoveredIndex(self.indexAt(evt.pos()))
 
-	def wheelEvent(self, evt):
-		super().wheelEvent(evt)
+	def leaveEvent(self, evt):
+		super().leaveEvent(evt)
+		self.updateHoveredIndex(None)
+
+	def onScrollerValueChange(self, value):
 		pos = self.mapFromGlobal(QCursor.pos())
-		self.hoveredIndex = self.indexAt(pos)
+		self.updateHoveredIndex(self.indexAt(pos))
+		self.updateDropIndicatorRect(None)
 
+	def _findNextExpandable(self, index):
+		model = self.model()
+		while True:
+			curr = self.indexBelow(index)
+			if model.hasChildren(curr) or not curr.isValid():
+				return curr
+	def keyPressEvent(self, evt):
+		key = evt.key()
+		if key == Qt.Key_Right:
+			# if self.underAnimating: return
+			if not self.selectedIndexes(): return super().keyPressEvent(evt)
+			curr = self.currentIndex()
+			if self.isExpanded(curr):
+				model = self.model()
+				while True:
+					curr = self.indexBelow(curr)
+					if not curr.isValid(): return
+					if model.hasChildren(curr):
+						self.setCurrentIndex(curr)
+						return
+			else:
+				self.toggleExpand(curr, evt.modifiers() & Qt.AltModifier)
+
+		elif key == Qt.Key_Left:
+			# if self.underAnimating: return
+			if not self.selectedIndexes(): return super().keyPressEvent(evt)
+			model = self.model()
+			curr = self.currentIndex()
+			if not model.hasChildren(curr) or not self.isExpanded(curr):
+				parent = curr.parent()
+				if parent.isValid(): self.setCurrentIndex(parent)
+			else:
+				self.toggleExpand(curr, evt.modifiers() & Qt.AltModifier)
+
+		else:
+			super().keyPressEvent(evt)
+
+
+	##################  DRAW  ##################
 	def paintEvent(self, event):
 		painter = QPainter(self.viewport())
+		painter.setClipping(True)
 		self.drawTree(painter, event.region())
+		painter.setClipping(False)
 		self.drawDropIndicator(painter)
 
 	def drawBranches(self, painter, rect, index):
-		pass
+		pass # skip default impl in QTreeView
 
 	def drawDropIndicator(self, painter):
 		if not self.dropIndicatorRect: return
 		painter.setPen(self._penDropIndicator)
-		l = self.dropIndicatorRect.left() + self.paddingLeft + 2 # indicatorOffset
+		l = self.dropIndicatorRect.left() + self.paddingLeft + 1 # indicatorOffset
 		r = self.dropIndicatorRect.right()
 		y = self.dropIndicatorRect.top()
 		radius = 3
 		painter.drawEllipse(l-2*radius, y-radius, 2*radius, 2*radius)
 		painter.drawLine(l, y, r, y)
+
+	def updateHoveredIndex(self, new):
+		viewport = self.viewport()
+		old = self.hoveredIndex
+		if new != old:
+			self.hoveredIndex = new
+			if old:
+				rect = self.visualRect(old)
+				rect.setLeft(0)
+				viewport.update(rect)
+			if new:
+				rect = self.visualRect(new)
+				rect.setLeft(0)
+				viewport.update(rect)
+
+	def updateDropIndicatorRect(self, new):
+		viewport = self.viewport()
+		old = self.dropIndicatorRect
+		if new != old:
+			self.dropIndicatorRect = new
+			w, h = self.width(), self.itemHeight
+			if old:
+				t = old.top() - round(h / 2)
+				viewport.update(QRect(0, t, w, h))
+			if new:
+				t = new.top() - round(h / 2)
+				viewport.update(QRect(0, t, w, h))
 
 
 	##################  DRAG  ##################
@@ -328,14 +454,11 @@ class TreeView(QTreeView):
 				model.removeRows(selection.row(), 1, selection.parent())
 
 	def dragEnterEvent(self, evt):
-		print('dragEnterEvent')
 		evt.acceptProposedAction()
 
 	def dragLeaveEvent(self, evt):
-		print('dragLeaveEvent')
-		if self.dropIndicatorRect:
-			self.dropIndicatorRect = None
-			self.repaint()
+		self.updateDropIndicatorRect(None)
+		self.updateHoveredIndex(None)
 
 	def dragMoveEvent(self, evt):
 		super().dragMoveEvent(evt)
@@ -344,11 +467,6 @@ class TreeView(QTreeView):
 		pos = evt.pos()
 		hovered = self.indexAt(pos)
 		if hovered.isValid():
-			if self.hoveredIndex != hovered:
-				self.update(hovered)
-				self.update(self.hoveredIndex)
-				self.hoveredIndex = hovered
-
 			rect = self.visualRect(hovered)
 			y, l, t, b = pos.y(), rect.left(), rect.top(), rect.bottom()
 			if y - t < self.dropIndicatorMargin: # and (y > margin and not self.hoveredItem.isRoot())
@@ -356,16 +474,17 @@ class TreeView(QTreeView):
 			elif b - y < self.dropIndicatorMargin:
 				newDropIndicatorRect = QRect(l, b + 1, self.width()-l, 0)
 		
-		if self.dropIndicatorRect != newDropIndicatorRect:
-			self.dropIndicatorRect = newDropIndicatorRect
-			self.repaint()
+		self.updateDropIndicatorRect(newDropIndicatorRect)
+		self.updateHoveredIndex(hovered)
+
 
 	def dropEvent(self, evt):
-		print('dropEvent')
 		idx = self.indexAt(evt.pos())
-		if not idx.isValid(): return print('wtf')
+		# if not idx.isValid(): return print('wtf')
 		self.model().dropMimeData(evt.mimeData(), Qt.MoveAction, -1, -1, idx)
 		evt.acceptProposedAction()
+
+		self.updateDropIndicatorRect(None)
 
 
 	################  ANIMATING  ################
@@ -453,6 +572,8 @@ class TreeView(QTreeView):
 				self.onAnimFinish()
 				self.onAnimFinish = None
 
+	def pingItem(self, index):
+		pass
 
 def runTreeDemo():
 	view = TreeView(QApplication.activeWindow())

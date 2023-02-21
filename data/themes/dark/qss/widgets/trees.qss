@@ -26,11 +26,19 @@ TreeView
 	qproperty-dropIndicatorWidth: 2;
 
 	qproperty-customAnimated: true;
-	qproperty-customAnimDuration: 120;
+	qproperty-customAnimDuration: 150;
 	qproperty-customAnimTickInterval: 10;
+
+	qproperty-drawBranchLine: true;
+	qproperty-branchLineFilterDepth: 1;
 	
 	qproperty-branchOpened: url(img/arrow_down.png);
 	qproperty-branchClosed: url(img/arrow_right.png);
+	
+	qproperty-background: #404040;
+	qproperty-backgroundAlternate: #474747;
+	qproperty-backgroundSelected: #516ca4;
+	qproperty-backgroundHovered: #555555;
 
 	min-width: 200;
 }
