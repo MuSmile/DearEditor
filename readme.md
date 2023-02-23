@@ -1,9 +1,11 @@
 
 # README
 
+> Your next Unity is not a Unity...
+
 Welcom to DearEditor!
 
-DearEditor is a PySide6 based **WIP** game editor. The aim of DearEditor is to create a open and unite editor solution for all game engines (especially for in-house engines).
+DearEditor is a PySide6 based **WIP** runtime-free game engine editor. The aim of DearEditor is to create an open and unite editor solution for all engine runtime (especially for in-house engines).
 
 ## Screenshots
 ![screenshot](.support/pyside6_qtads/img/p1.png)

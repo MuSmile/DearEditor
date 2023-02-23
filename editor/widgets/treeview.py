@@ -1,5 +1,5 @@
 from math import floor
-from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF
+from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QMimeData
 from PySide6.QtWidgets import QTreeView, QApplication, QAbstractItemView, QItemDelegate, QStyle
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QPen, QBrush, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
 from editor.common.math import clamp
@@ -55,7 +55,7 @@ class TreeItemDelegate(QItemDelegate):
 			bgColor = view.backgroundHovered
 		else:
 			# alternate = option.features & QStyleOptionViewItem.Alternate
-			alternate = self._flatVisibleRowNumber(index, self.view.model()) % 2
+			alternate = self.view._flatVisibleRowNumber(index, self.view.model()) % 2
 			bgColor = alternate and view.background or view.backgroundAlternate
 		painter.fillRect(rect, bgColor)
 	def drawContent(self, painter, rect, index):
@@ -119,30 +119,8 @@ class TreeItemDelegate(QItemDelegate):
 			depth += 1
 			parent = parent.parent()
 		return depth
-		
-	def _rowCountRecursive(self, index, model):
-		count = model.rowCount(index)
-		for row in range(count): count += self._rowCountRecursive(model.index(row, 0, index), model)
-		return count
-	def _flatRowNumber(self, index, model):
-		if not index.isValid(): return -1
-		result = index.row() + 1
-		parent = index.parent()
-		for row in range(result - 1): result += self._rowCountRecursive(model.index(row, 0, parent), model)
-		return result + self._flatRowNumber(parent, model)
 
-	def _visibleRowCountRecursive(self, index, model):
-		count = model.rowCount(index)
-		if not self.view.isExpanded(index) or self.view.collapsingIndex == index: return 0
-		for row in range(count): count += self._visibleRowCountRecursive(model.index(row, 0, index), model)
-		return count
-	def _flatVisibleRowNumber(self, index, model):
-		if not index.isValid(): return -1
-		result = index.row() + 1
-		parent = index.parent()
-		for row in range(result - 1): result += self._visibleRowCountRecursive(model.index(row, 0, parent), model)
-		return result + self._flatVisibleRowNumber(parent, model)
-			
+
 class TreeView(QTreeView):
 	@Property(int)
 	def paddingLeft(self):
@@ -287,6 +265,11 @@ class TreeView(QTreeView):
 		self.underAnimating = None
 		self.collapsingIndex = None
 		self.dropIndicatorRect = None
+		self.dropPosition = None # -1 - before, 0 - inside, 1 - after
+
+		self.autoExpandTimer = QTimer()
+		self.autoExpandTimer.timeout.connect(self.expandHovered)
+		self.autoExpandTimer.setSingleShot(True)
 		
 		self.setMouseTracking(True)
 		self.setItemDelegate(TreeItemDelegate(self))
@@ -296,6 +279,7 @@ class TreeView(QTreeView):
 		self.setAlternatingRowColors(False)
 		self.setExpandsOnDoubleClick(False)
 
+		self.dropAccepted = None
 		self.setDragEnabled(True)
 		self.setAcceptDrops(True)
 		self.setDragDropMode(QAbstractItemView.InternalMove)
@@ -356,20 +340,26 @@ class TreeView(QTreeView):
 		self.updateHoveredIndex(self.indexAt(pos))
 		self.updateDropIndicatorRect(None)
 
-	def _findNextExpandable(self, index):
-		model = self.model()
-		while True:
-			curr = self.indexBelow(index)
-			if model.hasChildren(curr) or not curr.isValid():
-				return curr
+	def _getCollapsedParent(self, index):
+		parents = []
+		parent = index.parent()
+		while parent.isValid():
+			parents.insert(0, parent)
+			parent = parent.parent()
+		for idx in parents:
+			if not self.isExpanded(idx):
+				return idx
 	def keyPressEvent(self, evt):
 		key = evt.key()
+		mods = evt.modifiers()
 		if key == Qt.Key_Right:
 			# if self.underAnimating: return
 			if not self.selectedIndexes(): return super().keyPressEvent(evt)
+			model = self.model()
 			curr = self.currentIndex()
-			if self.isExpanded(curr):
-				model = self.model()
+			cp = self._getCollapsedParent(curr)
+			if cp: return self.setCurrentIndex(cp)
+			if not model.hasChildren(curr) or self.isExpanded(curr):
 				while True:
 					curr = self.indexBelow(curr)
 					if not curr.isValid(): return
@@ -377,18 +367,41 @@ class TreeView(QTreeView):
 						self.setCurrentIndex(curr)
 						return
 			else:
-				self.toggleExpand(curr, evt.modifiers() & Qt.AltModifier)
+				self.toggleExpand(curr, mods & Qt.AltModifier)
 
 		elif key == Qt.Key_Left:
 			# if self.underAnimating: return
 			if not self.selectedIndexes(): return super().keyPressEvent(evt)
 			model = self.model()
 			curr = self.currentIndex()
+			cp = self._getCollapsedParent(curr)
+			if cp: return self.setCurrentIndex(cp)
 			if not model.hasChildren(curr) or not self.isExpanded(curr):
 				parent = curr.parent()
-				if parent.isValid(): self.setCurrentIndex(parent)
+				if parent.isValid():
+					self.setCurrentIndex(parent)
+				else:
+					row = curr.row()
+					if row > 0: self.setCurrentIndex(curr.siblingAtRow(row - 1))
 			else:
-				self.toggleExpand(curr, evt.modifiers() & Qt.AltModifier)
+				self.toggleExpand(curr, mods & Qt.AltModifier)
+		
+		elif key == Qt.Key_Delete or (key == Qt.Key_Backspace and mods & Qt.ControlModifier):
+			model = self.model()
+			selections = self.selectionModel().selectedIndexes()
+			for idx in selections: model.removeRow(idx.row(), idx.parent())
+
+		elif key == Qt.Key_C and mods & Qt.ControlModifier:
+			print('copy')
+
+		elif key == Qt.Key_V and mods & Qt.ControlModifier:
+			print('paste')
+
+		elif key == Qt.Key_D and mods & Qt.ControlModifier:
+			print('duplicate')
+
+		elif key == Qt.Key_Escape:
+			self.selectionModel().clear()
 
 		else:
 			super().keyPressEvent(evt)
@@ -406,6 +419,7 @@ class TreeView(QTreeView):
 		pass # skip default impl in QTreeView
 
 	def drawDropIndicator(self, painter):
+		if not self.dropAccepted: return
 		if not self.dropIndicatorRect: return
 		painter.setPen(self._penDropIndicator)
 		l = self.dropIndicatorRect.left() + self.paddingLeft + 1 # indicatorOffset
@@ -448,41 +462,82 @@ class TreeView(QTreeView):
 		drag = QDrag(self)
 		selections = self.selectedIndexes()
 		drag.setMimeData(self.model().mimeData(selections))
-		if drag.exec(Qt.MoveAction) == Qt.MoveAction:
-			model = self.model()
-			for selection in selections:
-				model.removeRows(selection.row(), 1, selection.parent())
+		drag.exec(Qt.MoveAction)
 
 	def dragEnterEvent(self, evt):
+		self.dropAccepted = True
 		evt.acceptProposedAction()
 
 	def dragLeaveEvent(self, evt):
 		self.updateDropIndicatorRect(None)
 		self.updateHoveredIndex(None)
 
-	def dragMoveEvent(self, evt):
-		super().dragMoveEvent(evt)
-		newDropIndicatorRect = None
+	def checkIsChildOf(self, index, test):
+		parent = index.parent()
+		while parent.isValid():
+			if parent == test: return True
+			parent = parent.parent()
+		return False
 
+	def checkDropable(self, hovered, source):
+		if source == self: return True
+		if not hovered.isValid(): return True
+		selectionModel = self.selectionModel()
+		if selectionModel.isSelected(hovered): return False
+		for select in selectionModel.selectedIndexes():
+			# todo: check root index
+			if self.checkIsChildOf(hovered, select): return False
+		return True
+
+	def dragMoveEvent(self, evt):
 		pos = evt.pos()
 		hovered = self.indexAt(pos)
+		newDropIndicatorRect = None
 		if hovered.isValid():
 			rect = self.visualRect(hovered)
 			y, l, t, b = pos.y(), rect.left(), rect.top(), rect.bottom()
-			if y - t < self.dropIndicatorMargin: # and (y > margin and not self.hoveredItem.isRoot())
+			if y - t < self.dropIndicatorMargin: # and (y > margin and not self.hoveredIndex.isRoot())
 				newDropIndicatorRect = QRect(l, t, self.width()-l, 0)
+				self.dropPosition = -1
+				self.autoExpandTimer.stop()
+
 			elif b - y < self.dropIndicatorMargin:
 				newDropIndicatorRect = QRect(l, b + 1, self.width()-l, 0)
-		
+				self.dropPosition = 1
+				self.autoExpandTimer.stop()
+
+			else:
+				self.autoExpandTimer.start(400)
+				self.dropPosition = 0
+
+		src = evt.source()
+		dropable = self.checkDropable(hovered, src)
+		if self.dropAccepted != dropable:
+			self.dropAccepted = dropable
+			if dropable: evt.accept()
+			else: evt.ignore()
+
+		if not dropable: newDropIndicatorRect = None
 		self.updateDropIndicatorRect(newDropIndicatorRect)
 		self.updateHoveredIndex(hovered)
-
+		if src != self: self.repaint()
+		super().dragMoveEvent(evt)
 
 	def dropEvent(self, evt):
-		idx = self.indexAt(evt.pos())
-		# if not idx.isValid(): return print('wtf')
-		self.model().dropMimeData(evt.mimeData(), Qt.MoveAction, -1, -1, idx)
 		evt.acceptProposedAction()
+		self.autoExpandTimer.stop()
+
+		idx = self.indexAt(evt.pos())
+		src = evt.source()
+		if src == self:
+			model = self.model()
+			selections = self.selectionModel().selectedIndexes()
+			selections.sort(key = lambda idx: self._flatVisibleRowNumber(idx, self.model()), reverse = True)
+			# model.dropMimeData(evt.mimeData(), Qt.MoveAction, -1, -1, idx)
+			# for selection in selections: model.removeRows(selection.row(), 1, selection.parent())
+			evt.acceptProposedAction()
+		else:
+			evt.ignore()
 
 		self.updateDropIndicatorRect(None)
 
@@ -572,8 +627,40 @@ class TreeView(QTreeView):
 				self.onAnimFinish()
 				self.onAnimFinish = None
 
+	def expandHovered(self):
+		if not self.hoveredIndex or not self.hoveredIndex.isValid(): return
+		if not self.model().hasChildren(self.hoveredIndex): return
+		if self.isExpanded(self.hoveredIndex): return
+		self.toggleExpand(self.hoveredIndex, False)
+
 	def pingItem(self, index):
 		pass
+
+
+	####################  UTILS  ####################
+	def _rowCountRecursive(self, index, model):
+		count = model.rowCount(index)
+		for row in range(count): count += self._rowCountRecursive(model.index(row, 0, index), model)
+		return count
+	def _flatRowNumber(self, index, model):
+		if not index.isValid(): return -1
+		result = index.row() + 1
+		parent = index.parent()
+		for row in range(result - 1): result += self._rowCountRecursive(model.index(row, 0, parent), model)
+		return result + self._flatRowNumber(parent, model)
+
+	def _visibleRowCountRecursive(self, index, model):
+		count = model.rowCount(index)
+		if not self.isExpanded(index) or self.collapsingIndex == index: return 0
+		for row in range(count): count += self._visibleRowCountRecursive(model.index(row, 0, index), model)
+		return count
+	def _flatVisibleRowNumber(self, index, model):
+		if not index.isValid(): return -1
+		result = index.row() + 1
+		parent = index.parent()
+		for row in range(result - 1): result += self._visibleRowCountRecursive(model.index(row, 0, parent), model)
+		return result + self._flatVisibleRowNumber(parent, model)
+
 
 def runTreeDemo():
 	view = TreeView(QApplication.activeWindow())
@@ -594,13 +681,4 @@ def runTreeDemo():
 
 	# model.dataChanged.connect(lambda i1, i2, r: print(r))
 	view.setModel(model)
-
-	view.setStyleSheet('''
-		TreeView
-		{
-		    background: #444;
-		    color: #fff;
-		}
-	''')
-
 	view.show()

@@ -17,6 +17,9 @@ QTreeView::branch:closed:has-children {
 
 TreeView
 {
+	background: #444;
+	color: #fff;
+	
 	qproperty-paddingLeft: 2;
 	qproperty-itemHeight: 20;
 	qproperty-indentation: 20;
@@ -26,7 +29,7 @@ TreeView
 	qproperty-dropIndicatorWidth: 2;
 
 	qproperty-customAnimated: true;
-	qproperty-customAnimDuration: 150;
+	qproperty-customAnimDuration: 100;
 	qproperty-customAnimTickInterval: 10;
 
 	qproperty-drawBranchLine: true;
