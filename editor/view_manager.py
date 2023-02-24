@@ -6,7 +6,7 @@ from PySide6.QtGui import QAction
 from editor.common.pyqtads import *
 from editor.common.logger import warn
 from editor.common.icon_cache import getThemeIcon
-from editor.widgets.toast import notifyToast
+from editor.widgets.misc.toast import notifyToast
 
 _dockManager = None
 _viewRegistry = {}
@@ -132,7 +132,9 @@ def createDockManager(parent):
 	CDockManager.setConfigFlag(CDockManager.AlwaysShowTabs, True)
 	CDockManager.setConfigFlag(CDockManager.FocusHighlighting, True)
 	CDockManager.setConfigFlag(CDockManager.MiddleMouseButtonClosesTab, True)
-	if platform.system() == 'Darwin': CDockManager.setConfigFlag(CDockManager.AllMenusHaveCustomStyle, True)
+	
+	if platform.system() == 'Darwin':
+		CDockManager.setConfigFlag(CDockManager.AllMenusHaveCustomStyle, True)
 
 	CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideFeatureEnabled, True)
 	CDockManager.setAutoHideConfigFlag(CDockManager.DockAreaHasAutoHideButton, True)

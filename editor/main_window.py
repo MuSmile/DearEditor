@@ -9,13 +9,58 @@ from PySide6.QtWidgets import *
 # from editor.widgets.new_tree import *
 from editor.widgets.toolbar import *
 from editor.widgets.statusbar import *
-from editor.widgets.preview import *
 # from editor.widgets.color_picker import *
 from editor.view_manager import createDockManager, DockView
 # from editor.ide_globals import _G
 
-import editor.views
 
+import numpy as np
+from OpenGL import GL as gl
+from PySide6.QtOpenGL import *
+from PySide6.QtOpenGLWidgets import *
+class OpenGLWidget(QOpenGLWidget):
+    def __init__(self, parent = None):
+        super().__init__(parent)
+        self.setWindowTitle("Triangle, PyQt5, OpenGL ES 2.0")
+        self.resize(300, 300)
+    def initializeGL(self):
+        gl.glClearColor(0.3, 0.3, 0.3, 1.0)
+        vertShaderSrc = """
+            attribute vec3 aPosition;
+            void main()
+            {
+                gl_Position = vec4(aPosition, 1.0);
+            }
+        """
+        fragShaderSrc = """
+            void main()
+            {
+                gl_FragColor = vec4(0.8, 0.6, 0.4, 1.0);
+            }
+        """
+        program = QOpenGLShaderProgram(self)
+        program.addShaderFromSourceCode(QOpenGLShader.Vertex, vertShaderSrc)
+        program.addShaderFromSourceCode(QOpenGLShader.Fragment, fragShaderSrc)
+        program.link()
+        program.bind()
+        vertPositions = np.array([
+            -0.5, -0.5, 0.0,
+            0.5, -0.5, 0.0,
+            0.0, 0.5, 0.0], dtype=np.float32)
+        self.vertPosBuffer = QOpenGLBuffer()
+        self.vertPosBuffer.create()
+        self.vertPosBuffer.bind()
+        self.vertPosBuffer.allocate(vertPositions, len(vertPositions) * 4)
+        program.bindAttributeLocation("aPosition", 0)
+        program.setAttributeBuffer(0, gl.GL_FLOAT, 0, 3)
+        program.enableAttributeArray(0)
+
+    def paintGL(self):
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+        gl.glDrawArrays(gl.GL_TRIANGLES, 0, 3)
+
+
+import editor.views
 class MyPopup(QWidget):
     def __init__(self):
         super().__init__()
@@ -30,6 +75,7 @@ class MyPopup(QWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.btn.resize(self.width(), self.height())
+
 
 # @addMenuItem('File/Restart', 55, 'Ctrl+R')
 def _restart_program():
@@ -158,20 +204,16 @@ class MainWindow(QMainWindow):
         dock3 = DockView(dockManager, 'dock3', 'console.png')
         dock3.addIntoEditor('right')
 
-        dock4 = DockView(dockManager, 'gdock4', 'inspector.png')
+        dock4 = DockView(dockManager, 'opengl dock', 'inspector.png')
         dock4.addIntoEditor('bottom')
+        dock4.setWidget(OpenGLWidget(dock4))
 
-        from editor.widgets.treeview import runTreeDemo
+        from editor.widgets.complex.treeview import runTreeDemo
         self.btn = QPushButton("Click me")
         self.btn.setGeometry(QRect(0, 0, 100, 30))
         # self.btn.clicked.connect(self.doit)
         self.btn.clicked.connect(runTreeDemo)
         dock2.setWidget(self.btn)
-
-        # dock5 = DockView(dockManager, 'preview')
-        # dock5.setWidget(PreviewWidget())
-        # dock5.resize(500, 800)
-        # dock5.addIntoEditorAsFloating()
 
     def doit(self):
         self.w = MyPopup()

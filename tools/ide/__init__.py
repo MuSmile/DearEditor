@@ -50,7 +50,7 @@ class Ide(QApplication):
 		setupThemeWatcher()
 
 		win = MainWindow()
-		win.setWindowTitle(f'prj_xmile - dx11 - {self.applicationName()}')
+		win.setWindowTitle(f'prj_xmile - OpenGL - {self.applicationName()}')
 		win.show()
 
 		sys.exit(self.exec())

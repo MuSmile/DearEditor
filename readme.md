@@ -1,11 +1,10 @@
-
 # README
 
 > Your next Unity is not a Unity...
 
-Welcom to DearEditor!
+DearEditor is a PySide6 based **WIP** runtime-free game engine editor.
 
-DearEditor is a PySide6 based **WIP** runtime-free game engine editor. The aim of DearEditor is to create an open and unite editor solution for all engine runtime (especially for in-house engines).
+The aim of DearEditor is to create an open and unite editor solution for all engine runtime(especially in-house engines).
 
 ## Screenshots
 ![screenshot](.support/pyside6_qtads/img/p1.png)
@@ -14,9 +13,12 @@ DearEditor is a PySide6 based **WIP** runtime-free game engine editor. The aim o
 
 
 ## Requirements
-### 1. install python >= 3.9.9
+### 1. Install python >= 3.9.9
+This project has only been developed and tested in python version 3.9.9.
 
-### 2. install required python packages
+Use this python version could help to keep issues to a minimum.
+
+### 2. Install required python packages
 ```bat
 > pip install -r requirements.txt
 ```
@@ -25,7 +27,12 @@ or simply (need do setup work first)
 > dear install
 ```
 
-## Setup
+### 3. Additional requirements on MacOS
+```bat
+> pip install pyobjc-framework-Cocoa
+```
+
+## Config prject
 1. Add `<your-path>/DearEditor/bin` into env-variables path.
 2. Find `<your-path>/DearEditor/bin/dear` file (aka dear-bin later).
 3. Modify `idedir` and `pybin` path in dear-bin with your actual path.
@@ -36,7 +43,7 @@ use ↓
 ```bat
 > dear
 ```
-to see welcome and help info.
+to see welcome and usage info.
 
 use ↓
 

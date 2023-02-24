@@ -56,7 +56,7 @@ def loadEditorTool(name):
 
 def printEditorTools():
 	print('available commands:')
-	for name in listEditorTool():
+	for name in sorted(listEditorTool()):
 		m = importlib.import_module('tools.' + name)
 		desc = hasattr(m, 'description') and m.description() or 'none'
 		print('  - {:<16}  {}'.format(name, desc))

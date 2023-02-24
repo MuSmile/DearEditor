@@ -1,3 +1,4 @@
+import functools
 from math import floor
 from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QMimeData
 from PySide6.QtWidgets import QTreeView, QApplication, QAbstractItemView, QItemDelegate, QStyle
@@ -389,6 +390,7 @@ class TreeView(QTreeView):
 		elif key == Qt.Key_Delete or (key == Qt.Key_Backspace and mods & Qt.ControlModifier):
 			model = self.model()
 			selections = self.selectionModel().selectedIndexes()
+			selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and 1 or -1))
 			for idx in selections: model.removeRow(idx.row(), idx.parent())
 
 		elif key == Qt.Key_C and mods & Qt.ControlModifier:
@@ -472,21 +474,14 @@ class TreeView(QTreeView):
 		self.updateDropIndicatorRect(None)
 		self.updateHoveredIndex(None)
 
-	def checkIsChildOf(self, index, test):
-		parent = index.parent()
-		while parent.isValid():
-			if parent == test: return True
-			parent = parent.parent()
-		return False
-
 	def checkDropable(self, hovered, source):
-		if source == self: return True
+		if source != self: return False
 		if not hovered.isValid(): return True
 		selectionModel = self.selectionModel()
 		if selectionModel.isSelected(hovered): return False
 		for select in selectionModel.selectedIndexes():
 			# todo: check root index
-			if self.checkIsChildOf(hovered, select): return False
+			if self._checkIsChildOf(hovered, select): return False
 		return True
 
 	def dragMoveEvent(self, evt):
@@ -532,7 +527,7 @@ class TreeView(QTreeView):
 		if src == self:
 			model = self.model()
 			selections = self.selectionModel().selectedIndexes()
-			selections.sort(key = lambda idx: self._flatVisibleRowNumber(idx, self.model()), reverse = True)
+			selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and 1 or -1))
 			# model.dropMimeData(evt.mimeData(), Qt.MoveAction, -1, -1, idx)
 			# for selection in selections: model.removeRows(selection.row(), 1, selection.parent())
 			evt.acceptProposedAction()
@@ -615,7 +610,8 @@ class TreeView(QTreeView):
 			self.prevIdxStop = idxStop
 			# model.dataChanged.emit(self.animIdxList[self.prevIdxStop], self.animIdxList[self.idxStop], [Qt.SizeHintRole])
 		else:
-			model.setData(self.animIdxList[-1], self.itemHeight, Qt.SizeHintRole)
+			for i in range(self.prevIdxStop, len(self.animIdxList)): model.setData(self.animIdxList[i], self.itemHeight, Qt.SizeHintRole)
+			# model.setData(self.animIdxList[-1], self.itemHeight, Qt.SizeHintRole)
 			self.underAnimating = False
 			self.animTimer.stop()
 			self.animTimer.deleteLater()
@@ -661,6 +657,32 @@ class TreeView(QTreeView):
 		for row in range(result - 1): result += self._visibleRowCountRecursive(model.index(row, 0, parent), model)
 		return result + self._flatVisibleRowNumber(parent, model)
 
+	def _checkIsChildOf(self, index, test):
+		parent = index.parent()
+		while parent.isValid():
+			if parent == test: return True
+			parent = parent.parent()
+		return False
+
+	def _checkIsAboveOf(self, index, test):
+		seq1 = self._getRowSequence(index)
+		seq2 = self._getRowSequence(test)
+		len1 = len(seq1)
+		len2 = len(seq2)
+		for i in range(min(len1, len2)):
+			row1 = seq1[i]
+			row2 = seq2[i]
+			if row1 < row2: return True
+			if row1 > row2: return False
+		return len1 < len2
+
+	def _getRowSequence(self, index):
+		seq = []
+		curr = index
+		while curr.isValid():
+			seq.insert(0, curr.row())
+			curr = curr.parent()
+		return seq
 
 def runTreeDemo():
 	view = TreeView(QApplication.activeWindow())
