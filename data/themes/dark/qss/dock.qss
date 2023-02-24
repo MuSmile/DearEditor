@@ -107,6 +107,11 @@ ads--CDockWidgetTab
     padding: 0px 2px 0px 2px;
 }
 
+ads--CDockWidgetTab[hasIcon="true"]
+{
+    margin-left: -2px;
+}
+
 ads--CDockWidgetTab[activeTab="true"]
 {
     background: &[Palette/bgActive];
