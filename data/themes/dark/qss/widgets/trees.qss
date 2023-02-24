@@ -43,7 +43,8 @@ TreeView
 	qproperty-backgroundSelected: #516ca4;
 	qproperty-backgroundHovered: #555555;
 
-	min-width: 200;
+	font-size: 12px;
+	min-width: 200px;
 }
 
 TreeView_
