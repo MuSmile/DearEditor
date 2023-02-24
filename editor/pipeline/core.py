@@ -3,11 +3,13 @@ from PySide6.QtCore import QThread, Signal
 
 class Pipeline(QThread):
 	progressChanged = Signal(str, float)
+	completed = Signal()
 
-	def __init__(self, *phases):
+	def __init__(self):
 		super().__init__()
-		self.phases = phases
 		self.taskTable = {}
+		self.targetTable = {}
+		self.context = {}
 
 	def registerTask(self, callback, phase, priority = None, progress = 1, description = None):
 		if phase not in self.taskTable: self.taskTable[ phase ] = []
@@ -25,10 +27,19 @@ class Pipeline(QThread):
 			'description' : description,
 		})
 
-	def dumpPipeline(self):
-		print(f'phases: {self.phases}')
+	def registerTarget(self, target, phases):
+		assert(phases)
+		self.targetTable[ target ] = phases
+
+	def listTargets(self):
+		return [b for b in self.targetTable.keys()]
+
+	def dumpTarget(self, target):
+		assert(target in self.targetTable)
+		phases = self.targetTable[ target ]
+		print(f'<{target}>: {phases}')
 		print('----------------------------------')
-		for phase in self.phases:
+		for phase in phases:
 			print(f'phase_{phase}:')
 			if phase not in self.taskTable:
 				print('\t\t<NONE>')
@@ -39,33 +50,40 @@ class Pipeline(QThread):
 			print('----------------------------------')
 
 	def setTaskProgress(self, progress):
-		globalProgress = (self.passedProgress + self.taskProgress * progress) / self.phasProgress
+		phaseProgress  = self.context['phaseProgress']
+		passedProgress = self.context['passedProgress']
+		taskProgress   = self.context['taskProgress']
+		globalProgress = (passedProgress + taskProgress * progress) / phaseProgress
 		self.progressChanged.emit(self.phase, globalProgress)
 
 	def run(self):
-		for self.phase in self.phases:
+		for self.phase in self.context['phases']:
 			if self.phase not in self.taskTable: continue
 			phaseList = self.taskTable[ self.phase ]
 			phaseList.sort(key = lambda t: t['priority'])
-			self.phasProgress = sum([t['progress'] for t in phaseList])
+			self.context['phaseProgress'] = sum([t['progress'] for t in phaseList])
+			self.context['passedProgress'] = 0
 			self.progressChanged.emit(self.phase, 0)
-			self.passedProgress = 0
 			for task in phaseList:
 				callback = task['callback']
 				argcount = callback.__code__.co_argcount
 				assert(argcount <= 2)
-				self.taskProgress = task['progress']
+				self.context['taskProgress'] = task['progress']
 				if argcount == 0:
 					callback()
 				elif argcount == 1:
 					callback(self)
 				elif argcount == 2:
-					callback(self, self.data)
-				self.passedProgress += self.taskProgress
-				self.progressChanged.emit(self.phase, self.passedProgress / self.phasProgress)
+					callback(self, self.context['data'])
+				self.context['passedProgress'] += self.context['taskProgress']
+				self.progressChanged.emit(self.phase, self.context['passedProgress'] / self.context['phaseProgress'])
+		self.context.clear()
+		self.completed.emit()
 
-	def start(self, **kwargs):
-		self.data = kwargs
+	def start(self, target, **kwargs):
+		assert(target in self.targetTable)
+		self.context['phases'] = self.targetTable[ target ]
+		self.context['data'] = kwargs
 		super().start()
 
 
@@ -79,8 +97,8 @@ if __name__ == '__main__':
 	win = QWidget()
 	win.show()
 
-	label = QLabel('foobar', win)
-	label.move(200, 180)
+	label = QLabel(win)
+	label.setGeometry(200, 180, 400, 20)
 	label.show()
 
 	pgb = QProgressBar(win)
@@ -89,23 +107,25 @@ if __name__ == '__main__':
 	pgb.move(200, 200)
 	pgb.show()
 
+
 	def task1(pipeline):
 		for x in range(20):
 			print(x)
 			pipeline.setTaskProgress(x / 20)
-			time.sleep(0.04)
+			time.sleep(0.02)
 	def task2(pipeline, data):
 		for x in range(20):
 			print(f'{data["a"]} {x}')
 			pipeline.setTaskProgress(x / 20)
-			time.sleep(0.02)
+			time.sleep(0.01)
 
+	p = Pipeline()
 
-	p = Pipeline('pre', 'main', 'post')
 	def progressChanged(phase, progress):
 		label.setText(phase)
 		pgb.setValue(progress * 1000)
 	p.progressChanged.connect(progressChanged)
+
 	p.registerTask(task1, 'pre', 1)
 	p.registerTask(task1, 'pre', 2)
 	p.registerTask(task2, 'pre', 0)
@@ -117,7 +137,8 @@ if __name__ == '__main__':
 	p.registerTask(task2, 'pre')
 	p.registerTask(task2, 'main', 1, 20)
 	p.registerTask(task1, 'main', 1, 80)
-	p.dumpPipeline()
-	p.start(a = 'hello')
+	p.registerTarget('test', ['pre', 'main', 'post'])
+	p.dumpTarget('test')
+	p.start('test', a = 'hello')
 
 	sys.exit(app.exec())
