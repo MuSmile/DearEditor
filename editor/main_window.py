@@ -1,4 +1,3 @@
-import sys, os
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
@@ -7,6 +6,7 @@ from PySide6.QtWidgets import *
 # from editor.widgets.screenshot import *
 # from editor.widgets.dropdown import *
 # from editor.widgets.new_tree import *
+from editor.widgets.menubar import createMenuBar, menuItem
 from editor.widgets.toolbar import *
 from editor.widgets.statusbar import *
 # from editor.widgets.color_picker import *
@@ -77,59 +77,23 @@ class MyPopup(QWidget):
         self.btn.resize(self.width(), self.height())
 
 
-# @addMenuItem('File/Restart', 55, 'Ctrl+R')
-def _restart_program():
-    python = sys.executable
-    os.execl( python, python, *sys.argv )
-
 class MainWindow(QMainWindow):
-    closed = Signal()
-
     def __init__(self, parent = None):
         super().__init__(parent)
-        # _G.mainWindow = self
-        # self.setupMenuBar()
-        self.setupToolBar()
-        self.setupStatusBar()
-        self.setupEditorViews()
+        
         self.setGeometry(1000, 300, 800, 600)
+        
+        self.setMenuBar(createMenuBar(self))
+        self.addToolBar(createMainToolBar(self))
+        self.setStatusBar(createMainStatusBar(self))
+
+        self.setupEditorViews()
         self.setFocus()
 
-        menubar = QMenuBar()
-        actionFile = menubar.addMenu("_File")
-        actionFile.addAction("New")
-        actionFile.addAction("Open")
-        a = actionFile.addAction("test")
-        # a.setCheckable(True)
-        # a.setChecked(True)
-        a.setMenuRole(QAction.ApplicationSpecificRole)
-        actionFile.addSeparator()
-        actionFile.addAction("_Quit")
-        actionEdit = menubar.addMenu("_Edit")
-        actionEdit.addAction("Save")
-        actionView = menubar.addMenu("_View")
-        actionView.addAction("Save")
-        actionHelp = menubar.addMenu("Help")
-        actionHelp.addAction("About")
-        actionHelp.addAction("Preferences")
-        actionHelp.addAction("foo")
-        actionHelp.addAction("bar")
-        quit = actionHelp.addAction("Quit")
-        quit.triggered.connect(self.close)
-        self.setMenuBar(menubar)
-
-    def setupToolBar(self):
-        toolbar = createMainToolBar(self)
-        self.addToolBar(toolbar)
-
-    def setupStatusBar(self):
-        statusbar = createMainStatusBar(self)
-        self.setStatusBar(statusbar)
 
     def closeEvent(self, evt):
-        self.closed.emit()
-        super().closeEvent(evt)
         for fw in self.dockManager.floatingWidgets(): fw.close()
+        super().closeEvent(evt)
 
     # def changeEvent(self, evt):
     #     super().changeEvent(evt)
@@ -152,44 +116,11 @@ class MainWindow(QMainWindow):
     #                 swin.setWindowOpacity(0)
     #             QTimer.singleShot(1, restoreSubwins)
 
-    # def setupMenuBar(self):
-    #     registerMenuItem('File/Exit', self.close, 99, shortcut = 'Ctrl+Q')
-    #     registerMenuItem('File/Toggle', self.toggleStatusBar, 50, shortcut = 'Ctrl+T', checkable = True )
-
-    #     registerMenuItem('Test/Save layout', self.saveLayout, 100, 'Ctrl+S')
-    #     registerMenuItem('Test/Load layout', self.loadLayout, 101, 'Ctrl+L')
-
-    #     registerMenuItem('Test/New dock', self.newDock, 150, 'Ctrl+N')
-    #     registerMenuItem('Test/Aniamtor', lambda: showEditorView('Animator', 'bottom'), 151, 'A,S')
-    #     registerMenuItem('Test/Take screenshot', takeScreenshot, 152, 'F10')
-    #     registerMenuItem('Test/Test ColorPicker', lambda: createColorPicker('#8844aadd'), 154, 'C')
-    #     registerMenuItem('Test/Test Runner', showTestRunner, 155, '`')
-
-    #     # def dump():
-    #     #     print(self.dockManager.perspectiveNames())
-    #     # registerMenuItem('Dock/Dump', dump, 220, 'Ctrl+D')
-
-    #     registerMenuItem('Dock/Toast', lambda:getEditorView('Project').showNotification('hello world', 1), 221, 'Ctrl+F')
-    #     registerMenuItem('Dock/Toast2', lambda:getEditorView('FsmGraph').showNotification('hello world'), 222, 'Ctrl+G')
-    #     registerMenuItem('Dock/Close focused', closeDockFocused, 223, 'Ctrl+W')
-    #     # registerMenuItem('Dock/test', lambda: self.root.setAsCurrentTab(), 221, 'Ctrl+A')
-
-    #     menubar = createMainMenuBar(self)
-    #     # menubar.setNativeMenuBar(False)
-    #     self.setMenuBar(menubar)
-
-    # def toggleStatusBar(self, state):
-    #     self.statusBar().setVisible(state)
-
     # def saveLayout(self):
     #     saveLayout('test')
 
     # def loadLayout(self):
     #     loadLayout('test')
-
-    # def newDock(self):
-    #     view = createEditorViewInstance('Hierarchy', 'Hierarchy -t')
-    #     addViewTabTo(view, 'Imgui')
 
     def setupEditorViews(self):
         dockManager = createDockManager(self)
@@ -208,7 +139,7 @@ class MainWindow(QMainWindow):
         dock4.addIntoEditor('bottom')
         dock4.setWidget(OpenGLWidget(dock4))
 
-        from editor.widgets.complex.treeview import runTreeDemo
+        from editor.widgets.complex.tree_view import runTreeDemo
         self.btn = QPushButton("Click me")
         self.btn.setGeometry(QRect(0, 0, 100, 30))
         # self.btn.clicked.connect(self.doit)
