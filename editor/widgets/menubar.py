@@ -90,7 +90,7 @@ _model.registerMenuItem('File/Build Settings...', None, 'Ctrl+Shift+B')
 _model.registerMenuItem('File/Build And Run', None, 'Ctrl+B')
 
 _model.registerMenuItem('File/Restart Dear', lambda: os.execl(sys.executable, sys.executable, *sys.argv), 'Ctrl+R', priority = 10000, menuRole = QAction.ApplicationSpecificRole)
-_model.registerMenuItem('File/Quit', QCoreApplication.quit, priority = 10001)
+_model.registerMenuItem('File/Quit Dear', QCoreApplication.quit, 'Ctrl+Q', priority = 10001)
 
 
 #####################  MENU - EDIT  #####################
@@ -411,7 +411,7 @@ _model.registerMenuItem('Window/2D/Sprite Packer', None, 'Ctrl+8')
 
 
 #####################  MENU - HELP  #####################
-_model.registerMenuItem('Help/About', None)
+_model.registerMenuItem('Help/About Dear', None)
 _model.registerMenuItem('Help/Documentation', None)
 _model.registerMenuSeparator('Help')
 _model.registerMenuItem('Help/Release Notes', None)

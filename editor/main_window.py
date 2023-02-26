@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(1000, 300, 800, 600)
         
         self.setMenuBar(createMenuBar(self))
-        self.addToolBar(createMainToolBar(self))
+        self.addToolBar(createToolBar(self))
         self.setStatusBar(createMainStatusBar(self))
 
         self.setupEditorViews()

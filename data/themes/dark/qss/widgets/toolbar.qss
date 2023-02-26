@@ -1,3 +1,19 @@
+PopupToolButton
+{
+    padding-right: 14px;
+    padding-left: -2px;
+}
+
+PopupToolButton::menu-button
+{
+    image: url(img/menu_indicator.svg);
+	border-left: 1px solid #333;
+	top: 4px;
+    width: 12px;
+    height: 12px;
+    padding: 2px 2 0 3;
+}
+
 QToolBar
 {
 	border: 0px;
@@ -12,7 +28,7 @@ QToolBar QToolButton
 	min-width: 26px;
 	height: 15px;
 	border-radius: 1px;
-	margin-right: 1;
+	/*margin-right: 1;*/
 }
 
 QToolBar #Center QToolButton
@@ -23,11 +39,10 @@ QToolBar #Center QToolButton
 QToolBar QPushButton
 {
 	background-color: #444;
-	border: 0px solid &[toolbar/colorBg];
+	border: none;
 	border-radius: 1px;
 	color: &[toolbar/colorLabel];
-	padding: 4px 6 3 4;
-	margin-left: -1;
+	padding: 4px 5 3 6;
 
 	height: 15px;
 	min-width: 24px;
@@ -39,7 +54,7 @@ QToolBar QPushButton::hover
 	color: &[toolbar/colorLabel];
 }
 
-QToolBar QPushButton:checked, QToolBar QPushButton::pressed
+QToolBar QPushButton::pressed
 {
 	background-color: #777;
 	color: &[toolbar/colorLabel];
