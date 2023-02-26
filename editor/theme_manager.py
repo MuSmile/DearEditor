@@ -1,5 +1,5 @@
 import os, re, time, platform
-from PySide6.QtCore import QSettings, QFile, QTextStream
+from PySide6.QtCore import QSettings, QFile, QTextStream, QTimer
 from PySide6.QtWidgets import QApplication
 
 from pathlib import Path
@@ -18,7 +18,9 @@ def _gatherStyleSheets(name):
 	qssFiles = {}
 	for currDir, dirs, files in os.walk(qssDir):
 		if currDir.endswith('__qsscache__'): continue
-		for f in files: qssFiles[f] = os.path.join(currDir, f)
+		for f in files:
+			if not f.endswith('.qss'): continue
+			qssFiles[f] = os.path.join(currDir, f)
 
 	qssFiles = dict(sorted(qssFiles.items(), key = lambda kv: kv[1]))
 	return qssFiles
@@ -105,7 +107,10 @@ def _onThemeModified(evt):
 	log('theme modify checked, reloading theme...')
 	rootPath = Path(os.path.abspath(activeThemeFolder()))
 	mfilePath = Path(os.path.abspath(evt.src_path))
-	if rootPath in mfilePath.parents: loadTheme(_activeTheme)
+	if rootPath in mfilePath.parents:
+		qApp = QApplication.instance()
+		reloadTheme = lambda: (qApp.setStyleSheet(None), loadTheme(_activeTheme))
+		QTimer.singleShot(10, reloadTheme)
 
 	_lastModifyTime = currTime
 
