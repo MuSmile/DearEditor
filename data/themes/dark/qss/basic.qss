@@ -124,9 +124,12 @@ QPushButton::menu-indicator
 {
 	/*image: none;*/
     image: url(img/menu_indicator.svg);
-    right: 2px;
     width: 12px;
     height: 12px;
+    right: 2px;
+#if Windows
+    bottom: 4px;
+#end
 }
 
 QCheckBox

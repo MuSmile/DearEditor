@@ -26,6 +26,7 @@ class MenuBarModel:
 		name = path[:idx]
 		path = path[idx+1:]
 		tree = self.affirmMenuTree(name)
+		if 'shortcutContext' not in data: data['shortcutContext'] = Qt.ApplicationShortcut
 		tree.addItem(path, callback, shortcut, priority, **data)
 
 	def registerMenuSeparator(self, groupPath, priority = None, **data):
