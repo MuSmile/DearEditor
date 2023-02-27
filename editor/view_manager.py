@@ -280,6 +280,12 @@ def loadLayout(name):
 					_dockManager.updateDockWidgetsMapKey(oldName, name)
 				
 		_dockManager.restoreState(states, 1)
+		for container in _dockManager.dockContainers():
+			for i in range(container.dockAreaCount()):
+				# hided for fixing flashing issue in restore phase,
+				# so, we need re-show it now... very stupid...
+				area = container.dockArea(i)
+				area.show()
 		for d in _dockManager.dockWidgetsMap().values(): d.onLoadLayout()
 
 	win = _dockManager.window()

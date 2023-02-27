@@ -160,7 +160,7 @@
 			"path": "."
 		},
 		{
-			"path": ".shiboken/qtads/src"
+			"path": ".support/pyside6_qtads/Qt-Advanced-Docking-System/src"
 		}
 	],
 	"settings":
