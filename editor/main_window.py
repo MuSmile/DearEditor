@@ -6,7 +6,7 @@ from PySide6.QtWidgets import *
 # from editor.widgets.screenshot import *
 # from editor.widgets.dropdown import *
 # from editor.widgets.new_tree import *
-from editor.widgets.menubar import createMenuBar, menuItem
+from editor.widgets.menubar import createMenuBar
 from editor.widgets.toolbar import *
 from editor.widgets.statusbar import *
 # from editor.widgets.color_picker import *
@@ -82,7 +82,7 @@ class MainWindow(QMainWindow):
         super().__init__(parent)
         
         self.setGeometry(1000, 300, 800, 600)
-        
+
         self.setMenuBar(createMenuBar(self))
         self.addToolBar(createToolBar(self))
         self.setStatusBar(createMainStatusBar(self))
@@ -126,16 +126,16 @@ class MainWindow(QMainWindow):
         dockManager = createDockManager(self)
         self.dockManager = dockManager
 
-        dock1 = DockView(dockManager, 'dock1')
+        dock1 = DockView(dockManager, name = 'Dummy', title = 'dock 1')
         dock1.addIntoEditor('right')
 
-        dock2 = DockView(dockManager, 'dock2', 'project.png')
+        dock2 = DockView(dockManager, name = 'Dummy', title = 'dock 2', icon = 'project.png')
         dock2.addIntoEditor('center')
 
-        dock3 = DockView(dockManager, 'dock3', 'console.png')
+        dock3 = DockView(dockManager, name = 'Dummy', title = 'dock 3', icon = 'console.png')
         dock3.addIntoEditor('right')
 
-        dock4 = DockView(dockManager, 'opengl dock', 'inspector.png')
+        dock4 = DockView(dockManager, name = 'Dummy', title = 'opengl dock', icon = 'inspector.png')
         dock4.addIntoEditor('bottom')
         dock4.setWidget(OpenGLWidget(dock4))
 
@@ -144,7 +144,9 @@ class MainWindow(QMainWindow):
         self.btn.setGeometry(QRect(0, 0, 100, 30))
         # self.btn.clicked.connect(self.doit)
         self.btn.clicked.connect(runTreeDemo)
+ 
         dock2.setWidget(self.btn)
+
 
     def doit(self):
         self.w = MyPopup()
