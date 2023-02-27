@@ -23,12 +23,12 @@ _dockAreaTable = {
 
 #######################  INTERFACE  #######################
 class DockView(CDockWidget):
-	def __init__(self, parent = None, **data):
+	def __init__(self, parent, **data):
 		cls       = self.__class__.__name__
 		name      = data['name'     ] if 'name'      in data else cls
 		icon      = data['icon'     ] if 'icon'      in data else None
 		title     = data['title'    ] if 'title'     in data else name
-		toolTip   = data['toolTip'  ] if 'toolTip'   in data else None
+		tooltip   = data['tooltip'  ] if 'tooltip'   in data else None
 		keepAlive = data['keepAlive'] if 'keepAlive' in data else False
 
 		super().__init__(title, parent)
@@ -38,7 +38,7 @@ class DockView(CDockWidget):
 		if icon: self.setIcon(getThemeIcon(icon))
 		self.setFeature(CDockWidget.DockWidgetForceCloseWithArea, True)
 		self.setFeature(CDockWidget.DockWidgetDeleteOnClose, not keepAlive)
-		self.setTabToolTip(toolTip)
+		self.setTabToolTip(tooltip)
 
 		self.setupTitleActions()
 
@@ -90,7 +90,7 @@ def registerDockView(cls, name, icon = None, **data):
 	data['class'] = cls
 	_viewRegistry[name] = data
 
-def registerView(name, icon = None, **data):
+def dockView(name, icon = None, **data):
 	def wrapper(cls):
 		registerDockView(cls, name, icon, **data)
 		return cls
