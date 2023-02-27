@@ -1,11 +1,8 @@
 /*ADS*/
-ads--CDockContainerWidget
+ads--CDockContainerWidget,
+ads--CDockContainerWidget > QSplitter
 {
     background: #333;
-}
-ads--CDockContainerWidget > QWidget
-{
-    background: #222;
 }
 
 ads--CDockAreaTitleBar

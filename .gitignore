@@ -3,6 +3,8 @@
 /.screenshots
 /.test
 
+/data/layouts
+
 __qsscache__
 __pycache__
 

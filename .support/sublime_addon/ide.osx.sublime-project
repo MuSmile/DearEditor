@@ -35,7 +35,7 @@
 		{
 			"cmd":
 			[
-				"arch -arm64 python -u $file"
+				"arch -arm64 python $file"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Python",
@@ -47,7 +47,7 @@
 		{
 			"cmd":
 			[
-				"cmake -DCMAKE_BUILD_TYPE=Release .. -DADS_VERSION=4.0.2"
+				"arch -arm64 cmake -DCMAKE_BUILD_TYPE=Release .. -DADS_VERSION=4.0.2"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Config qtads",
@@ -58,7 +58,7 @@
 		{
 			"cmd":
 			[
-				"cmake --build . --target install --config Release -j12"
+				"arch -arm64 cmake --build . --target install --config Release -j12"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Compile qtads",
@@ -69,7 +69,7 @@
 		{
 			"cmd":
 			[
-				"arch -arm64 python -u testpkg.py"
+				"arch -arm64 python testpkg.py"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Test qtads",

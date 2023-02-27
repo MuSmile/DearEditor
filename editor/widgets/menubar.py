@@ -1,7 +1,7 @@
 import sys, os
-from PySide6.QtCore import Qt, QCoreApplication
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenuBar
+from PySide6.QtWidgets import QMenuBar, QApplication, QMainWindow
 from editor.common.logger import warn
 from editor.widgets.menu.menu_tree import MenuTree
 
@@ -9,7 +9,7 @@ class MenuBarModel:
 	def __init__(self):
 		self.menuTreeTable = {}
 		self.menuPriorityTable = {}
-		self.defaultPriority = 20
+		self.defaultPriority = 10
 		self.menubar = None
 
 	def registerMenu(self, name, priority):
@@ -70,7 +70,7 @@ _model.registerMenu('Window'    , 10000)
 _model.registerMenu('Help'      , 10001)
 
 
-_model.registerMenuItem('Tools/__placeholder__', None)
+_model.registerMenuItem('Extenstion/__placeholder__', None)
 
 
 #####################  MENU - FILE  #####################
@@ -91,7 +91,13 @@ _model.registerMenuItem('File/Build Settings...', None, 'Ctrl+Shift+B')
 _model.registerMenuItem('File/Build And Run', None, 'Ctrl+B')
 
 _model.registerMenuItem('File/Restart Dear', lambda: os.execl(sys.executable, sys.executable, *sys.argv), 'Ctrl+R', priority = 10000, menuRole = QAction.ApplicationSpecificRole)
-_model.registerMenuItem('File/Quit Dear', QCoreApplication.quit, 'Ctrl+Q', priority = 10001)
+
+def quit():
+	app = QApplication.instance()
+	for widget in app.topLevelWidgets():
+		if isinstance(widget, QMainWindow):
+			return widget.close()
+_model.registerMenuItem('File/Quit Dear', quit, 'Ctrl+Q', priority = 10001)
 
 
 #####################  MENU - EDIT  #####################
