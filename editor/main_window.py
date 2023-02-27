@@ -14,22 +14,6 @@ from editor.view_manager import createDockManager, createDockView
 
 import editor.views
 
-class MyPopup(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowFlag(Qt.Popup, True)
-        self.setWindowFlag(Qt.FramelessWindowHint, True)
-        self.setAttribute(Qt.WA_NoSystemBackground, True)
-        self.setAttribute(Qt.WA_TranslucentBackground, True)
-        # self.setWindowOpacity(0.1)
-        # self.setStyleSheet('QWidget { background-color: transparent; }')
-        self.btn = QPushButton('test', self)
-
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.btn.resize(self.width(), self.height())
-
-
 class MainWindow(QMainWindow):
     def __init__(self, parent = None):
         super().__init__(parent)
@@ -48,33 +32,6 @@ class MainWindow(QMainWindow):
         for fw in self.dockManager.floatingWidgets(): fw.close()
         super().closeEvent(evt)
 
-    # def changeEvent(self, evt):
-    #     super().changeEvent(evt)
-    #     if evt.type() != QEvent.WindowStateChange: return
-    #     if self.windowState() & Qt.WindowMinimized:
-    #         self.maximizedSubwins = []
-    #         for fwin in self.dockManager.floatingWidgets():
-    #             if fwin.windowState() & Qt.WindowMaximized:
-    #                 self.maximizedSubwins.append(fwin)
-    #     elif evt.oldState() & Qt.WindowMinimized:
-    #         if len(self.maximizedSubwins) == 0:
-    #             del self.maximizedSubwins
-    #         else:
-    #             def restoreSubwins():
-    #                 for swin in self.maximizedSubwins:
-    #                     swin.showMaximized()
-    #                     swin.setWindowOpacity(1)
-    #                 del self.maximizedSubwins
-    #             for swin in self.maximizedSubwins:
-    #                 swin.setWindowOpacity(0)
-    #             QTimer.singleShot(1, restoreSubwins)
-
-    # def saveLayout(self):
-    #     saveLayout('test')
-
-    # def loadLayout(self):
-    #     loadLayout('test')
-
     def setupEditorViews(self):
         dockManager = createDockManager(self)
         self.dockManager = dockManager
@@ -90,21 +47,6 @@ class MainWindow(QMainWindow):
 
         dock4 = createDockView('Scene')
         dock4.addIntoEditor('bottom')
-
-        from editor.widgets.complex.tree_view import runTreeDemo
-        self.btn = QPushButton("Click me")
-        self.btn.setGeometry(QRect(0, 0, 100, 30))
-        # self.btn.clicked.connect(self.doit)
-        self.btn.clicked.connect(runTreeDemo)
- 
-        dock2.setWidget(self.btn)
-
-
-    def doit(self):
-        self.w = MyPopup()
-        self.w.show()
-        self.w.resize(200, 300)
-        self.w.move(QCursor.pos())
 
         # # rootarea = showEditorView('opengl', 'left')
         # area1 = showEditorView('Imgui', 'left')
