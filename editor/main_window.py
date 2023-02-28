@@ -1,9 +1,10 @@
+import platform
+from PySide6.QtCore import Qt, QTimer, QEvent
 from PySide6.QtWidgets import QMainWindow
 from editor.widgets.menubar import createMenuBar
 from editor.widgets.toolbar import createToolBar
 from editor.widgets.statusbar import createMainStatusBar
 from editor.view_manager import createDockManager, createDockView
-
 import editor.views, extensions
 
 class MainWindow(QMainWindow):
@@ -36,6 +37,8 @@ class MainWindow(QMainWindow):
 		dock4 = createDockView('Scene')
 		dock4.addIntoEditor('bottom')
 
+		for x in range(10):
+			createDockView('Console').addIntoEditor()
 		# # rootarea = showEditorView('opengl', 'left')
 		# area1 = showEditorView('Imgui', 'left')
 		# area2 = showEditorView('Project', 'right')
@@ -50,6 +53,32 @@ class MainWindow(QMainWindow):
 		# setDockFocused('Hierarchy')
 
 
+	def changeEvent(self, evt):
+		super().changeEvent(evt)
+
+		if evt.type() != QEvent.WindowStateChange: return
+		if platform.system() != 'Windows': return
+
+		if self.windowState() & Qt.WindowMinimized:
+			self.maximizedFloatings = []
+			for f in self.dockManager.floatingWidgets():
+				if f.windowState() & Qt.WindowMaximized:
+					self.maximizedFloatings.append(f)
+		
+		elif evt.oldState() & Qt.WindowMinimized:
+			if not self.maximizedFloatings: return
+			def restoreFloatings():
+				for f in self.maximizedFloatings:
+					f.showMaximized()
+					f.setWindowOpacity(1)
+				self.maximizedFloatings = []
+				self.activateWindow()
+
+			for f in self.maximizedFloatings: f.setWindowOpacity(0)
+			QTimer.singleShot(1, restoreFloatings)
+
+
 	def closeEvent(self, evt):
 		for fw in self.dockManager.floatingWidgets(): fw.close()
 		super().closeEvent(evt)
+
