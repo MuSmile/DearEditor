@@ -17,8 +17,8 @@ def VLineWidget(parent = None, color = '#333', width = 2):
 	return line
 
 def QListWidgetLineItem(height = 1, background = QColor('#888')):
-    line = QListWidgetItem(None, -1)
-    line.setFlags(Qt.NoItemFlags)
-    line.setBackground(background)
-    line.setSizeHint(QSize(0, height))
-    return line
+	line = QListWidgetItem(None, -1)
+	line.setFlags(Qt.NoItemFlags)
+	line.setBackground(background)
+	line.setSizeHint(QSize(0, height))
+	return line

@@ -1,9 +1,11 @@
-import sys, os
+import sys, os, platform
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QAction
-from PySide6.QtWidgets import QMenuBar, QApplication, QMainWindow
+from PySide6.QtWidgets import QMenuBar
 from editor.common.logger import warn
+from editor.common.util import quitApp, restartApp
 from editor.widgets.menu.menu_tree import MenuTree
+__system__ = platform.system()
 
 class MenuBarModel:
 	def __init__(self):
@@ -89,20 +91,9 @@ _model.registerMenuItem('File/Save Project', None)
 _model.registerMenuSeparator('File')
 _model.registerMenuItem('File/Build Settings...', None, 'Ctrl+Shift+B')
 _model.registerMenuItem('File/Build And Run', None, 'Ctrl+B')
-
-
-def quit():
-	app = QApplication.instance()
-	for widget in app.topLevelWidgets():
-		if isinstance(widget, QMainWindow):
-			return widget.close()
-def restart():
-	quit()
-	py = sys.executable
-	os.execl(py, py, *sys.argv)
 	
-_model.registerMenuItem('File/Restart Dear', restart, 'Ctrl+R', priority = 10000, menuRole = QAction.ApplicationSpecificRole)
-_model.registerMenuItem('File/Quit Dear', quit, 'Ctrl+Q', priority = 10001)
+_model.registerMenuItem('File/Restart Dear', restartApp, 'Ctrl+R', priority = 10000, menuRole = QAction.ApplicationSpecificRole)
+_model.registerMenuItem('File/Quit Dear', quitApp, 'Ctrl+Q', priority = 10001)
 
 
 #####################  MENU - EDIT  #####################
@@ -164,8 +155,7 @@ _model.registerMenuSeparator('Asset/Create')
 _model.registerMenuItem('Asset/Create/Animation', None)
 _model.registerMenuItem('Asset/Create/Timeline', None)
 
-import platform
-if platform.system() == 'Darwin':
+if __system__ == 'Darwin':
 	_model.registerMenuItem('Asset/Rereal in Finder', None)
 else:
 	_model.registerMenuItem('Asset/Show in Explorer', None)
@@ -275,7 +265,10 @@ _model.registerMenuItem('Entity/Toggle Active State', None, 'Alt+Shift+A')
 
 
 #####################  MENU - COMPONENT  #####################
-_model.registerMenuItem('Component/Create...', None, 'Ctrl+Shift+A')
+if __system__ == 'Darwin':
+	_model.registerMenuItem('Component/Create...' + ' ' * 12, None, 'Ctrl+Shift+A')
+else:
+	_model.registerMenuItem('Component/Create...', None, 'Ctrl+Shift+A')
 
 _model.registerMenuItem('Component/Mesh/Mesh Filter', None)
 _model.registerMenuItem('Component/Mesh/Text Mesh', None)

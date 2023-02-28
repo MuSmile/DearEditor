@@ -112,8 +112,8 @@ ads--CDockWidgetTab[hasIcon="true"]
 ads--CDockWidgetTab[activeTab="true"]
 {
     background: &[Palette/bgActive];
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
 }
 
 ads--CDockWidgetTab[activeTab="true"] > QFrame

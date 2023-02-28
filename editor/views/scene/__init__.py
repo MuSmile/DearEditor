@@ -5,10 +5,6 @@ from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from editor.view_manager import DockView, dockView
 
 class OpenGLWidget(QOpenGLWidget):
-	def __init__(self, parent = None):
-		super().__init__(parent)
-		self.setWindowTitle("Triangle, PyQt5, OpenGL ES 2.0")
-		self.resize(300, 300)
 	def initializeGL(self):
 		gl.glClearColor(0.3, 0.3, 0.3, 1.0)
 		vertShaderSrc = '''

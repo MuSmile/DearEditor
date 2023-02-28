@@ -1,7 +1,6 @@
 import os, json, platform, uuid
 import xml.etree.ElementTree as ET
-from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import Qt, QTimer, QSize
+from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction
 from editor.common.pyqtads import CDockManager, CDockWidget, DockWidgetArea
 from editor.common.logger import warn, error
@@ -233,6 +232,12 @@ def loadLayout(name):
 				layoutTable[ view ] = [ data ]
 
 		for view in layoutTable:
+			
+			if view not in _viewRegistry:
+				error(f'skip restoring view \'{view}\', which is not registered.')
+				for dock in findDockViewList(view): dock.closeDockWidget()
+				continue
+
 			lviews = layoutTable[view]
 			eviews = findDockViewList(view)
 			lviewsLen, eviewsLen = len(lviews), len(eviews)
