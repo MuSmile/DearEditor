@@ -37,8 +37,6 @@ class MainWindow(QMainWindow):
 		dock4 = createDockView('Scene')
 		dock4.addIntoEditor('bottom')
 
-		for x in range(10):
-			createDockView('Console').addIntoEditor()
 		# # rootarea = showEditorView('opengl', 'left')
 		# area1 = showEditorView('Imgui', 'left')
 		# area2 = showEditorView('Project', 'right')

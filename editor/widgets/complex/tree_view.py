@@ -1,7 +1,7 @@
 import functools
 from math import floor
-from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QMimeData
-from PySide6.QtWidgets import QTreeView, QApplication, QAbstractItemView, QItemDelegate, QStyle
+from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QMimeData, QItemSelectionModel, QEvent
+from PySide6.QtWidgets import QTreeView, QWidget, QPushButton, QApplication, QAbstractItemView, QItemDelegate, QStyle
 from PySide6.QtGui import QStandardItemModel, QStandardItem, QPen, QBrush, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
 from editor.common.math import clamp
 from editor.common.ease import easeInOutQuad
@@ -25,7 +25,7 @@ class TreeItemDelegate(QItemDelegate):
 	# 	return w
 
 	def paint(self, painter, option, index):
-		painter.setRenderHint(QPainter.Antialiasing)
+		painter.setRenderHint(QPainter.Antialiasing, True)
 
 		view = self.view
 		rect = option.rect
@@ -121,6 +121,81 @@ class TreeItemDelegate(QItemDelegate):
 			parent = parent.parent()
 		return depth
 
+
+class TreeItemPingOverlay(QPushButton):
+	instances = []
+
+	@Property(int)
+	def pingAnimDuration(self):
+		return self._pingAnimDuration
+	@pingAnimDuration.setter
+	def pingAnimDuration(self, value):
+		self._pingAnimDuration = value
+
+	@Property(int)
+	def pingAnimTickInterval(self):
+		return self._pingAnimTickInterval
+	@pingAnimTickInterval.setter
+	def pingAnimTickInterval(self, value):
+		self._pingAnimTickInterval = value
+
+	def __init__(self, treeview):
+		super().__init__(treeview)
+		self._pingAnimDuration = 1000
+		self._pingAnimTickInterval = 10
+		self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+		self.setAttribute(Qt.WA_TranslucentBackground, True)
+		self.setAttribute(Qt.WA_DeleteOnClose, True)
+		self.instances.append(self)
+
+	def syncTreeViewRect(self):
+		treeview = self.parent()
+		viewport = treeview.viewport()
+		self.setGeometry(viewport.rect())
+
+	def eventFilter(self, obj, evt):
+		if evt.type() == QEvent.Resize: self.syncTreeViewRect()
+		return False
+
+	def startPingAnim(self, index):
+		self.elapsed = 0
+		self.index = index
+		treeview = self.parent()
+		treeview.installEventFilter(self)
+		self.syncTreeViewRect()
+		# self.timer = QTimer()
+		# self.timer.timeout.connect(self.tickPingAnim)
+		# self.timer.start(self._pingAnimTickInterval)
+
+	def tickPingAnim(self):
+		self.elapsed += self._pingAnimTickInterval
+		k = clamp(self.elapsed / self._pingAnimDuration, 0, 1)
+		progress = easeInOutQuad(k)
+		if progress < 1:
+			# to do
+			self.repaint()
+
+		else:
+			self.timer.stop()
+			self.timer.deleteLater()
+			self.deleteLater()
+
+	def paintEvent(self, event):
+		treeview = self.parent()
+		rect = treeview.visualRect(self.index)
+		painter = QPainter()
+		painter.begin(self) 
+		painter.setRenderHints(QPainter.Antialiasing, True)
+		painter.setBrush(Qt.red)
+		painter.setPen(Qt.green)
+		painter.drawRoundedRect(rect, 4, 4)
+		# painter.setBrush(QBrush(QColor(100, 100, 100, self._alpha)))
+		# painter.setPen(Qt.transparent)
+		# painter.drawRoundedRect(rect, 15, 15)
+		# painter.setPen(QColor(230, 230, 230, self._alpha))
+		# painter.setFont(_toastFont)
+		# painter.drawText(rect, Qt.AlignCenter, self.msg)
+		painter.end()
 
 class TreeView(QTreeView):
 	@Property(int)
@@ -268,6 +343,8 @@ class TreeView(QTreeView):
 		self.dropIndicatorRect = None
 		self.dropPosition = None # -1 - before, 0 - inside, 1 - after
 
+		self.mimeDatas = None
+
 		self.autoExpandTimer = QTimer()
 		self.autoExpandTimer.timeout.connect(self.expandHovered)
 		self.autoExpandTimer.setSingleShot(True)
@@ -355,8 +432,15 @@ class TreeView(QTreeView):
 		mods = evt.modifiers()
 		if key == Qt.Key_Right:
 			# if self.underAnimating: return
-			if not self.selectedIndexes(): return super().keyPressEvent(evt)
 			model = self.model()
+			curr = self.currentIndex()
+			if not curr.isValid():
+				curr = model.index(0, 0, curr)
+				if curr.isValid():
+					self.toggleExpand(curr, mods & Qt.AltModifier)
+					self.setCurrentIndex(curr)
+				return
+
 			curr = self.currentIndex()
 			cp = self._getCollapsedParent(curr)
 			if cp: return self.setCurrentIndex(cp)
@@ -393,20 +477,109 @@ class TreeView(QTreeView):
 			selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and 1 or -1))
 			for idx in selections: model.removeRow(idx.row(), idx.parent())
 
-		elif key == Qt.Key_C and mods & Qt.ControlModifier:
-			print('copy')
-
-		elif key == Qt.Key_V and mods & Qt.ControlModifier:
-			print('paste')
-
-		elif key == Qt.Key_D and mods & Qt.ControlModifier:
-			print('duplicate')
-
 		elif key == Qt.Key_Escape:
 			self.selectionModel().clear()
 
+		elif key == Qt.Key_Space:
+			curr = self.currentIndex()
+			if not curr.isValid(): return
+			overlay = TreeItemPingOverlay(self)
+			overlay.startPingAnim(curr)
+			overlay.show()
+
 		else:
 			super().keyPressEvent(evt)
+
+	def copySelection(self):
+		model = self.model()
+		selectionModel = self.selectionModel()
+		selections = selectionModel.selectedIndexes()
+		selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and -1 or 1))
+
+		# detect children and remove
+		for i in range(len(selections) - 1, 0, -1):
+			curr = selections[i]
+			for j in range(i - 1, -1, -1):
+				test = selections[j]
+				if self._checkIsChildOf(curr, test):
+					del selections[i]
+					break
+
+		clipboard = QApplication.clipboard()
+		clipboard.setMimeData(model.mimeData(selections))
+
+	def pasteSelection(self):
+		model = self.model()
+		selectionModel = self.selectionModel()
+		toSelections = []
+		parent = self.currentIndex().parent()
+		clipboard = QApplication.clipboard()
+		oldRowCount = model.rowCount(parent)
+		model.dropMimeData(clipboard.mimeData(), Qt.CopyAction, -1, -1, parent)
+		newRowCount = model.rowCount(parent)
+		dropedCount = newRowCount - oldRowCount
+		if dropedCount > 0:
+			selectionModel.clear()
+			
+			self.setCurrentIndex(model.index(newRowCount - 1, 0, parent))
+			for i in range(newRowCount - dropedCount, newRowCount):
+				selection = model.index(i, 0, parent)
+				selectionModel.select(selection, QItemSelectionModel.Select)
+
+			while parent.isValid():
+				self.expandInstant(parent, False)
+				parent = parent.parent()
+
+		
+	def duplicateSelection(self):
+		model = self.model()
+		selectionModel = self.selectionModel()
+		selections = selectionModel.selectedIndexes()
+		selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and -1 or 1))
+		
+		# detect children and remove
+		for i in range(len(selections) - 1, 0, -1):
+			curr = selections[i]
+			for j in range(i - 1, -1, -1):
+				test = selections[j]
+				if self._checkIsChildOf(curr, test):
+					del selections[i]
+					break
+
+		selectionModel.clear()
+		toSelections = []
+		for selection in selections:
+			parent = selection.parent()
+			mimeData = model.mimeData([selection])
+			model.dropMimeData(mimeData, Qt.CopyAction, -1, -1, parent)
+
+			row = model.rowCount(parent) - 1
+			toSelections.append(model.index(row, 0, parent))
+
+			while parent.isValid():
+				self.expandInstant(parent, False)
+				parent = parent.parent()
+
+		self.setCurrentIndex(toSelections[-1])
+		for selection in toSelections:
+			selectionModel.select(selection, QItemSelectionModel.Select)
+
+	def event(self, evt):
+		super().event(evt)
+
+		if evt.type() == QEvent.ShortcutOverride:
+			key = evt.key()
+			mods = evt.modifiers()
+
+			if key == Qt.Key_A and mods & Qt.ControlModifier:
+				self.keyPressEvent(evt)
+
+			elif key == Qt.Key_C and mods & Qt.ControlModifier:
+				self.copySelection()
+			elif key == Qt.Key_V and mods & Qt.ControlModifier:
+				self.pasteSelection()
+			elif key == Qt.Key_D and mods & Qt.ControlModifier:
+				self.duplicateSelection()
 
 
 	##################  DRAW  ##################
@@ -526,10 +699,36 @@ class TreeView(QTreeView):
 		src = evt.source()
 		if src == self:
 			model = self.model()
-			selections = self.selectionModel().selectedIndexes()
+			selectionModel = self.selectionModel()
+			selections = selectionModel.selectedIndexes()
 			selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and 1 or -1))
-			# model.dropMimeData(evt.mimeData(), Qt.MoveAction, -1, -1, idx)
-			# for selection in selections: model.removeRows(selection.row(), 1, selection.parent())
+			selectionModel.clear()
+
+			dropInsertRow, dropParent = None, None
+			valid = idx.isValid()
+			if valid and self.dropPosition == -1:
+				dropInsertRow = idx.row()
+				dropParent = idx.parent()
+			elif valid and self.dropPosition == 1:
+				dropInsertRow = idx.row() + 1
+				dropParent = idx.parent()
+			else:
+				dropInsertRow = model.rowCount(idx)
+				dropParent = idx
+
+			delayRemoves = [selection for selection in selections if selection.parent() == dropParent and selection.row() < dropInsertRow]
+			for selection in selections:
+				mimeData = model.mimeData([selection])
+				if selection not in delayRemoves: model.removeRow(selection.row(), selection.parent())
+				model.dropMimeData(mimeData, Qt.CopyAction, dropInsertRow, -1, dropParent)
+
+			dropCount = len(selections)
+			self.setCurrentIndex(model.index(dropInsertRow + dropCount - 1, 0, dropParent))
+			for i in range(dropInsertRow, dropInsertRow + dropCount): selectionModel.select(model.index(i, 0, dropParent), QItemSelectionModel.Select)
+			
+			for index in delayRemoves: model.removeRow(index.row(), index.parent())
+			if valid and self.dropPosition == 0: self.expandInstant(idx, False)
+
 			evt.acceptProposedAction()
 		else:
 			evt.ignore()
@@ -555,6 +754,17 @@ class TreeView(QTreeView):
 			else:
 				self.expand(index)
 			if self.customAnimated: self._playExpandAnim(index, False, recursive)
+
+	def expandInstant(self, index, recursive):
+		if self.isExpanded(index): return
+		model = self.model()
+		height = self.itemHeight
+		list = self._animChildrenList(index, recursive)
+		for idx in list: model.setData(idx, height, Qt.SizeHintRole)
+		if recursive:
+			self.expandRecursively(index)
+		else:
+			self.expand(index)
 
 	def _collapseRecursively(self, index):
 		self.collapse(index)
@@ -626,8 +836,12 @@ class TreeView(QTreeView):
 	def expandHovered(self):
 		if not self.hoveredIndex or not self.hoveredIndex.isValid(): return
 		if not self.model().hasChildren(self.hoveredIndex): return
+		for selection in self.selectedIndexes():
+			if self.hoveredIndex == selection: return
+			if self._checkIsChildOf(self.hoveredIndex, selection): return
 		if self.isExpanded(self.hoveredIndex): return
 		self.toggleExpand(self.hoveredIndex, False)
+		# self.expandInstant(self.hoveredIndex, False)
 
 	def pingItem(self, index):
 		pass
