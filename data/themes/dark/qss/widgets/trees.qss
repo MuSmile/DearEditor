@@ -1,26 +1,11 @@
-/*QTreeView::branch:has-siblings:!adjoins-item {
-        background: cyan;
-}
-
-QTreeView
-{
-	qproperty-indentation: 20;
-	qproperty-alternatingRowColors: 0; 
-}*/
-
-/*QTreeView::branch:open:has-children {
-        image: url(img/arrow_down.png);
-}
-QTreeView::branch:closed:has-children {
-        image: url(img/arrow_right.png);
-}*/
-
 TreeView
 {
 	background: #444;
 	color: #fff;
 	
-	qproperty-paddingLeft: 2;
+	qproperty-treePaddingLeft: 2;
+	qproperty-itemPaddingLeft: 2;
+	qproperty-itemIconSize: 16;
 	qproperty-itemHeight: 20;
 	qproperty-indentation: 20;
 
@@ -37,6 +22,7 @@ TreeView
 	
 	qproperty-branchOpened: url(img/arrow_down.png);
 	qproperty-branchClosed: url(img/arrow_right.png);
+	qproperty-branchPixmapSize: 12;
 	
 	qproperty-background: #404040;
 	qproperty-backgroundAlternate: #474747;
@@ -47,6 +33,25 @@ TreeView
 	min-width: 200px;
 }
 
+TreeItemPingOverlay
+{
+	color: #fff;
+	font-size: 12px;
+
+	qproperty-pingZoomScale: 1.8;
+
+	qproperty-pingZoomDuration: 100;
+	qproperty-pingIdleDuration: 2000;
+	qproperty-pingFadeDuration: 1000;
+	qproperty-pingAnimTickInterval: 10;
+
+	qproperty-pingOutlineColor: #D7C11B;
+	qproperty-pingOutlineWidth: 2;
+	qproperty-pingOutlineRound: 6;
+}
+
+
+/****************************************************/
 TreeItemEditor:focus
 {
 	background: transparent;

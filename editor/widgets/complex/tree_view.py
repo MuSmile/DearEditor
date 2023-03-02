@@ -1,10 +1,11 @@
 import functools
+from enum import Enum
 from math import floor
 from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QMimeData, QItemSelectionModel, QEvent
-from PySide6.QtWidgets import QTreeView, QWidget, QPushButton, QApplication, QAbstractItemView, QItemDelegate, QStyle
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QPen, QBrush, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
-from editor.common.math import clamp
-from editor.common.ease import easeInOutQuad
+from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QAbstractItemView, QItemDelegate, QStyle, QStyleOption, QStylePainter
+from PySide6.QtGui import QStandardItemModel, QStandardItem, QPen, QBrush, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent, QRadialGradient
+from editor.common.math import clamp, lerp
+from editor.common.ease import easeInOutQuad, easeOutQuad
 from editor.common.icon_cache import getThemePixmap
 
 
@@ -61,18 +62,18 @@ class TreeItemDelegate(QItemDelegate):
 		painter.fillRect(rect, bgColor)
 	def drawContent(self, painter, rect, index):
 		view = self.view
-		textOffset = view.paddingLeft
+		textOffset = view.treePaddingLeft
 		decoration = index.data(Qt.DecorationRole)
 
 		if decoration:
 			indentation = view.indentation()
 			rectSize = view.itemHeight
-			textOffset += indentation + 2
+			textOffset += indentation + view.itemPaddingLeft
 			cx, cy = rect.left() + round(indentation / 2), rect.top() + round(rect.height() / 2)
-			iconSize, halfSize = 16, 8
+			iconSize = view.itemIconSize
+			halfSize = iconSize / 2
 			x, y = cx - halfSize, cy - halfSize
-			iconOffset = round((rectSize - iconSize) / 2) + view.paddingLeft - 2
-			painter.drawPixmap(x + iconOffset, y, iconSize, iconSize, decoration)
+			painter.drawPixmap(x, y, iconSize, iconSize, decoration)
 
 		painter.drawText(rect.adjusted(textOffset, -1, 0, 0), Qt.AlignVCenter, index.data())
 	def drawBranchLines(self, painter, rect, index):
@@ -88,7 +89,7 @@ class TreeItemDelegate(QItemDelegate):
 			# print(index.siblingAtRow(index.row()+1).isValid(), index.data())
 			curr = index
 			for i in range(drawDepth):
-				x = int(indentation * (itemDepth - i - 0.5)) + view.paddingLeft
+				x = int(indentation * (itemDepth - i - 0.5)) + view.treePaddingLeft
 				# painter.fillRect(x, t, indentation, h, Qt.green)
 				hasSiblings = curr.siblingAtRow(curr.row() + 1).isValid()
 				adjoinsItem = i == 0
@@ -105,8 +106,9 @@ class TreeItemDelegate(QItemDelegate):
 		if not index.model().hasChildren(index): return
 
 		view = self.view
-		size, sizeHalf = 12, 6
-		cx = rect.right() - round(view.indentation() / 2) + 1 + view.paddingLeft
+		size = view.branchPixmapSize
+		sizeHalf = size / 2
+		cx = rect.right() - round(view.indentation() / 2) + 1 + view.treePaddingLeft
 		cy = rect.top() + (rect.height() / 2)
 		rect = QRect(cx - sizeHalf, cy - sizeHalf, size, size)
 		branchArrow = view.isExpanded(index) and view.branchOpened or view.branchClosed
@@ -122,15 +124,42 @@ class TreeItemDelegate(QItemDelegate):
 		return depth
 
 
-class TreeItemPingOverlay(QPushButton):
-	instances = []
+class PingAnimPhase(Enum):
+	ZoomIn  = 1
+	ZoomOut = 2
+	Idle    = 3
+	Fade    = 4
+
+class TreeItemPingOverlay(QWidget):
+	InstanceList = []
 
 	@Property(int)
-	def pingAnimDuration(self):
-		return self._pingAnimDuration
-	@pingAnimDuration.setter
-	def pingAnimDuration(self, value):
-		self._pingAnimDuration = value
+	def pingZoomDuration(self):
+		return self._pingZoomDuration
+	@pingZoomDuration.setter
+	def pingZoomDuration(self, value):
+		self._pingZoomDuration = value
+
+	@Property(int)
+	def pingIdleDuration(self):
+		return self._pingIdleDuration
+	@pingIdleDuration.setter
+	def pingIdleDuration(self, value):
+		self._pingIdleDuration = value
+
+	@Property(int)
+	def pingFadeDuration(self):
+		return self._pingFadeDuration
+	@pingFadeDuration.setter
+	def pingFadeDuration(self, value):
+		self._pingFadeDuration = value
+
+	@Property(float)
+	def pingZoomScale(self):
+		return self._pingZoomScale
+	@pingZoomScale.setter
+	def pingZoomScale(self, value):
+		self._pingZoomScale = value
 
 	@Property(int)
 	def pingAnimTickInterval(self):
@@ -139,14 +168,42 @@ class TreeItemPingOverlay(QPushButton):
 	def pingAnimTickInterval(self, value):
 		self._pingAnimTickInterval = value
 
+	@Property(QColor)
+	def pingOutlineColor(self):
+		return self._pingOutlinePen.color()
+	@pingOutlineColor.setter
+	def pingOutlineColor(self, value):
+		self._pingOutlinePen.setColor(value)
+	@Property(int)
+	def pingOutlineWidth(self):
+		return self._pingOutlinePen.width()
+	@pingOutlineWidth.setter
+	def pingOutlineWidth(self, value):
+		self._pingOutlinePen.setWidth(value)
+
+	@Property(int)
+	def pingOutlineRound(self):
+		return self._pingOutlineRound
+	@pingOutlineRound.setter
+	def pingOutlineRound(self, value):
+		self._pingOutlineRound = value
+
 	def __init__(self, treeview):
 		super().__init__(treeview)
-		self._pingAnimDuration = 1000
+		self._pingZoomDuration = 100
+		self._pingIdleDuration = 2000
+		self._pingFadeDuration = 1000
+		self._pingZoomScale = 1.5
 		self._pingAnimTickInterval = 10
+		self._pingOutlinePen = QPen(QColor('#D7C11B'), 2)
+		self._pingOutlineRound = 6
+
 		self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 		self.setAttribute(Qt.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
-		self.instances.append(self)
+
+		treeview.installEventFilter(self)
+		self.InstanceList.append(self)
 
 	def syncTreeViewRect(self):
 		treeview = self.parent()
@@ -157,54 +214,128 @@ class TreeItemPingOverlay(QPushButton):
 		if evt.type() == QEvent.Resize: self.syncTreeViewRect()
 		return False
 
-	def startPingAnim(self, index):
+	def startPing(self, index):
 		self.elapsed = 0
+		self.progress = 0
 		self.index = index
-		treeview = self.parent()
-		treeview.installEventFilter(self)
+		self.state = PingAnimPhase.Idle
+
+		self.timer = QTimer()
+		self.timer.timeout.connect(self.tickPingAnim)
+		self.timer.start(self._pingAnimTickInterval)
 		self.syncTreeViewRect()
-		# self.timer = QTimer()
-		# self.timer.timeout.connect(self.tickPingAnim)
-		# self.timer.start(self._pingAnimTickInterval)
+
+	def stopPing(self):
+		self.InstanceList.remove(self)
+		self.timer.stop()
+		self.timer.deleteLater()
+		self.deleteLater()
+
+	@staticmethod
+	def stopAll():
+		for instance in TreeItemPingOverlay.InstanceList:
+			instance.stopPing()
 
 	def tickPingAnim(self):
 		self.elapsed += self._pingAnimTickInterval
-		k = clamp(self.elapsed / self._pingAnimDuration, 0, 1)
-		progress = easeInOutQuad(k)
-		if progress < 1:
-			# to do
+		
+		zoomInDuration = self._pingZoomDuration
+		zoomOutDuration = zoomInDuration + self._pingZoomDuration
+		idleDuration = zoomInDuration + self._pingIdleDuration
+		fadeDuration = idleDuration + self._pingFadeDuration
+
+		if self.elapsed <= zoomInDuration:
+			self.state = PingAnimPhase.ZoomIn
+			self.progress = self.elapsed / self._pingZoomDuration
+			self.repaint()
+
+		elif self.elapsed <= zoomOutDuration:
+			self.state = PingAnimPhase.ZoomOut
+			self.progress = (self.elapsed - zoomInDuration) / self._pingZoomDuration
+			self.repaint()
+
+		elif self.elapsed <= idleDuration:
+			self.state = PingAnimPhase.Idle
+			# self.repaint()
+
+		elif self.elapsed <= fadeDuration:
+			self.state = PingAnimPhase.Fade
+			k = (self.elapsed - idleDuration) / self._pingFadeDuration
+			self.progress = easeOutQuad(k)
 			self.repaint()
 
 		else:
-			self.timer.stop()
-			self.timer.deleteLater()
-			self.deleteLater()
+			return self.stopPing()
 
 	def paintEvent(self, event):
-		treeview = self.parent()
-		rect = treeview.visualRect(self.index)
+		view = self.parent()
+		index = self.index
+
+		rect = view.visualRect(index)
 		painter = QPainter()
 		painter.begin(self) 
 		painter.setRenderHints(QPainter.Antialiasing, True)
-		painter.setBrush(Qt.red)
-		painter.setPen(Qt.green)
-		painter.drawRoundedRect(rect, 4, 4)
-		# painter.setBrush(QBrush(QColor(100, 100, 100, self._alpha)))
-		# painter.setPen(Qt.transparent)
-		# painter.drawRoundedRect(rect, 15, 15)
-		# painter.setPen(QColor(230, 230, 230, self._alpha))
-		# painter.setFont(_toastFont)
-		# painter.drawText(rect, Qt.AlignCenter, self.msg)
+
+		option = QStyleOption()
+		option.initFrom(self)
+		fm = option.fontMetrics
+		width = option.fontMetrics.boundingRect(index.data()).width() + view.treePaddingLeft * 2
+		if index.data(Qt.DecorationRole): width += view.indentation() + view.itemPaddingLeft + round((view.itemHeight - view.itemIconSize) / 2)
+		rect.setWidth(width)
+
+		zoom = None
+		if self.state == PingAnimPhase.ZoomIn:
+			zoom = lerp(1, self.pingZoomScale, self.progress)
+		elif self.state == PingAnimPhase.ZoomOut:
+			zoom = lerp(self.pingZoomScale, 1, self.progress)
+		elif self.state == PingAnimPhase.Fade:
+			painter.setOpacity(1 - self.progress)
+
+		if zoom != None:
+			tx, ty = rect.x() + width / 2, rect.y() + rect.height() / 2
+			painter.translate(tx, ty)
+			painter.scale(zoom, zoom)
+			painter.translate(-tx, -ty)
+
+		pen = painter.pen()
+		alternate = view._flatVisibleRowNumber(index, view.model()) % 2
+		bgColor = alternate and view.background or view.backgroundAlternate
+		painter.setBrush(bgColor)
+		painter.setPen(self._pingOutlinePen)
+		painter.drawRoundedRect(rect.adjusted(-10, 0, 10, 0), self._pingOutlineRound, self._pingOutlineRound)
+
+		painter.setPen(pen)
+		delegate = view.itemDelegate(index)
+		delegate.drawContent(painter, rect, index)
+
 		painter.end()
 
 class TreeView(QTreeView):
 	@Property(int)
-	def paddingLeft(self):
-		return self._paddingLeft
-	@paddingLeft.setter
-	def paddingLeft(self, value):
-		if self._paddingLeft == value: return
-		self._paddingLeft = value
+	def treePaddingLeft(self):
+		return self._treePaddingLeft
+	@treePaddingLeft.setter
+	def treePaddingLeft(self, value):
+		if self._treePaddingLeft == value: return
+		self._treePaddingLeft = value
+		self.repaint()
+
+	@Property(int)
+	def itemPaddingLeft(self):
+		return self._itemPaddingLeft
+	@itemPaddingLeft.setter
+	def itemPaddingLeft(self, value):
+		if self._itemPaddingLeft == value: return
+		self._itemPaddingLeft = value
+		self.repaint()
+
+	@Property(int)
+	def itemIconSize(self):
+		return self._itemIconSize
+	@itemIconSize.setter
+	def itemIconSize(self, value):
+		if self._itemIconSize == value: return
+		self._itemIconSize = value
 		self.repaint()
 
 	@Property(int)
@@ -214,6 +345,15 @@ class TreeView(QTreeView):
 	def itemHeight(self, value):
 		if self._itemHeight == value: return
 		self._itemHeight = value
+		self.repaint()
+
+	@Property(int)
+	def branchPixmapSize(self):
+		return self._branchPixmapSize
+	@branchPixmapSize.setter
+	def branchPixmapSize(self, value):
+		if self._branchPixmapSize == value: return
+		self._branchPixmapSize = value
 		self.repaint()
 
 	@Property(QPixmap)
@@ -319,8 +459,11 @@ class TreeView(QTreeView):
 	
 	def __init__(self, parent = None):
 		super().__init__(parent)
-		self._paddingLeft = 2
+		self._treePaddingLeft = 2
+		self._itemPaddingLeft = 2
+		self._itemIconSize = 16
 		self._penDropIndicator = QPen(QColor('#8af'), 2)
+		self._branchPixmapSize = 12
 		self._pixmapBranchOpened = getThemePixmap('arrow_down.png')
 		self._pixmapBranchClosed = getThemePixmap('arrow_right.png')
 		self._customAnimated = True
@@ -381,13 +524,14 @@ class TreeView(QTreeView):
 		rect = self.visualRect(index)
 		l, t, h = rect.left(), rect.top(), rect.height()
 		indentation = self.indentation()
-		branchRect = QRect(l - indentation + self.paddingLeft, t, indentation, h)
+		branchRect = QRect(l - indentation + self.treePaddingLeft, t, indentation, h)
 		if branchRect.contains(pos):
 			recursive = evt.modifiers() == Qt.AltModifier
 			self.toggleExpand(index, recursive)
 			return True
 
 	def mousePressEvent(self, evt):
+		TreeItemPingOverlay.stopAll()
 		if self.testClickBranchArrow(evt): return
 		super().mousePressEvent(evt)
 
@@ -397,7 +541,7 @@ class TreeView(QTreeView):
 		rect = self.visualRect(index)
 		l, t, h = rect.left(), rect.top(), rect.height()
 		indentation = self.indentation()
-		branchRect = QRect(l - indentation + self.paddingLeft, t, indentation, h)
+		branchRect = QRect(l - indentation + self.treePaddingLeft, t, indentation, h)
 		if branchRect.contains(pos): return
 		super().mouseReleaseEvent(evt)
 
@@ -484,7 +628,7 @@ class TreeView(QTreeView):
 			curr = self.currentIndex()
 			if not curr.isValid(): return
 			overlay = TreeItemPingOverlay(self)
-			overlay.startPingAnim(curr)
+			overlay.startPing(curr)
 			overlay.show()
 
 		else:
@@ -597,7 +741,7 @@ class TreeView(QTreeView):
 		if not self.dropAccepted: return
 		if not self.dropIndicatorRect: return
 		painter.setPen(self._penDropIndicator)
-		l = self.dropIndicatorRect.left() + self.paddingLeft + 1 # indicatorOffset
+		l = self.dropIndicatorRect.left() + self.treePaddingLeft + 1 # indicatorOffset
 		r = self.dropIndicatorRect.right()
 		y = self.dropIndicatorRect.top()
 		radius = 3
