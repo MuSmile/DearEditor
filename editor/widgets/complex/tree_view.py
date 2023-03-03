@@ -1,4 +1,4 @@
-import functools
+import functools, time
 from enum import Enum
 from math import floor
 from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QMimeData, QItemSelectionModel, QEvent
@@ -229,6 +229,7 @@ class TreeItemPingOverlay(QWidget):
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.tickPingAnim)
 		self.timer.start(self._pingAnimTickInterval)
+		self.prevTickTime = time.time()
 		self.syncTreeViewRect()
 
 	def stopPing(self):
@@ -246,7 +247,9 @@ class TreeItemPingOverlay(QWidget):
 			instance.stopPing()
 
 	def tickPingAnim(self):
-		self.elapsed += self._pingAnimTickInterval
+		delta = (time.time() - self.prevTickTime) * 1000
+		self.prevTickTime = time.time()
+		self.elapsed += delta
 		
 		zoomInDuration = self._pingZoomDuration
 		zoomOutDuration = zoomInDuration + self._pingZoomDuration
@@ -265,7 +268,7 @@ class TreeItemPingOverlay(QWidget):
 
 		elif self.elapsed <= idleDuration:
 			self.state = PingAnimPhase.Idle
-			# self.repaint()
+			self.repaint()
 
 		elif self.elapsed <= fadeDuration:
 			self.state = PingAnimPhase.Fade
@@ -988,8 +991,13 @@ class TreeView(QTreeView):
 		self.animTimer = QTimer()
 		self.animTimer.timeout.connect(self._tickExpanding)
 		self.animTimer.start(self._customAnimTickInterval)
+		self.prevTickTime = time.time()
+
 	def _tickExpanding(self):
-		self.animElapsed += self.customAnimTickInterval
+		delta = (time.time() - self.prevTickTime) * 1000
+		self.prevTickTime = time.time()
+		self.animElapsed += delta
+
 		k = clamp(self.animElapsed / self.customAnimDuration, 0, 1)
 		progress = easeInOutQuad(k)
 		idxProgress = len(self.animIdxList) * progress
@@ -1016,6 +1024,7 @@ class TreeView(QTreeView):
 			self.animElapsed = None
 			self.animIdxList = None
 			self.prevIdxStop = None
+			self.prevTickTime = None
 			self.collapsingIndex = None
 			if self.onAnimFinish:
 				self.onAnimFinish()
