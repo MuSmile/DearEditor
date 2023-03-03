@@ -19,6 +19,7 @@ TreeView
 	qproperty-customAnimTickInterval: 8;
 #end
 #if Windows
+	/* or change vsync setting for python */
 	qproperty-customAnimTickInterval: 16;
 #end
 	qproperty-drawBranchLine: true;
@@ -54,6 +55,7 @@ TreeItemPingOverlay
 	qproperty-pingAnimTickInterval: 10;
 #end
 #if Windows
+	/* or change vsync setting for python */
 	qproperty-pingAnimTickInterval: 16;
 #end
 

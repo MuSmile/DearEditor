@@ -9,20 +9,21 @@ The aim of DearEditor is to create an open and unite editor solution for all eng
 ## Screenshots
 ![screenshot](.support/pyside6_qtads/img/p1.png)
 ![screenshot](.support/pyside6_qtads/img/p2.png)
-![screenshot](.support/pyside6_qtads/img/p3.png)
 
 
 ## Requirements
 ### 1. Install python >= 3.9.9
 This project has only been developed and tested in python version 3.9.9.
 
-Use this python version could help to keep issues to a minimum.
+Other compatible versions may be fine theoretically though...
+
+Stick on this version could help to keep away from annoy issues.
 
 ### 2. Install required python packages
 ```bat
 > pip install -r requirements.txt
 ```
-or simply (need do setup work first)
+or simply (need config project first)
 ```bat
 > dear install
 ```
@@ -32,10 +33,10 @@ or simply (need do setup work first)
 > pip install pyobjc-framework-Cocoa
 ```
 
-## Config prject
-1. Add `<your-path>/DearEditor/bin` into env-variables path.
-2. Find `<your-path>/DearEditor/bin/dear` file (aka dear-bin later).
-3. Modify `idedir` and `pybin` path in dear-bin with your actual path.
+## Config project
+1. Add `<your-path>/DearEditor/bin` into environment variable `path`.
+2. Find `<your-path>/DearEditor/bin/dear` file (`dear` for MacOS, and `dear.bat` for Windows).
+3. Modify `idedir` and `pybin` path in dear file with your actual path.
 
 ## Enjoy and run
 use ↓
