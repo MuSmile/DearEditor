@@ -27,7 +27,7 @@ QMenu {
 QMenu::item {
     background-color: transparent;
     padding: 3px 15px 4px 14px;
-    color: #000;
+    color: #444;
 }
 
 QMenu::item:selected { /* when user selects item using mouse or keyboard */

@@ -65,7 +65,6 @@ class Toast(QWidget):
 		pw, ph = rect.width(), rect.height()
 		sw = clamp(pw * 0.7, 100, 400)
 		sh = clamp(ph * 0.4, 40 , 160)
-		sh = ph
 		self.setFixedSize(sw, sh)
 
 		offsetToBottom = ph * 0.15

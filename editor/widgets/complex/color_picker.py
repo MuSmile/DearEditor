@@ -1,9 +1,14 @@
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
-from editor.ide_globals import _G
-from editor.tools.util import *
-from editor.tools.icon_cache import getThemePixmap
+from editor.common.math import clamp, locAt, vecAngle, lerpI, getDir
+from editor.common.util import getIde, requestTransparentBgBrush, toInt, toFloat, isParentOfWidget
+from editor.common.icon_cache import getThemePixmap
+
+
+#####################  INTERNAL  #####################
+_ColorSpaceLabels = ['RGB 0-255', 'RGB 0-1.0', 'HSV      ']
+_ColorSpaceRgb, _ColorSpaceRgbF, _ColorSpaceHsv = range(3)
 
 class _ColorRing(QWidget):
 	def color(self): return self.parent().currentColor
@@ -202,36 +207,20 @@ class _ColorPreview(QWidget):
 		painter.fillRect(0, 0, wHalf, h, parent.initColor)
 		painter.fillRect(wHalf, 0, wHalf, h, parent.currentColor)
 
-_ColorSpaceLabels = ['RGB 0-255', 'RGB 0-1.0', 'HSV']
-_SpaceRgb, _SpaceRgbF, _SpaceHsv = range(3)
 class _ColorSpaceDropDown(QPushButton):
 	def __init__(self, parent):
 		super().__init__(parent)
 		self.setFocusPolicy(Qt.NoFocus)
 		self.setText(_ColorSpaceLabels[ColorPicker.ColorSpace])
-		# self.setPopupMode(QToolButton.MenuButtonPopup)
 		self.pressed.connect(self.showMenu)
-		self.setFixedSize(84, 18)
+		self.setFixedSize(88, 24)
 		self.initMenu()
-		self.setStyleSheet('''
-			QPushButton
-			{
-				text-align: left;
-				padding: 0 0 1px 5px;
-				color: #ddd;
-			}
-			QPushButton::menu-indicator
-			{
-			    top: -3px;
-			    right: 1px;
-			    width: 10px;
-			    height: 10px;
-			}
-		''')
 
 	def initMenu(self):
 		actions = []
 		menu = QMenu(self)
+		menu.setAttribute(Qt.WA_TranslucentBackground)
+		menu.setWindowFlag(Qt.FramelessWindowHint, True)
 		for label in _ColorSpaceLabels: actions.append(menu.addAction(label))
 		for act in actions: act.setCheckable(True)
 		actions[ColorPicker.ColorSpace].setChecked(True)
@@ -361,9 +350,9 @@ class _ColorCptLineEdit(QLineEdit):
 
 	def parseText(self, text):
 		space = ColorPicker.ColorSpace
-		if space == _SpaceRgb:
+		if space == _ColorSpaceRgb:
 			return clamp(toInt(text), 0, 255)
-		elif space == _SpaceRgbF:
+		elif space == _ColorSpaceRgbF:
 			return clamp(toFloat(text), 0.0, 1.0)
 		else:
 			hue = self.parent().cpt == _ColorComponentEdit.CptH
@@ -377,7 +366,7 @@ class _ColorCptLineEdit(QLineEdit):
 		cpt = self.parent().cpt
 		space = ColorPicker.ColorSpace
 		editor = self.parent().parent()
-		if space == _SpaceRgb:
+		if space == _ColorSpaceRgb:
 			r, g, b, a = editor.currentColor.getRgb()
 			if cpt == _ColorComponentEdit.CptR:
 				editor.currentColor.setRgb(value, g, b, a)
@@ -388,7 +377,7 @@ class _ColorCptLineEdit(QLineEdit):
 			elif cpt == _ColorComponentEdit.CptA:
 				editor.currentColor.setRgb(r, g, b, value)
 
-		elif space == _SpaceRgbF:
+		elif space == _ColorSpaceRgbF:
 			r, g, b, a = editor.currentColor.getRgbF()
 			if cpt == _ColorComponentEdit.CptR:
 				editor.currentColor.setRgbF(value, g, b, a)
@@ -449,10 +438,10 @@ class _ColorCptLineEdit(QLineEdit):
 
 	def updateWithDelta(self, deltaDir):
 		space = ColorPicker.ColorSpace
-		if space == _SpaceRgb:
+		if space == _ColorSpaceRgb:
 			value = clamp(self.value + deltaDir * 5, 0, 255)
 			self.setText(str(value))
-		elif space == _SpaceRgbF:
+		elif space == _ColorSpaceRgbF:
 			value = clamp(self.value + deltaDir * 0.05, 0.0, 1.0)
 			value = round(value * 10000) / 10000
 			self.setText(str(value))
@@ -509,17 +498,17 @@ class _ColorComponentEdit(QWidget):
 		color = parent.currentColor
 		space = parent.ColorSpace
 		if self.cpt == self.CptA:
-			if   space == _SpaceRgbF: return color.alphaF()
-			elif space == _SpaceHsv: return round(color.alphaF() * 100)
+			if   space == _ColorSpaceRgbF: return color.alphaF()
+			elif space == _ColorSpaceHsv: return round(color.alphaF() * 100)
 			else: return color.alpha()
 		elif self.cpt == self.CptR:
-			if space == _SpaceRgbF: return color.redF()
+			if space == _ColorSpaceRgbF: return color.redF()
 			else: return color.red()
 		elif self.cpt == self.CptG:
-			if space == _SpaceRgbF: return color.greenF()
+			if space == _ColorSpaceRgbF: return color.greenF()
 			else: return color.green()
 		elif self.cpt == self.CptB:
-			if space == _SpaceRgbF: return color.blueF()
+			if space == _ColorSpaceRgbF: return color.blueF()
 			else: return color.blue()
 		elif self.cpt == self.CptH:
 			return max(color.hue(), 0)
@@ -579,7 +568,7 @@ class _ColorComponentEdit(QWidget):
 
 	def updateLineEdit(self):
 		space = ColorPicker.ColorSpace
-		if space == _SpaceRgbF:
+		if space == _ColorSpaceRgbF:
 			value = round(self.componentValue() * 1000) / 1000
 			self.lineEdit.setText(str(value))
 		else:
@@ -671,19 +660,19 @@ class _ColorHexEdit(QLineEdit):
 		painter.setFont(self.font())
 		painter.drawText(5, 14, '#')
 
-def createColorPicker(initColor):
-	if ColorPicker.Instanced: return
-	ColorPicker(initColor).show()
 
+#####################  PUBLIC  #####################
 class ColorPicker(QWidget):
 	colorChanged = Signal(QColor, str) # color: QColor, reason: str
-	ColorSpace = _SpaceRgb
+	
+	ColorSpace = _ColorSpaceRgb
 	Instanced = False
 	PrevLoc = None
 
 	def __init__(self, initColor):
-		super().__init__(_G.ide.activeWindow())
-		_G.ide.focusChanged.connect(self.onFocusChange)
+		ide = getIde()
+		super().__init__(ide.activeWindow())
+		ide.focusChanged.connect(self.onFocusChange)
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
 		self.setWindowFlags(Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
 		# self.setWindowFlags(Qt.Drawer | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
@@ -703,7 +692,7 @@ class ColorPicker(QWidget):
 		space = _ColorSpaceDropDown(self)
 		cptA = _ColorComponentEdit(self, _ColorComponentEdit.CptA)
 		cpt1, cpt2, cpt3 = None, None, None
-		if self.ColorSpace == _SpaceHsv:
+		if self.ColorSpace == _ColorSpaceHsv:
 			cpt1 = _ColorComponentEdit(self, _ColorComponentEdit.CptH)
 			cpt2 = _ColorComponentEdit(self, _ColorComponentEdit.CptS)
 			cpt3 = _ColorComponentEdit(self, _ColorComponentEdit.CptV)
@@ -771,21 +760,14 @@ class ColorPicker(QWidget):
 
 	def closeEvent(self, evt):
 		super().closeEvent(evt)
-		_G.ide.focusChanged.disconnect(self.onFocusChange)
+		getIde().focusChanged.disconnect(self.onFocusChange)
 		ColorPicker.PrevLoc = self.pos()
 		ColorPicker.Instanced = False
-
-	def isParentOf(self, wgt):
-		p = wgt.parent()
-		while p:
-			if p == self: return True
-			p = p.parent()
-		return False
 
 	def onFocusChange(self, old, now):
 		if not now: return
 		if not isinstance(now, QWidget): return
-		if now != self and not self.isParentOf(now): self.close()
+		if now != self and not isParentOfWidget(self, now): self.close()
 
 	def pickScreenshotColor(self):
 		def onPickedColorUpdate(color, finish):
@@ -801,7 +783,7 @@ class ColorPicker(QWidget):
 	def updateColorSpace(self, space):
 		if ColorPicker.ColorSpace == space: return
 		ColorPicker.ColorSpace = space
-		if space == _SpaceHsv:
+		if space == _ColorSpaceHsv:
 			self.colorCpt1.updateComponent(_ColorComponentEdit.CptH)
 			self.colorCpt2.updateComponent(_ColorComponentEdit.CptS)
 			self.colorCpt3.updateComponent(_ColorComponentEdit.CptV)
@@ -840,7 +822,7 @@ class ScreenColorPicker(QWidget):
 	colorUpdated = Signal(QColor, bool)
 
 	def __init__(self, defaultColor, onColorUpdate, showPreview = True, overridePaint = None):
-		super().__init__(_G.ide.activeWindow())
+		super().__init__(getIde().activeWindow())
 		self.setAttribute(Qt.WA_DeleteOnClose)
 		self.setAttribute(Qt.WA_TranslucentBackground)
 		self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
@@ -966,13 +948,7 @@ class ColorPresetEditor(QWidget):
 		super().closeEvent(evt)
 		self.parent().presetEditor = None
 
-if __name__ == '__main__':
-	import sys
-	app = QApplication(sys.argv)
-	w = QWidget()
-	w.show()
-	btn = QPushButton(w)
-	btn.setGeometry(50, 50, 80, 40)
-	btn.clicked.connect(lambda: ColorPicker().show())
-	btn.show()
-	sys.exit(app.exec_())
+def createColorPicker(initColor):
+	if ColorPicker.Instanced: return
+	ColorPicker(initColor).show()
+

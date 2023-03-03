@@ -5,6 +5,7 @@ from PySide6.QtGui import QAction
 from editor.common.pyqtads import CDockManager, CDockWidget, DockWidgetArea
 from editor.common.logger import warn, error
 from editor.common.icon_cache import getThemeIcon
+from editor.common.util import getIde, isParentOfWidget
 from editor.widgets.misc.toast import notifyToast
 
 
@@ -60,8 +61,8 @@ class DockView(CDockWidget):
 		self.createTitleAction('menu_d.png')
 		self.setTitleBarActions( self.titleActions )
 
-	def showNotification(self, msg, duration = 1.5):
-		notifyToast(self, msg, duration * 1000)
+	def showNotification(self, msg):
+		notifyToast(self, msg, 1500)
 
 	def addIntoEditor(self, area = 'center', anchor = None):
 		anchor = anchor or focusedDockView()
@@ -135,7 +136,7 @@ def closeFocusedDockView():
 def setDockSplitterSizes(dockArea, sizes):
 	_dockManager.setSplitterSizes(dockArea, sizes)
 
-def createDockManager(parent):
+def createDockManager(mainWin):
 	CDockManager.setConfigFlag(CDockManager.RetainTabSizeWhenCloseButtonHidden, True)
 	CDockManager.setConfigFlag(CDockManager.FloatingContainerHasWidgetIcon, False)
 	CDockManager.setConfigFlag(CDockManager.FloatingContainerHasWidgetTitle, False)
@@ -159,10 +160,15 @@ def createDockManager(parent):
 	CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideTitleForceHasCloseBtn, True)
 
 	global _dockManager
-	_dockManager = CDockManager(parent)
+	_dockManager = CDockManager(mainWin)
 	_dockManager.setStyleSheet(None)
-	# _dockManager.floatingWidgetCreated.connect(lambda f: f.layout().setContentsMargins(0, 1, 0, 0))
-	_dockManager.focusedDockWidgetChanged.connect(lambda old, now: now.setFocus())
+	_dockManager.floatingWidgetCreated.connect(lambda f: f.layout().setContentsMargins(0, 1, 0, 0))
+	
+	def focusedDockWidgetChanged(old, now):
+		focused = getIde().focusWidget()
+		if not isParentOfWidget(now, focused): now.setFocus()
+	_dockManager.focusedDockWidgetChanged.connect(focusedDockWidgetChanged)
+	
 	return _dockManager
 
 def dockManager():

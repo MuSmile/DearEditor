@@ -5,6 +5,39 @@ from PySide6.QtWidgets import QApplication, QMainWindow
 
 
 #############################################
+_ide = None
+def getIde():
+	global _ide
+	if not _ide: _ide = QApplication.instance()
+	return _ide
+
+def getMainWindow():
+	app = QApplication.instance()
+	for widget in app.topLevelWidgets():
+		if isinstance(widget, QMainWindow):
+			return widget
+
+def restartApp():
+	quitApp()
+	py = sys.executable
+	os.execl(py, py, *sys.argv)
+
+def quitApp():
+	getMainWindow().close()
+
+
+#############################################
+def isParentOfWidget(test, wgt):
+	if not wgt: return False
+	if not test: return False
+	p = wgt.parent()
+	while p:
+		if p == test: return True
+		p = p.parent()
+	return False
+
+
+#############################################
 def toInt(text, default = 0):
 	try:
 		return int(text)
@@ -85,16 +118,3 @@ def shakeWidget(target):
 	animation.setKeyValueAt(0.99, QPoint(x - 1, y + 1))
 	animation.setEndValue(QPoint(x, y))
 	animation.start(animation.DeleteWhenStopped)
-
-
-#############################################
-def quitApp():
-	app = QApplication.instance()
-	for widget in app.topLevelWidgets():
-		if isinstance(widget, QMainWindow):
-			return widget.close()
-
-def restartApp():
-	quitApp()
-	py = sys.executable
-	os.execl(py, py, *sys.argv)

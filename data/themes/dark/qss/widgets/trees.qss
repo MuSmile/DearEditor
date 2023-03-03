@@ -27,7 +27,10 @@ TreeView
 	qproperty-background: #404040;
 	qproperty-backgroundAlternate: #474747;
 	qproperty-backgroundSelected: #516ca4;
+	qproperty-backgroundSelectedUnfocused: #6d6d74;
 	qproperty-backgroundHovered: #555555;
+	qproperty-useAlternatingBackground: true;
+	qproperty-branchArrowOffset: 0;
 
 	font-size: 12px;
 	min-width: 200px;
@@ -52,7 +55,31 @@ TreeItemPingOverlay
 
 
 /****************************************************/
-TreeItemEditor:focus
+GalleryView TreeView
+{
+	qproperty-itemHeight: 25;
+	qproperty-indentation: 13;
+	qproperty-treePaddingLeft: 25;
+	qproperty-branchArrowOffset: 10;
+	qproperty-branchLineFilterDepth: 10000;
+
+	qproperty-useAlternatingBackground: false;
+
+	qproperty-dragEnabled: false;
+	qproperty-acceptDrops: false;
+	qproperty-selectionMode: 1;
+	qproperty-editTriggers: 0;
+
+	min-width: 140px;
+}
+
+GalleryView QSplitter::handle:horizontal
+{
+	background-color: #333;
+	width: 1px;
+}
+
+/*TreeItemEditor:focus
 {
 	background: transparent;
     border: 2px solid #3ac;
@@ -84,4 +111,4 @@ HierarchyView > QPushButton,
 ProjectView > QPushButton
 {
 	margin: 1px;
-}
+}*/

@@ -17,7 +17,7 @@ def _createStatusProgressBar():
 	widget.setLayout(layout)
 	return widget, label, progressBar
 
-class MainStatusBar(QStatusBar):
+class StatusBar(QStatusBar):
 	def __init__(self, parent = None):
 		super().__init__(parent)
 		self._setupOutputMsgWidget()
@@ -81,8 +81,8 @@ class MainStatusBar(QStatusBar):
 		self.progressLabel.setVisible(False)
 		self.progress.setValue(0)
 
-def createMainStatusBar(parent = None):
-	statusbar = MainStatusBar(parent)
+def createStatusBar(parent = None):
+	statusbar = StatusBar(parent)
 	# statusbar.setSizeGripEnabled(False)
 
 	# text = 'This is a test output log.'

@@ -52,13 +52,13 @@ class TreeItemDelegate(QItemDelegate):
 		hovered  = index == view.hoveredIndex # option.state & QStyle.State_MouseOver
 		bgColor  = None
 		if selected:
-			bgColor = view.backgroundSelected
+			bgColor = view.backgroundSelected if view.viewFocused else view.backgroundSelectedUnfocused
 		elif hovered and view.dropIndicatorRect == None:
 			bgColor = view.backgroundHovered
 		else:
 			# alternate = option.features & QStyleOptionViewItem.Alternate
-			alternate = self.view._flatVisibleRowNumber(index, self.view.model()) % 2
-			bgColor = alternate and view.background or view.backgroundAlternate
+			alternate = view.useAlternatingBackground and self.view._flatVisibleRowNumber(index, self.view.model()) % 2
+			bgColor = view.backgroundAlternate if alternate else view.background
 		painter.fillRect(rect, bgColor)
 	def drawContent(self, painter, rect, index):
 		view = self.view
@@ -110,7 +110,7 @@ class TreeItemDelegate(QItemDelegate):
 		sizeHalf = size / 2
 		cx = rect.right() - round(view.indentation() / 2) + 1 + view.treePaddingLeft
 		cy = rect.top() + (rect.height() / 2)
-		rect = QRect(cx - sizeHalf, cy - sizeHalf, size, size)
+		rect = QRect(cx - sizeHalf - view.branchArrowOffset, cy - sizeHalf, size, size)
 		branchArrow = view.isExpanded(index) and view.branchOpened or view.branchClosed
 		painter.drawPixmap(rect, branchArrow)
 
@@ -233,7 +233,10 @@ class TreeItemPingOverlay(QWidget):
 
 	@staticmethod
 	def stopAll():
-		for instance in TreeItemPingOverlay.InstanceList:
+		list = TreeItemPingOverlay.InstanceList
+		instanceCount = len(list)
+		for i in range(instanceCount):
+			instance = list[instanceCount - i - 1]
 			instance.stopPing()
 
 	def tickPingAnim(self):
@@ -374,6 +377,13 @@ class TreeView(QTreeView):
 		self._pixmapBranchClosed = value
 		self.repaint()
 
+	@Property(int)
+	def branchArrowOffset(self):
+		return self._branchArrowOffset
+	@branchArrowOffset.setter
+	def branchArrowOffset(self, value):
+		self._branchArrowOffset = value
+
 	@Property(bool)
 	def customAnimated(self):
 		return self._customAnimated
@@ -451,11 +461,25 @@ class TreeView(QTreeView):
 	def backgroundSelected(self, value):
 		self._backgroundSelected = value
 	@Property(QColor)
+	def backgroundSelectedUnfocused(self):
+		return self._backgroundSelectedUnfocused
+	@backgroundSelectedUnfocused.setter
+	def backgroundSelectedUnfocused(self, value):
+		self._backgroundSelectedUnfocused = value
+	@Property(QColor)
 	def backgroundHovered(self):
 		return self._backgroundHovered
 	@backgroundHovered.setter
 	def backgroundHovered(self, value):
 		self._backgroundHovered = value
+
+	@Property(bool)
+	def useAlternatingBackground(self):
+		return self._useAlternatingBackground
+	@useAlternatingBackground.setter
+	def useAlternatingBackground(self, value):
+		self._useAlternatingBackground = value
+
 	
 	def __init__(self, parent = None):
 		super().__init__(parent)
@@ -466,6 +490,7 @@ class TreeView(QTreeView):
 		self._branchPixmapSize = 12
 		self._pixmapBranchOpened = getThemePixmap('arrow_down.png')
 		self._pixmapBranchClosed = getThemePixmap('arrow_right.png')
+		self._branchArrowOffset = 0
 		self._customAnimated = True
 		self._customAnimDuration = 120
 		self._customAnimTickInterval = 10
@@ -478,7 +503,9 @@ class TreeView(QTreeView):
 		self._background = QColor('#404040')
 		self._backgroundAlternate = QColor('#474747')
 		self._backgroundSelected = QColor('#515c84')
+		self._backgroundSelectedUnfocused = QColor('#6d7284')
 		self._backgroundHovered = QColor('#454768')
+		self._useAlternatingBackground = True
 
 		self.hoveredIndex = None
 		self.underAnimating = None
@@ -486,7 +513,7 @@ class TreeView(QTreeView):
 		self.dropIndicatorRect = None
 		self.dropPosition = None # -1 - before, 0 - inside, 1 - after
 
-		self.mimeDatas = None
+		self.viewFocused = None
 
 		self.autoExpandTimer = QTimer()
 		self.autoExpandTimer.timeout.connect(self.expandHovered)
@@ -499,6 +526,7 @@ class TreeView(QTreeView):
 		self.setHeaderHidden(True)
 		self.setAlternatingRowColors(False)
 		self.setExpandsOnDoubleClick(False)
+		self.setItemsExpandable(False)
 
 		self.dropAccepted = None
 		self.setDragEnabled(True)
@@ -516,6 +544,16 @@ class TreeView(QTreeView):
 
 
 	#################  EVENTS  #################
+	def updateViewFocused(self, focused):
+		if self.viewFocused == focused: return
+		self.viewFocused = focused
+		self.repaint()
+	def focusInEvent(self, evt):
+		self.updateViewFocused(True)
+	def focusOutEvent(self, evt):
+		# to do: handle context menu
+		self.updateViewFocused(False)
+
 	def testClickBranchArrow(self, evt):
 		# if self.underAnimating: return True
 		pos = evt.pos()
@@ -524,7 +562,7 @@ class TreeView(QTreeView):
 		rect = self.visualRect(index)
 		l, t, h = rect.left(), rect.top(), rect.height()
 		indentation = self.indentation()
-		branchRect = QRect(l - indentation + self.treePaddingLeft, t, indentation, h)
+		branchRect = QRect(l - indentation + self.treePaddingLeft - self.branchArrowOffset, t, indentation, h)
 		if branchRect.contains(pos):
 			recursive = evt.modifiers() == Qt.AltModifier
 			self.toggleExpand(index, recursive)
@@ -550,8 +588,8 @@ class TreeView(QTreeView):
 		super().mouseDoubleClickEvent(evt)
 
 	def mouseMoveEvent(self, evt):
-		super().mouseMoveEvent(evt)
 		self.updateHoveredIndex(self.indexAt(evt.pos()))
+		if self.dragEnabled(): super().mouseMoveEvent(evt)
 
 	def leaveEvent(self, evt):
 		super().leaveEvent(evt)
@@ -1043,7 +1081,7 @@ class TreeView(QTreeView):
 		return seq
 
 def runTreeDemo():
-	view = TreeView(QApplication.activeWindow())
+	view = TreeView()
 	view.setWindowFlags(Qt.Window)
 	model = QStandardItemModel()
 	for i in range(5):

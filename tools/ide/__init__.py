@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPalette
 from editor.common import argparse
 from editor.common.logger import log
+from editor.common.native import setDarkMode, setLightMode
 from editor.theme_manager import loadTheme, setupThemeWatcher
 from editor.editor_prefs import EditorPrefs
 from editor.main_window import MainWindow
@@ -12,21 +13,19 @@ def setupProcess():
 	system = platform.system()
 	if system == 'Windows':
 		import ctypes
-		appid = 'dear_editor.0.1'
+		appid = 'dear_editor'
 		ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
 
 	elif system == 'Darwin':
-		# required:
-		# pip3 install pyobjc-framework-Cocoa
-		try:
-			from Foundation import NSBundle
-			bundle = NSBundle.mainBundle()
-			if not bundle: return
-			app_info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
-			if app_info: app_info['CFBundleName'] = 'Dear'
-		except ImportError:
-			pass
-		pass
+		# required python package: pyobjc-framework-Cocoa
+		from Foundation import NSBundle
+		bundle = NSBundle.mainBundle()
+		app_info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
+		if app_info: app_info['CFBundleName'] = 'Dear'
+
+		# from Foundation import NSUserDefaults
+		# defaults = NSUserDefaults.standardUserDefaults()
+		# defaults.setObject_forKey_(['en'], 'AppleLanguages')
 
 
 class Ide(QApplication):
@@ -37,12 +36,17 @@ class Ide(QApplication):
 		self.setApplicationName('Dear Editor')
 		self.aboutToQuit.connect(self.onAboutToQuit)
 		EditorPrefs.connect(os.environ[ 'DEAR_PREFS_PATH' ])
-		self.setupPalette()
 
 	def setupPalette(self):
 		self.palette = self.style().standardPalette()
 		self.palette.setColor(QPalette.Highlight, '#4999FD')
 		self.setPalette(self.palette)
+
+	def setupAppearance(self, darkmode):
+		if darkmode:
+			setDarkMode()
+		else:
+			setLightMode()
 
 	def raiseWindow(self, prj, theme):
 		log('hello!')
@@ -66,14 +70,19 @@ def description():
 def main( argv ):
 	parser = argparse.ArgumentParser(prog = 'dear ide', description = description())
 	parser.add_argument('-p', '--prj', help='specify working prject path')
-	parser.add_argument('--theme', help='specify ide theme')
+	parser.add_argument('--theme', help='specify ide editor theme')
+	parser.add_argument('--darkmode', action='store_true', help='use platform dark appearance', default=False)
 	parser.add_argument('--host', action='store_true', help='start with host mode', default=False)
 	args = parser.parse_args(argv)
 
 	setupProcess()
 
-	prj = args.prj or 'none'
+	prj = args.prj
+	dark = args.darkmode
 	theme = args.theme or 'dark'
 
 	ide = Ide(argv)
+	ide.setupPalette()
+	ide.setupAppearance(dark)
 	ide.raiseWindow(prj, theme)
+

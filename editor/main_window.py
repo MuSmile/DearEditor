@@ -3,8 +3,9 @@ from PySide6.QtCore import Qt, QTimer, QEvent
 from PySide6.QtWidgets import QMainWindow
 from editor.widgets.menubar import createMenuBar
 from editor.widgets.toolbar import createToolBar
-from editor.widgets.statusbar import createMainStatusBar
+from editor.widgets.statusbar import createStatusBar
 from editor.view_manager import createDockManager, createDockView
+from editor.common.util import getIde
 import editor.views, extensions
 
 class MainWindow(QMainWindow):
@@ -15,40 +16,26 @@ class MainWindow(QMainWindow):
 
 		self.setMenuBar(createMenuBar(self))
 		self.addToolBar(createToolBar(self))
-		self.setStatusBar(createMainStatusBar(self))
+		self.setStatusBar(createStatusBar(self))
 
 		self.setupEditorViews()
-		self.setFocus()
+		self.activateWindow()
 
 
 	def setupEditorViews(self):
-		dockManager = createDockManager(self)
-		self.dockManager = dockManager
+		self.dockMgr = createDockManager(self)
 
 		dock1 = createDockView('Hierarchy')
 		dock1.addIntoEditor('right')
 
-		dock2 = createDockView('Project')
-		dock2.addIntoEditor('center')
+		dock2 = createDockView('Gallery')
+		dock2.addIntoEditor()
 
-		dock3 = createDockView('Console')
+		dock3 = createDockView('Project')
 		dock3.addIntoEditor('right')
 
 		dock4 = createDockView('Scene')
 		dock4.addIntoEditor('bottom')
-
-		# # rootarea = showEditorView('opengl', 'left')
-		# area1 = showEditorView('Imgui', 'left')
-		# area2 = showEditorView('Project', 'right')
-		# showEditorView('Inspector', 'bottom', area2)
-		# showEditorViewTabTo('Console', 'Inspector')
-		# showEditorViewTabTo('Hierarchy', 'Imgui')
-		# showEditorViewTabTo('FsmGraph', 'Imgui')
-
-		# setDockSplitterSizes(area2, [600, 600])
-		# setDockSplitterSizes(area1, [600, 600])
-
-		# setDockFocused('Hierarchy')
 
 
 	def changeEvent(self, evt):
@@ -59,7 +46,7 @@ class MainWindow(QMainWindow):
 
 		if self.windowState() & Qt.WindowMinimized:
 			self.maximizedFloatings = []
-			for f in self.dockManager.floatingWidgets():
+			for f in self.dockMgr.floatingWidgets():
 				if f.windowState() & Qt.WindowMaximized:
 					self.maximizedFloatings.append(f)
 		
@@ -77,6 +64,6 @@ class MainWindow(QMainWindow):
 
 
 	def closeEvent(self, evt):
-		for fw in self.dockManager.floatingWidgets(): fw.close()
+		for w in getIde().topLevelWidgets(): w.close()
 		super().closeEvent(evt)
 

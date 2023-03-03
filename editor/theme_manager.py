@@ -1,10 +1,10 @@
 import os, re, time, platform
-from PySide6.QtCore import QSettings, QFile, QTextStream, QTimer
-from PySide6.QtWidgets import QApplication
+from PySide6.QtCore import QSettings, QTimer
 
 from pathlib import Path
 from editor.common.logger import log
 from editor.common.file_watcher import RegexWatcher
+from editor.common.util import getIde
 
 
 _themeFolder = os.environ[ 'DEAR_THEME_PATH' ]
@@ -26,10 +26,10 @@ def _gatherStyleSheets(name):
 	return qssFiles
 
 def _parseSingleQss(srcPath, cachePath, sysParser, macroParser, urlParser):
-	srcFile = QFile(srcPath)
-	srcFile.open(QFile.ReadOnly | QFile.Text)
-	srcText = QTextStream(srcFile).readAll()
-	srcFile.close()
+	srcText = None
+	with open(srcPath, 'r') as file:
+		srcText = file.read()
+		file.close()
 
 	parsed = re.sub(r'/\*.*?\*/', '', srcText, flags = re.S)
 	parsed = re.sub(r'\n+', '\n', parsed, flags = re.S)
@@ -37,12 +37,10 @@ def _parseSingleQss(srcPath, cachePath, sysParser, macroParser, urlParser):
 	parsed = re.sub(r'&\[(.*)\]', macroParser, parsed)
 	parsed = re.sub(r'url\((.*)\)', urlParser, parsed)
 
-	cacheFile = QFile(cachePath)
-	cacheFile.open(QFile.WriteOnly | QFile.Text)
-	stream = QTextStream(cacheFile)
-	stream << parsed
-	cacheFile.close()
-	# log(f'{qss} parsed successfully!'
+	with open(cachePath, 'w') as file:
+		file.write(parsed)
+		file.close()
+		# log(f'{qss} parsed successfully!'
 
 	return parsed
 
@@ -52,11 +50,9 @@ def _mergeGeneratedQss(name):
 	mergedText = ''
 	for f in _gatherStyleSheets(name):
 		qssPath = f'{cacheDir}/{f}'
-		qssFile = QFile(qssPath)
-		qssFile.open(QFile.ReadOnly | QFile.Text)
-		qssText = QTextStream(qssFile).readAll()
-		qssFile.close()
-		mergedText += qssText
+		with open(qssPath, 'r') as file:
+			mergedText += file.read()
+			file.close()
 
 	return mergedText
 
@@ -108,8 +104,7 @@ def _onThemeModified(evt):
 	rootPath = Path(os.path.abspath(activeThemeFolder()))
 	mfilePath = Path(os.path.abspath(evt.src_path))
 	if rootPath in mfilePath.parents:
-		qApp = QApplication.instance()
-		reloadTheme = lambda: (qApp.setStyleSheet(None), loadTheme(_activeTheme))
+		reloadTheme = lambda: loadTheme(_activeTheme, True)
 		QTimer.singleShot(10, reloadTheme)
 
 	_lastModifyTime = currTime
@@ -125,16 +120,17 @@ def activeTheme():
 def activeThemeFolder():
 	return f'{_themeFolder}/{_activeTheme}'
 
-def loadTheme(name):
+def loadTheme(name, reset = False):
 	assert name in listThemes()
 	global _activeTheme
 	_activeTheme = name
 	theme = _parseTheme(name)
-	qApp = QApplication.instance()
-	qApp.setStyleSheet(theme)
+	ide = getIde()
+	if reset: ide.setStyleSheet(None)
+	ide.setStyleSheet(theme)
 
 def setupThemeWatcher():
-	global watcher
+	global watcher # to keep alive
 	ignores = ['.*__qsscache__.*', '.*img.*']
 	watcher = RegexWatcher(ignoreRegexes = ignores, onModified = _onThemeModified)
 	watcher.start(_themeFolder)
