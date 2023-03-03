@@ -247,8 +247,9 @@ class TreeItemPingOverlay(QWidget):
 			instance.stopPing()
 
 	def tickPingAnim(self):
-		delta = (time.time() - self.prevTickTime) * 1000
-		self.prevTickTime = time.time()
+		curr = time.time()
+		delta = (curr - self.prevTickTime) * 1000
+		self.prevTickTime = curr
 		self.elapsed += delta
 		
 		zoomInDuration = self._pingZoomDuration
@@ -994,8 +995,9 @@ class TreeView(QTreeView):
 		self.prevTickTime = time.time()
 
 	def _tickExpanding(self):
-		delta = (time.time() - self.prevTickTime) * 1000
-		self.prevTickTime = time.time()
+		curr = time.time()
+		delta = (curr - self.prevTickTime) * 1000
+		self.prevTickTime = curr
 		self.animElapsed += delta
 
 		k = clamp(self.animElapsed / self.customAnimDuration, 0, 1)

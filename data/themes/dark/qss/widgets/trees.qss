@@ -15,8 +15,12 @@ TreeView
 
 	qproperty-customAnimated: true;
 	qproperty-customAnimDuration: 80;
+#if Darwin
 	qproperty-customAnimTickInterval: 8;
-
+#end
+#if Windows
+	qproperty-customAnimTickInterval: 16;
+#end
 	qproperty-drawBranchLine: true;
 	qproperty-branchLineFilterDepth: 1;
 	
@@ -46,7 +50,12 @@ TreeItemPingOverlay
 	qproperty-pingZoomDuration: 100;
 	qproperty-pingIdleDuration: 2000;
 	qproperty-pingFadeDuration: 1000;
+#if Darwin
 	qproperty-pingAnimTickInterval: 10;
+#end
+#if Windows
+	qproperty-pingAnimTickInterval: 16;
+#end
 
 	qproperty-pingOutlineColor: #D7C11B;
 	qproperty-pingOutlineWidth: 2;
