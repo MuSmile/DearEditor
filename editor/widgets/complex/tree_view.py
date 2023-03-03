@@ -203,7 +203,6 @@ class TreeItemPingOverlay(QWidget):
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
 
 		treeview.installEventFilter(self)
-		self.InstanceList.append(self)
 
 	def syncTreeViewRect(self):
 		treeview = self.parent()
@@ -219,6 +218,13 @@ class TreeItemPingOverlay(QWidget):
 		self.progress = 0
 		self.index = index
 		self.state = PingAnimPhase.Idle
+
+		list = TreeItemPingOverlay.InstanceList
+		instanceCount = len(list)
+		for i in range(instanceCount):
+			instance = list[instanceCount - i - 1]
+			if (instance.index == index): instance.stopPing()
+		self.InstanceList.append(self)
 
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.tickPingAnim)

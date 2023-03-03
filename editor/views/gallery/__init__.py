@@ -1,5 +1,5 @@
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtWidgets import QApplication, QHBoxLayout, QFrame, QSplitter
+from PySide6.QtCore import Qt, QSize, QEvent
+from PySide6.QtWidgets import QApplication, QHBoxLayout, QWidget, QSplitter
 from PySide6.QtGui import QStandardItemModel, QStandardItem
 from editor.widgets.complex.tree_view import TreeView
 from editor.common.icon_cache import getThemePixmap
@@ -16,7 +16,7 @@ class GalleryView(DockView):
 		# self.layout().addLayout(layout)
 
 		tree = self.createTreeView(self)
-		placeHolder = QFrame(self)
+		placeHolder = QWidget(self)
 		placeHolder.setMinimumWidth(150)
 
 		splitter = QSplitter(self)
@@ -29,6 +29,10 @@ class GalleryView(DockView):
 
 		self.setWidget(splitter)
 		# self.layout().addWidget(splitter)
+
+		tree.installEventFilter(self)
+		self.tree = tree
+
 
 	def createTreeView(self, parent):
 		view = TreeView(parent)
@@ -45,10 +49,13 @@ class GalleryView(DockView):
 		view.setModel(model)
 		return view
 
-	def keyPressEvent(self, evt):
-		key = evt.key()
-		if key == Qt.Key_Right or key == Qt.Key_Left or key == Qt.Key_Up or key == Qt.Key_Down:
-			super().keyPressEvent(evt)
+	def eventFilter(self, obj, evt):
+		if evt.type() == QEvent.KeyPress:
+			key = evt.key()
+			if key == Qt.Key_Right or key == Qt.Key_Left or key == Qt.Key_Up or key == Qt.Key_Down:
+				self.tree.keyPressEvent(evt)
+			return True
+		return False
 
 	def minimumSizeHint(self):
 		return QSize(300, 100)

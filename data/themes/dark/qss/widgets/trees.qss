@@ -57,9 +57,9 @@ TreeItemPingOverlay
 /****************************************************/
 GalleryView TreeView
 {
-	qproperty-itemHeight: 25;
+	qproperty-itemHeight: 24;
 	qproperty-indentation: 13;
-	qproperty-treePaddingLeft: 25;
+	qproperty-treePaddingLeft: 24;
 	qproperty-branchArrowOffset: 10;
 	qproperty-branchLineFilterDepth: 10000;
 

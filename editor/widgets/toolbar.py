@@ -169,6 +169,10 @@ class _ToolBarImpl(QWidget):
 def _createToolBarImpl():
 	toolbar = _ToolBarImpl()
 
+	btnSearch = QToolButton()
+	btnSearch.setIcon(getThemeIcon('search.png'))
+	btnSearch.setFixedWidth(20)
+
 	btnBuild = IconTextToolButton('Build', 'build.png')
 	btnLayer = PopupPushButton('Layer')
 	btnLayer.addTestMenu()
@@ -182,6 +186,7 @@ def _createToolBarImpl():
 	# toolbar.addRightWidget(test)
 	toolbar.addRightWidget(btnLayer)
 	toolbar.addRightWidget(btnLayout)
+	toolbar.addRightWidget(btnSearch)
 
 	# init left widgets
 	btnViewMove = CheckableToolButton('tool_viewmove.png')

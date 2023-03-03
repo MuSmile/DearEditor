@@ -42,7 +42,7 @@ QToolBar QPushButton
 	border: none;
 	border-radius: 1px;
 	color: &[toolbar/colorLabel];
-	padding: 4px 5 3 6;
+	padding: 3px 5 4 6;
 
 	height: 15px;
 	min-width: 24px;
