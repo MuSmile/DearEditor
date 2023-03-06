@@ -1,7 +1,7 @@
 import sys, os, time
 from PySide6.QtCore import Qt, QPropertyAnimation, QPoint
 from PySide6.QtGui import QPainter, QPixmap, QBrush
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
 
 
 #############################################
@@ -35,6 +35,13 @@ def isParentOfWidget(test, wgt):
 		if p == test: return True
 		p = p.parent()
 	return False
+
+def createTestMenu(parent):
+	menu = QMenu(parent)
+	menu.addAction("Item 1")
+	menu.addAction("Item 2")
+	menu.addAction("Item 3")
+	return menu
 
 
 #############################################

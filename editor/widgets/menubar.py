@@ -4,7 +4,7 @@ from PySide6.QtGui import QAction
 from PySide6.QtWidgets import QMenuBar
 from editor.common.logger import warn
 from editor.common.util import quitApp, restartApp
-from editor.widgets.menu.menu_tree import MenuTree
+from editor.models.editor.menu_tree import MenuTree
 __system__ = platform.system()
 
 class MenuBarModel:

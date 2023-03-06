@@ -1,17 +1,13 @@
-PopupToolButton
-{
-    padding-right: 14px;
-    padding-left: -2px;
+
+QToolButton[popupMode='InstantPopup'] { /* only for MenuButtonPopup */
+    padding-right: 12px;
 }
 
-PopupToolButton::menu-button
-{
+QToolButton::menu-indicator {
     image: url(img/menu_indicator.svg);
-	border-left: 1px solid #333;
-	top: 4px;
     width: 12px;
     height: 12px;
-    padding: 2px 2 0 3;
+    margin: 0px -11 3 0
 }
 
 QToolBar

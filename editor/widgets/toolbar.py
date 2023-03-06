@@ -45,7 +45,7 @@ class PopupPushButton(QPushButton):
 		self.setObjectName('popup')
 		self.setFocusPolicy(Qt.NoFocus)
 		self.setText(text)
-		self.pressed.connect(self.showMenu)
+		# self.pressed.connect(self.showMenu)
 		# self.setPopupMode(QToolButton.MenuButtonPopup)
 
 	def addTestMenu(self):

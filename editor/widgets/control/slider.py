@@ -3,7 +3,7 @@ from enum import Enum
 from PySide6.QtCore import Qt, QRectF, QPoint, Signal, Property
 from PySide6.QtGui import QPainter, QColor, QBrush
 from PySide6.QtWidgets import QWidget
-from editor.tools.util import lerp, rangeMap
+from editor.common.math import lerp, rangeMap
 
 class SliderState(Enum):
 	Normal  = 0

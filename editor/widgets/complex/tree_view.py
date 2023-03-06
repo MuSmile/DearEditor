@@ -72,7 +72,7 @@ class TreeItemDelegate(QItemDelegate):
 			cx, cy = rect.left() + round(indentation / 2), rect.top() + round(rect.height() / 2)
 			iconSize = view.itemIconSize
 			halfSize = iconSize / 2
-			x, y = cx - halfSize, cy - halfSize
+			x, y = cx - halfSize + view.treePaddingLeft, cy - halfSize
 			painter.drawPixmap(x, y, iconSize, iconSize, decoration)
 
 		painter.drawText(rect.adjusted(textOffset, -1, 0, 0), Qt.AlignVCenter, index.data())
@@ -125,7 +125,7 @@ class TreeItemDelegate(QItemDelegate):
 
 
 class PingAnimPhase(Enum):
-	ZoomIn  = 1
+	ZoomIn  = 0
 	ZoomOut = 2
 	Idle    = 3
 	Fade    = 4
@@ -292,8 +292,9 @@ class TreeItemPingOverlay(QWidget):
 		option = QStyleOption()
 		option.initFrom(self)
 		fm = option.fontMetrics
-		width = option.fontMetrics.boundingRect(index.data()).width() + view.treePaddingLeft * 2
-		if index.data(Qt.DecorationRole): width += view.indentation() + view.itemPaddingLeft + round((view.itemHeight - view.itemIconSize) / 2)
+		tp, ip = view.treePaddingLeft, view.itemPaddingLeft
+		width = option.fontMetrics.boundingRect(index.data()).width() + tp * 2
+		if index.data(Qt.DecorationRole): width += view.indentation() + ip + round((view.itemHeight - view.itemIconSize) / 2)
 		rect.setWidth(width)
 
 		zoom = None
@@ -315,7 +316,7 @@ class TreeItemPingOverlay(QWidget):
 		bgColor = alternate and view.background or view.backgroundAlternate
 		painter.setBrush(bgColor)
 		painter.setPen(self._pingOutlinePen)
-		painter.drawRoundedRect(rect.adjusted(-10, 0, 10, 0), self._pingOutlineRound, self._pingOutlineRound)
+		painter.drawRoundedRect(rect.adjusted(-12 + tp, 0, 12 - tp, 0), self._pingOutlineRound, self._pingOutlineRound)
 
 		painter.setPen(pen)
 		delegate = view.itemDelegate(index)
@@ -564,7 +565,7 @@ class TreeView(QTreeView):
 		# to do: handle context menu
 		self.updateViewFocused(False)
 
-	def testClickBranchArrow(self, evt):
+	def testClickBranchArrow(self, evt, doubleClick):
 		# if self.underAnimating: return True
 		pos = evt.pos()
 		index = self.indexAt(pos)
@@ -578,9 +579,19 @@ class TreeView(QTreeView):
 			self.toggleExpand(index, recursive)
 			return True
 
+		if pos.x() < l + self.treePaddingLeft:
+			newPos = QPointF(l, pos.y())
+			newPosGlobal = self.mapToGlobal(newPos)
+			newEvt = QMouseEvent(evt.type(), newPos, newPosGlobal, evt.button(), evt.buttons(), evt.modifiers())
+			if doubleClick:
+				super().mouseDoubleClickEvent(newEvt)
+			else:
+				super().mousePressEvent(newEvt)
+			return True
+
 	def mousePressEvent(self, evt):
 		TreeItemPingOverlay.stopAll()
-		if self.testClickBranchArrow(evt): return
+		if self.testClickBranchArrow(evt, False): return
 		super().mousePressEvent(evt)
 
 	def mouseReleaseEvent(self, evt):
@@ -594,7 +605,7 @@ class TreeView(QTreeView):
 		super().mouseReleaseEvent(evt)
 
 	def mouseDoubleClickEvent(self, evt):
-		if self.testClickBranchArrow(evt): return
+		if self.testClickBranchArrow(evt, True): return
 		super().mouseDoubleClickEvent(evt)
 
 	def mouseMoveEvent(self, evt):

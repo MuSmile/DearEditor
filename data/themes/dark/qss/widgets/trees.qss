@@ -3,7 +3,7 @@ TreeView
 	background: #444;
 	color: #fff;
 	
-	qproperty-treePaddingLeft: 2;
+	qproperty-treePaddingLeft: 22;
 	qproperty-itemPaddingLeft: 2;
 	qproperty-itemIconSize: 16;
 	qproperty-itemHeight: 20;
