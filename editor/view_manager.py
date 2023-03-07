@@ -151,7 +151,8 @@ def createDockManager(mainWin):
 	CDockManager.setConfigFlag(CDockManager.AlwaysShowTabs, True)
 	CDockManager.setConfigFlag(CDockManager.FocusHighlighting, True)
 	CDockManager.setConfigFlag(CDockManager.MiddleMouseButtonClosesTab, True)
-	
+	CDockManager.setConfigFlag(CDockManager.DragPreviewShowsContentPixmap, False)
+
 	if platform.system() == 'Darwin':
 		CDockManager.setConfigFlag(CDockManager.AllMenusHaveCustomStyle, True)
 

@@ -19,9 +19,15 @@ ads--CDockAreaTitleBar QToolButton
     border: none;
     border-radius: 0px;
     width: 12px;
-    height: 16px;
-	margin-bottom: 1px;
-	margin-top: 1px;
+    height: 22px;
+    margin: 1px 0 1 0;
+	padding: 0px;
+	/*padding: 2px 0 2 0;*/
+}
+
+ads--CDockAreaTitleBar QToolButton[popupMode='InstantPopup']
+{
+    padding: 0px;
 }
 
 #tabsMenuButton
@@ -92,16 +98,11 @@ QScrollArea#dockWidgetScrollArea
 	border: none;
 }
 
-ads--CDockAreaTitleBar > QFrame QWidget
-{
-	background-color: &[Palette/bgDeactive];
-}
-
 ads--CDockWidgetTab
 {
     background: &[Palette/bgDeactive];
-    border: none;
     padding: 0px 2px 1px 2px;
+	qproperty-iconSize: 16px;
 }
 
 ads--CDockWidgetTab[hasIcon="true"]
@@ -116,16 +117,10 @@ ads--CDockWidgetTab[activeTab="true"]
     border-top-right-radius: 0px;
 }
 
-ads--CDockWidgetTab[activeTab="true"] > QFrame
-{
-    background: none;
-}
-
 /*ads--CDockWidgetTab[activeTab="true"] QLabel
 {
     color: &[Palette/labelColor];
     border: 1px solid rgb(255, 145, 0);
-	border-radius: 26px;
 }*/
 
 ads--CDockWidgetTab[focused="true"]
@@ -138,11 +133,6 @@ ads--CDockWidget
 {
     background: &[Palette/bgActive];
     border: none;
-}
-ads--CDockWidget QFrame
-{
-	color: #ccc;
-	background-color: &[Palette/bgActive];
 }
 
 /*ads--CDockOverlayCross

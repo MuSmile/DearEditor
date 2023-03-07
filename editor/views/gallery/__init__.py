@@ -55,9 +55,8 @@ class GalleryView(DockView):
 	def createTestPreview(self):
 		area = QScrollArea(self)
 		area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-		area.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+		area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		area.setWidgetResizable(True)
-		# area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
 		preview = QWidget(self)
 

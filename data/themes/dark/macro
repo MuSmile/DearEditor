@@ -1,6 +1,6 @@
 [Font]
-sizeNormal = 13px
-sizeMenuBar = 13px
+sizeNormal = 12px
+sizeMenuBar = 12px
 sizeMenuItem = 12px
 familyNormal = consolas
 

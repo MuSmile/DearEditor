@@ -194,7 +194,7 @@ class TreeItemPingOverlay(QWidget):
 		self._pingIdleDuration = 2000
 		self._pingFadeDuration = 1000
 		self._pingZoomScale = 1.5
-		self._pingAnimTickInterval = 10
+		self._pingAnimTickInterval = 16
 		self._pingOutlinePen = QPen(QColor('#D7C11B'), 2)
 		self._pingOutlineRound = 6
 
@@ -286,7 +286,7 @@ class TreeItemPingOverlay(QWidget):
 
 		rect = view.visualRect(index)
 		painter = QPainter()
-		painter.begin(self) 
+		painter.begin(self)
 		painter.setRenderHints(QPainter.Antialiasing, True)
 
 		option = QStyleOption()
@@ -504,7 +504,7 @@ class TreeView(QTreeView):
 		self._branchArrowOffset = 0
 		self._customAnimated = True
 		self._customAnimDuration = 120
-		self._customAnimTickInterval = 10
+		self._customAnimTickInterval = 16
 		self._dropIndicatorMargin = 5
 		self._itemHeight = 20
 		self._drawBranchLine = True
