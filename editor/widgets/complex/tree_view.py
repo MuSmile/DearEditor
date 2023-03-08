@@ -22,13 +22,11 @@ class TreeItemDelegate(QItemDelegate):
 
 	def updateEditorGeometry(self, editor, option, index):
 		view = self.view
-		x = option.rect.x() + view.treePaddingLeft + view.itemPaddingLeft
-		decoration = index.data(Qt.DecorationRole)
-		if decoration:
-			option.rect.setLeft(x + view.indentation() - 29)
-		else:
-			option.rect.setLeft(x - 5)
-		super().updateEditorGeometry(editor, option, index)
+		rect = view.visualRect(index)
+		left = rect.x() + view.treePaddingLeft
+		if index.data(Qt.DecorationRole): left += view.indentation() + view.itemPaddingLeft
+		rect.setLeft(left - 3)
+		editor.setGeometry(rect)
 
 	def paint(self, painter, option, index):
 		painter.setRenderHint(QPainter.Antialiasing, True)
