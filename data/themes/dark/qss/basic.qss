@@ -31,21 +31,29 @@ QToolTip
 QLineEdit
 {
 	background: #555;
-	border: 1px solid #333;
+	border: 1px solid #555;
 	border-radius: 2px;
 	padding-right: 2px;
 	padding-left: 2px;
 	height: 18px;
 	font-size: 12px;
 	color: #eee;
+	selection-background-color: #36a;
 }
+/*QLineEdit[text='']
+{
+	color: gray;
+}*/
 QLineEdit:hover
 {
-	border: 1px solid #222;
+	border: 1px solid #777;
 }
 QLineEdit:focus
 {
 	border: 1px solid #5ae;
+}
+QLineEdit:read-only {
+    background: lightblue;
 }
 
 SearchField
@@ -190,7 +198,7 @@ QSplitter::handle:vertical
 }
 
 QScrollArea { background: transparent; }
-QScrollArea > QWidget > QWidget { background: transparent; }
+QScrollArea > #qt_scrollarea_viewport > QWidget { background: #444; }
 
 /*QGraphicsView
 {

@@ -168,6 +168,8 @@ def createDockManager(mainWin):
 	def focusedDockWidgetChanged(old, now):
 		focused = getIde().focusWidget()
 		if not isParentOfWidget(now, focused): now.setFocus()
+		if now.dockContainer().isFloating(): now.window().setWindowTitle(now.tabWidget().text())
+
 	_dockManager.focusedDockWidgetChanged.connect(focusedDockWidgetChanged)
 	
 	return _dockManager

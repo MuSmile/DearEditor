@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt
 
 __system__ = platform.system()
 
-def setDarkMode():
+def setDarkAppearance():
 	if __system__ == 'Windows':
 		pass
 
@@ -12,7 +12,7 @@ def setDarkMode():
 		appearance = NSAppearance.appearanceNamed_('NSAppearanceNameVibrantDark')
 		NSApp.setAppearance_(appearance)
 
-def setLightMode():
+def setLightAppearance():
 	if __system__ == 'Windows':
 		pass
 
@@ -22,7 +22,7 @@ def setLightMode():
 		NSApp.setAppearance_(appearance)
 
 
-# def setDarkModeToWindow(widget):
+# def setDarkAppearanceForWindow(widget):
 # 	if __system__ == 'Windows':
 # 		pass
 
@@ -45,7 +45,7 @@ def setLightMode():
 # 		appearance = NSAppearance.appearanceNamed_('NSAppearanceNameVibrantDark')
 # 		window.setAppearance_(appearance)
 
-# def setLightModeToWindow(widget):
+# def setLightAppearanceForWindow(widget):
 # 	if __system__ == 'Windows':
 # 		pass
 

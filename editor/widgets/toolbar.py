@@ -14,7 +14,7 @@ class IconTextToolButton(QPushButton):
 	def __init__(self, text, icon):
 		super().__init__()
 
-		self.setCheckable(True)
+		# self.setCheckable(True)
 		self.setFocusPolicy(Qt.NoFocus)
 		self.setIcon(getThemeIcon(icon))
 		self.setText(text)

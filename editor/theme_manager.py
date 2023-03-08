@@ -124,10 +124,13 @@ def loadTheme(name, reset = False):
 	assert name in listThemes()
 	global _activeTheme
 	_activeTheme = name
-	theme = _parseTheme(name)
+
+	initScript = f'{_themeFolder}/{name}/init.py'
+	if os.path.exists(initScript): exec(open(initScript).read())
+
 	ide = getIde()
 	if reset: ide.setStyleSheet(None)
-	ide.setStyleSheet(theme)
+	ide.setStyleSheet(_parseTheme(name))
 
 def setupThemeWatcher():
 	global watcher # to keep alive

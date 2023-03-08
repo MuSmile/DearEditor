@@ -4,7 +4,6 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPalette
 from editor.common import argparse
 from editor.common.logger import log
-from editor.common.native import setDarkMode, setLightMode
 from editor.theme_manager import loadTheme, setupThemeWatcher
 from editor.editor_prefs import EditorPrefs
 from editor.main_window import MainWindow
@@ -42,12 +41,6 @@ class Ide(QApplication):
 		self.palette.setColor(QPalette.Highlight, '#4999FD')
 		self.setPalette(self.palette)
 
-	def setupAppearance(self, darkmode):
-		if darkmode:
-			setDarkMode()
-		else:
-			setLightMode()
-
 	def raiseWindow(self, prj, theme):
 		log('hello!')
 		loadTheme(theme)
@@ -71,18 +64,15 @@ def main( argv ):
 	parser = argparse.ArgumentParser(prog = 'dear ide', description = description())
 	parser.add_argument('-p', '--prj', help='specify working prject path')
 	parser.add_argument('--theme', help='specify ide editor theme')
-	parser.add_argument('--darkmode', action='store_true', help='use platform dark appearance', default=False)
 	parser.add_argument('--host', action='store_true', help='start with host mode', default=False)
 	args = parser.parse_args(argv)
 
 	setupProcess()
 
-	prj = args.prj
-	dark = args.darkmode
+	prj = args.prj or None
 	theme = args.theme or 'dark'
 
 	ide = Ide(argv)
 	ide.setupPalette()
-	ide.setupAppearance(dark)
 	ide.raiseWindow(prj, theme)
 
