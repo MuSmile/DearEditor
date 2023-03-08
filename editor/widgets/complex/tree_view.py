@@ -20,10 +20,15 @@ class TreeItemDelegate(QItemDelegate):
 		if h == None: h = self.view.itemHeight
 		return QSize(w, h)
 
-	# def createEditor(self, parent, option, index):
-	# 	w = super().createEditor(parent, option, index)
-	# 	QTimer.singleShot(1, lambda: w.move(option.rect.x() + 22, w.pos().y()))
-	# 	return w
+	def updateEditorGeometry(self, editor, option, index):
+		view = self.view
+		x = option.rect.x() + view.treePaddingLeft + view.itemPaddingLeft
+		decoration = index.data(Qt.DecorationRole)
+		if decoration:
+			option.rect.setLeft(x + view.indentation() - 29)
+		else:
+			option.rect.setLeft(x - 5)
+		super().updateEditorGeometry(editor, option, index)
 
 	def paint(self, painter, option, index):
 		painter.setRenderHint(QPainter.Antialiasing, True)

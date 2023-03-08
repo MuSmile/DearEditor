@@ -38,6 +38,22 @@ TreeView
 	min-width: 200px;
 }
 
+
+
+TreeView > #qt_scrollarea_viewport > QLineEdit
+{
+	background: #555;
+	border: 1px solid #555;
+	border-radius: 0px;
+	padding-left: 0px;
+	color: #eee;
+}
+TreeView > #qt_scrollarea_viewport > QLineEdit:focus
+{
+	border: 1px solid #5af;
+}
+
+
 TreeItemPingOverlay
 {
 	color: #eee;
