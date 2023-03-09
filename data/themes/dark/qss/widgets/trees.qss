@@ -93,6 +93,10 @@ TreeStackedWidget > TreeView
 	min-width: 140px;
 }
 
+TreeStackedWidget > QStackedWidget
+{
+	min-width: 300px;
+}
 TreeStackedWidget > QStackedWidget > QWidget#empty
 {
 	background: #444;
@@ -101,7 +105,18 @@ TreeStackedWidget > QStackedWidget > QWidget#empty
 TreeStackedWidget::handle:horizontal
 {
 	background-color: #333;
-	width: 1px;
+	width: 2px;
+}
+TreeStackedWidget::handle:vertical
+{
+	background-color: #333;
+	height: 2px;
+}
+
+GalleryView > #searchbar
+{
+	background-color: none;
+	border-bottom: 1px solid #333;
 }
 
 /*TreeItemEditor:focus

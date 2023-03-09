@@ -1,17 +1,17 @@
 from PySide6.QtCore import Qt, QRect, Property
 from PySide6.QtGui import QGuiApplication, QCursor, QPixmap, QPainter, QPen, QColor
 from PySide6.QtWidgets import QLineEdit
-from editor.tools.icon_cache import getThemePixmap
+from editor.common.icon_cache import getThemePixmap
 
-class SearchField(QLineEdit):
-	def __init__(self,  parent=None):
+class SearchEdit(QLineEdit):
+	def __init__(self, parent=None):
 		super().__init__(parent)
 
 		self._pixmapSearch = getThemePixmap('search.png')
 		# self._pixmapClear  = getThemePixmap('close.png')
 
-		self.margin = 4
-		self.setContentsMargins(self.margin, 0, self.margin, 0)
+		self.margin = 0
+		# self.setContentsMargins(self.margin, 0, self.margin, 0)
 		self.textChanged.connect(self.onTextChange)
 		self.returnPressed.connect(self.clearFocus)
 

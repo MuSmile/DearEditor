@@ -5,6 +5,7 @@ from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.control.slider import Slider
 from editor.widgets.control.line_edit import LineEdit
+from editor.widgets.control.search_edit import SearchEdit
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
 from editor.common.util import createTestMenu
@@ -15,13 +16,29 @@ from editor.view_manager import DockView, dockView
 class GalleryView(DockView):
 	def __init__(self, parent, **data):
 		super().__init__(parent, **data)
-		wgt = TreeStackedWidget(self)
 
-		wgt.addStackedWidget('Basic/Button', self.createButtonPreview())
-		wgt.addStackedWidget('Basic/CheckBox', self.createCheckBoxPreview())
-		wgt.addStackedWidget('LineEdit', self.createLineEditPreview())
-		wgt.addStackedWidget('Slider', self.createSliderPreview())
-		self.setWidget(wgt)
+		layout = QVBoxLayout()
+		self.layout().addLayout(layout)
+
+		searchbar = QWidget(self)
+		searchbar.setFixedHeight(25)
+		searchbar.setObjectName('searchbar')
+		searchbarLayout = QHBoxLayout(searchbar)
+		searchbarLayout.setContentsMargins(0, 2, 2, 4)
+		searchbarLayout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
+		layout.addWidget(searchbar)
+
+		searchEdit = SearchEdit(self)
+		searchEdit.setFixedWidth(300)
+		searchbarLayout.addWidget(searchEdit)
+
+		treeStacked = TreeStackedWidget(self)
+		treeStacked.addStackedWidget('Basic/Button', self.createButtonPreview())
+		treeStacked.addStackedWidget('Basic/CheckBox', self.createCheckBoxPreview())
+		treeStacked.addStackedWidget('LineEdit', self.createLineEditPreview())
+		treeStacked.addStackedWidget('Slider', self.createSliderPreview())
+		treeStacked.tree.expandAll()
+		layout.addWidget(treeStacked)
 
 	def createButtonPreview(self):
 		preview = QWidget(self)
@@ -206,6 +223,21 @@ class GalleryView(DockView):
 		comboBoxLayout.addWidget(lineEdit1)
 		comboBoxLayout.addWidget(lineEdit2)
 		layout.addLayout(comboBoxLayout)
+
+
+		#############  SEARCH  #############
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('SearchEdit'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		searchEditLayout = QHBoxLayout()
+		searchEditLayout.setSpacing(20)
+		searchEditLayout.setAlignment(Qt.AlignLeft)
+
+		searchEdit = SearchEdit()
+
+		searchEditLayout.addWidget(searchEdit)
+		layout.addLayout(searchEditLayout)
 
 
 		#############  KEYSEQ  #############
