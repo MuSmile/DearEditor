@@ -30,8 +30,8 @@ QToolTip
 
 QLineEdit
 {
-	background: #555;
-	border: 1px solid #555;
+	background: #333;
+	border: 1px solid #222;
 	border-radius: 2px;
 	padding-right: 2px;
 	padding-left: 2px;
@@ -40,10 +40,11 @@ QLineEdit
 	color: #eee;
 	selection-background-color: #36a;
 }
-/*QLineEdit[text='']
+LineEdit[text='']
 {
-	color: gray;
-}*/
+	font-size: 11px;
+	color: #999;
+}
 QLineEdit:hover
 {
 	border: 1px solid #777;
@@ -197,7 +198,7 @@ QSplitter::handle:vertical
 	height: 3px;
 }
 
-QScrollArea { background: transparent; }
+QScrollArea { background: #444; }
 QScrollArea > #qt_scrollarea_viewport > QWidget { background: #444; }
 
 /*QGraphicsView

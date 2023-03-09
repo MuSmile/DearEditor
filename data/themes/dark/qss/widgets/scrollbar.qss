@@ -4,6 +4,10 @@ QScrollBar
 	background-color: &[scrollbar/colorBg];
 }
 
+QAbstractScrollArea::corner {
+    background: &[scrollbar/colorBg];
+}
+
 QScrollBar::add-page, QScrollBar::sub-page
 {
 	background: none;

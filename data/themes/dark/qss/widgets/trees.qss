@@ -39,7 +39,6 @@ TreeView
 }
 
 
-
 TreeView > #qt_scrollarea_viewport > QLineEdit
 {
 	background: #555;
@@ -75,7 +74,7 @@ TreeItemPingOverlay
 
 
 /****************************************************/
-GalleryView TreeView
+TreeStackedWidget > TreeView
 {
 	qproperty-itemHeight: 24;
 	qproperty-indentation: 13;
@@ -94,7 +93,12 @@ GalleryView TreeView
 	min-width: 140px;
 }
 
-GalleryView QSplitter::handle:horizontal
+TreeStackedWidget > QStackedWidget > QWidget#empty
+{
+	background: #444;
+}
+
+TreeStackedWidget::handle:horizontal
 {
 	background-color: #333;
 	width: 1px;

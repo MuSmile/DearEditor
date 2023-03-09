@@ -2,7 +2,9 @@ from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from editor.widgets.complex.tree_view import TreeView
+from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.control.slider import Slider
+from editor.widgets.control.line_edit import LineEdit
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
 from editor.common.util import createTestMenu
@@ -13,51 +15,15 @@ from editor.view_manager import DockView, dockView
 class GalleryView(DockView):
 	def __init__(self, parent, **data):
 		super().__init__(parent, **data)
+		wgt = TreeStackedWidget(self)
 
-		# layout = QHBoxLayout()
-		# layout.setAlignment(Qt.AlignTop)
-		# self.layout().addLayout(layout)
+		wgt.addStackedWidget('Basic/Button', self.createButtonPreview())
+		wgt.addStackedWidget('Basic/CheckBox', self.createCheckBoxPreview())
+		wgt.addStackedWidget('LineEdit', self.createLineEditPreview())
+		wgt.addStackedWidget('Slider', self.createSliderPreview())
+		self.setWidget(wgt)
 
-		tree = self.createTreeView()
-		preview = self.createTestPreview()
-		preview.setMinimumWidth(150)
-
-		splitter = QSplitter(self)
-		splitter.addWidget(tree)
-		splitter.addWidget(preview)
-		splitter.setOrientation(Qt.Horizontal)
-		splitter.setChildrenCollapsible(False)
-		splitter.setStretchFactor(0, 1)
-		splitter.setStretchFactor(1, 3)
-
-		self.setWidget(splitter)
-		# self.layout().addWidget(splitter)
-
-		tree.installEventFilter(self)
-		self.tree = tree
-
-
-	def createTreeView(self):
-		view = TreeView(self)
-		# view.setWindowFlags(Qt.Window)
-		model = QStandardItemModel()
-		for i in range(5):
-			n = QStandardItem(f'Item_{i}')
-			model.appendRow(n)
-			for j in range(4):
-				c = QStandardItem(f'Child_{j}')
-				n.appendRow(c)
-
-		# model.dataChanged.connect(lambda i1, i2, r: print(r))
-		view.setModel(model)
-		return view
-
-	def createTestPreview(self):
-		area = QScrollArea(self)
-		area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-		area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		area.setWidgetResizable(True)
-
+	def createButtonPreview(self):
 		preview = QWidget(self)
 
 		layout = QVBoxLayout()
@@ -154,8 +120,18 @@ class GalleryView(DockView):
 		layout.addLayout(toolBtnLayout)
 
 
+		return preview
+	def createCheckBoxPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
 		#############  CHECKBOX  #############
-		layout.addSpacing(20)
 		layout.addWidget(QLabel('CheckBox and RadioButton'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -204,9 +180,18 @@ class GalleryView(DockView):
 		comboBoxLayout.addWidget(spinBox2)
 		layout.addLayout(comboBoxLayout)
 
+		return preview
+	def createLineEditPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
 
 		#############  LINEEDIT  #############
-		layout.addSpacing(20)
 		layout.addWidget(QLabel('LineEdit'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -215,7 +200,7 @@ class GalleryView(DockView):
 		comboBoxLayout.setAlignment(Qt.AlignLeft)
 
 		lineEdit1 = QLineEdit()
-		lineEdit2 = QLineEdit()
+		lineEdit2 = LineEdit()
 		lineEdit2.setPlaceholderText('placeholder')
 
 		comboBoxLayout.addWidget(lineEdit1)
@@ -237,9 +222,18 @@ class GalleryView(DockView):
 		keySeqLayout.addWidget(keySeq)
 		layout.addLayout(keySeqLayout)
 
+		return preview
+	def createSliderPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
 
 		#############  RPOGRESSBAR  #############
-		layout.addSpacing(20)
 		layout.addWidget(QLabel('ProgressBar'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -276,17 +270,7 @@ class GalleryView(DockView):
 		sliderLayout.addWidget(slider2)
 		layout.addLayout(sliderLayout)
 
-		area.setWidget(preview)
-		return area
-		# return preview
-
-	def eventFilter(self, obj, evt):
-		if evt.type() == QEvent.KeyPress:
-			key = evt.key()
-			if key == Qt.Key_Right or key == Qt.Key_Left or key == Qt.Key_Up or key == Qt.Key_Down:
-				self.tree.keyPressEvent(evt)
-			return True
-		return False
+		return preview
 
 	def minimumSizeHint(self):
 		return QSize(300, 100)
