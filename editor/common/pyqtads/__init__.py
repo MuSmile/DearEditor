@@ -36,18 +36,9 @@ elif _sys == 'Darwin':
 os.chdir(_cwd)
 
 
-CDockWidget               =   ads.CDockWidget
-CDockManager              =   ads.CDockManager
-DockWidgetArea            =   ads.DockWidgetArea
-SideBarLocation           =   ads.SideBarLocation
-TitleBarButton            =   ads.TitleBarButton
-
-
 ####################### export #######################
-__all__ = [
-	'CDockWidget'            ,
-	'CDockManager'           ,
-	'DockWidgetArea'         ,
-	'SideBarLocation'        ,
-	'TitleBarButton'         ,
-]
+CDockWidget      =   ads.CDockWidget
+CDockManager     =   ads.CDockManager
+DockWidgetArea   =   ads.DockWidgetArea
+SideBarLocation  =   ads.SideBarLocation
+TitleBarButton   =   ads.TitleBarButton

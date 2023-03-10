@@ -1,8 +1,7 @@
-import os, sys, platform
+import os, sys, platform, argparse
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPalette
-from editor.common import argparse
 from editor.common.logger import log, ilog
 from editor.theme_manager import loadTheme, setupThemeWatcher
 from editor.editor_prefs import EditorPrefs

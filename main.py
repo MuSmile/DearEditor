@@ -45,7 +45,7 @@ def setupEnvironment():
 
 def listEditorTool():
 	tooldir = os.environ[ 'DEAR_BASE_PATH' ] + '/tools'
-	return [ f.name for f in os.scandir(tooldir) if f.is_dir() ]
+	return [ f.name for f in os.scandir(tooldir) if f.is_dir() and f.name != '__pycache__' ]
 
 def loadEditorTool(name):
 	# log(f'loading tool <{name}>')

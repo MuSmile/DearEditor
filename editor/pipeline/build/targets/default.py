@@ -1,4 +1,4 @@
-from editor.common.pipeline import Pipeline
+from editor.pipeline.core import Pipeline
 
 buildPipeline = Pipeline('prebuild', 'build', 'postbuild')
 

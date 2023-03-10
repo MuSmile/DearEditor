@@ -1,5 +1,4 @@
-import os
-from editor.common import argparse
+import os, argparse
 
 ignoreFolder = [
 	'__pycache__',

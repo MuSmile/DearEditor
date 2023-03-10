@@ -1,4 +1,4 @@
-from editor.common import argparse
+import argparse
 
 def hello():
 	# generated from:
