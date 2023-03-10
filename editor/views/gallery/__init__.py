@@ -3,9 +3,12 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
-from editor.widgets.control.slider import Slider
-from editor.widgets.control.line_edit import LineEdit
-from editor.widgets.control.search_edit import SearchEdit
+from editor.widgets.basic.slider import RangeSlider
+from editor.widgets.basic.line_edit import LineEdit
+from editor.widgets.basic.search_edit import SearchEdit
+from editor.widgets.container.collapsible import CollapsibleWidget
+from editor.widgets.container.sliding_stacked import SlidingStackedWidget
+from editor.widgets.misc.waiting_spinner import WaitingSpinner
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
 from editor.common.util import createTestMenu
@@ -35,8 +38,11 @@ class GalleryView(DockView):
 		treeStacked = TreeStackedWidget(self)
 		treeStacked.addStackedWidget('Basic/Button', self.createButtonPreview())
 		treeStacked.addStackedWidget('Basic/CheckBox', self.createCheckBoxPreview())
-		treeStacked.addStackedWidget('LineEdit', self.createLineEditPreview())
-		treeStacked.addStackedWidget('Slider', self.createSliderPreview())
+		treeStacked.addStackedWidget('Basic/LineEdit', self.createLineEditPreview())
+		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
+		treeStacked.addStackedWidget('Container/Collapsible', self.createCollapsiblePreview())
+		treeStacked.addStackedWidget('Container/SlidingStacked', self.createSlidingStackedPreview())
+		treeStacked.addStackedWidget('Misc/WaitingSpinner', self.createWaitingSpinnerPreview())
 		treeStacked.tree.expandAll()
 		layout.addWidget(treeStacked)
 
@@ -89,7 +95,6 @@ class GalleryView(DockView):
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
 		toolBtnLayout = QHBoxLayout()
-		# toolBtnLayout.setSpacing(5)
 		toolBtnLayout.setAlignment(Qt.AlignLeft)
 
 		toolBtn1 = QToolButton()
@@ -157,15 +162,23 @@ class GalleryView(DockView):
 		checkBoxLayout.setAlignment(Qt.AlignLeft)
 
 		checkBox1 = QCheckBox('normal')
+		checkBox1.setFocusPolicy(Qt.StrongFocus)
 		checkBox2 = QCheckBox('icon')
+		checkBox2.setTristate(True)
 		checkBox2.setIcon(getThemeIcon('project.png'))
+		checkBox2.setFocusPolicy(Qt.StrongFocus)
+		checkBox3 = QCheckBox()
+		checkBox3.setFocusPolicy(Qt.StrongFocus)
 
 		radioBtn1 = QRadioButton('normal')
+		radioBtn1.setFocusPolicy(Qt.StrongFocus)
 		radioBtn2 = QRadioButton('icon')
 		radioBtn2.setIcon(getThemeIcon('project.png'))
+		radioBtn2.setFocusPolicy(Qt.StrongFocus)
 
 		checkBoxLayout.addWidget(checkBox1)
 		checkBoxLayout.addWidget(checkBox2)
+		checkBoxLayout.addWidget(checkBox3)
 
 		checkBoxLayout.addWidget(radioBtn1)
 		checkBoxLayout.addWidget(radioBtn2)
@@ -275,8 +288,13 @@ class GalleryView(DockView):
 
 		progressBar = QProgressBar()
 		progressBar.setValue(30)
+		progressBar.setObjectName('test')
+		progressBar2 = QProgressBar()
+		progressBar2.setValue(30)
+
 
 		comboBoxLayout.addWidget(progressBar)
+		comboBoxLayout.addWidget(progressBar2)
 		layout.addLayout(comboBoxLayout)
 
 
@@ -290,17 +308,135 @@ class GalleryView(DockView):
 		sliderLayout.setAlignment(Qt.AlignLeft)
 
 		slider1 = QSlider(Qt.Horizontal)
-		slider1.setMinimum(10)
-		slider1.setMaximum(50)
-		slider1.setSingleStep(3) 
+		slider1.setMinimum(0)
+		slider1.setMaximum(100)
+		slider1.setSingleStep(1) 
 		slider1.setFixedWidth(100)
 		slider1.setValue(20)
-		slider2 = Slider()
+		slider1.sliderMoved.connect(lambda v: progressBar.setValue(v))
+		slider1.setFocusPolicy(Qt.StrongFocus)
+		slider2 = RangeSlider(Qt.Horizontal)
+		slider2.setMinimumHeight(30)
+		slider2.setMinimum(0)
+		slider2.setMaximum(255)
+		slider2.setLow(15)
+		slider2.setHigh(35)
+		slider2.setTickPosition(QSlider.TicksBelow)
 		slider2.setFixedWidth(100)
 
 		sliderLayout.addWidget(slider1)
 		sliderLayout.addWidget(slider2)
 		layout.addLayout(sliderLayout)
+
+		return preview
+	def createCollapsiblePreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('Collapsible'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		tmpLayout = QHBoxLayout()
+		tmpLayout.setSpacing(20)
+		tmpLayout.setAlignment(Qt.AlignLeft)
+
+		wgt = CollapsibleWidget()
+
+		tmpLayout.addWidget(wgt)
+		layout.addLayout(tmpLayout)
+
+
+		return preview
+	def createSlidingStackedPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('SlidingStacked'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		tmpLayout = QHBoxLayout()
+		tmpLayout.setSpacing(20)
+		tmpLayout.setAlignment(Qt.AlignLeft)
+
+		ssw = SlidingStackedWidget()
+
+		w1 = QPushButton('Page 1')
+		w2 = QPushButton('Page 2')
+		w3 = QPushButton('Page 3')
+		w1.setStyleSheet("background-color: blue ; border: 0; font-size: 24px; color: white;")
+		w2.setStyleSheet("background-color: green; border: 0; font-size: 24px; color: white;")
+		w3.setStyleSheet("background-color: gray ; border: 0; font-size: 24px; color: white;")
+		ssw.addWidget(w1)
+		ssw.addWidget(w2)
+		ssw.addWidget(w3)
+		w2.setFixedHeight(100)
+		# ssw.vertical = True
+		ssw.wrap = True
+
+		btn1 = QPushButton('Prev')
+		btn1.clicked.connect(ssw.slideInPrev)
+
+		btn2 = QPushButton('Next')
+		btn2.clicked.connect(ssw.slideInNext)
+
+		btnLayout = QHBoxLayout()
+		btnLayout.addWidget(btn1)
+		btnLayout.addWidget(btn2)
+
+		tmpLayout.addWidget(ssw)
+		
+		layout.addLayout(btnLayout)
+		layout.addLayout(tmpLayout)
+
+
+		return preview
+	def createWaitingSpinnerPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('WaitingSpinner'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		spinnerLayout = QHBoxLayout()
+		spinnerLayout.setSpacing(50)
+		spinnerLayout.setAlignment(Qt.AlignLeft)
+
+		ws1 = WaitingSpinner()
+		ws2 = WaitingSpinner(clockwise = False)
+		ws3 = WaitingSpinner(color = QColor(50, 120, 200), clockwise = False)
+
+		ws1.setFixedSize(50, 50)
+		ws2.setFixedSize(50, 50)
+		ws3.setFixedSize(50, 50)
+
+		spinnerLayout.addWidget(ws1)
+		spinnerLayout.addWidget(ws2)
+		spinnerLayout.addWidget(ws3)
+		
+		layout.addLayout(spinnerLayout)
+
 
 		return preview
 

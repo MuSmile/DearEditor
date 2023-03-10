@@ -3,12 +3,23 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPalette
 from editor.common import argparse
-from editor.common.logger import log
+from editor.common.logger import log, ilog
 from editor.theme_manager import loadTheme, setupThemeWatcher
 from editor.editor_prefs import EditorPrefs
 from editor.main_window import MainWindow
 
-def setupProcess():
+
+###################################################################
+def enableStdout(enabled):
+	if enabled:
+		sys.stdout = sys.__stdout__
+		sys.stderr = sys.__stderr__
+	else:
+		devnull = open(os.devnull, 'w')
+		sys.stdout = devnull
+		sys.stderr = devnull
+
+def setupBundleInfo():
 	system = platform.system()
 	if system == 'Windows':
 		import ctypes
@@ -27,6 +38,7 @@ def setupProcess():
 		# defaults.setObject_forKey_(['en'], 'AppleLanguages')
 
 
+###################################################################
 class Ide(QApplication):
 	def __init__(self, *args):
 		super().__init__(*args)
@@ -57,6 +69,7 @@ class Ide(QApplication):
 		log('bye!')
 
 
+###################################################################
 def description():
 	return 'raise editor ide'
 
@@ -64,10 +77,12 @@ def main( argv ):
 	parser = argparse.ArgumentParser(prog = 'dear ide', description = description())
 	parser.add_argument('-p', '--prj', help='specify working prject path')
 	parser.add_argument('--theme', help='specify ide editor theme')
+	parser.add_argument('--stdout', action='store_true', help='enable standard output', default=True)
 	parser.add_argument('--host', action='store_true', help='start with host mode', default=False)
 	args = parser.parse_args(argv)
 
-	setupProcess()
+	setupBundleInfo()
+	enableStdout(args.stdout)
 
 	prj = args.prj or None
 	theme = args.theme or 'dark'

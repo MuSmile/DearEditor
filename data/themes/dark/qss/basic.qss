@@ -42,7 +42,7 @@ QLineEdit
 }
 LineEdit[text='']
 {
-	font-size: 11px;
+	font-size: 10px;
 	color: #999;
 }
 QLineEdit:hover
@@ -54,7 +54,7 @@ QLineEdit:focus
 	border: 1px solid #5ae;
 }
 QLineEdit:read-only {
-    background: lightblue;
+    background: gray;
 }
 
 SearchEdit
@@ -63,13 +63,8 @@ SearchEdit
 	border-radius: 2px;
 	padding-right: 12px;
 	padding-left: 16px;
-	font-size: 11px;
 	color: #eee;
 }
-/*SearchField:focus
-{
-	border: 1px solid #5af;
-}*/
 
 /*
 Slider
@@ -77,7 +72,42 @@ Slider
 	qproperty-grooveHeight: 2;
 	qproperty-grooveRoundRadius: 0;
 }*/
+QSlider::groove:horizontal {
+    background: #666;
+    border: none;
+    border-radius: 2px;
+    height: 2px;
+}
 
+QSlider::handle:horizontal {
+    background: #888;
+    border: 1px solid #888;
+    border-radius: 6px;
+    width: 10px;
+    margin: -5px 0;
+}
+QSlider::handle:horizontal:focus {
+    background: qradialgradient(cx:0.5, cy:0.5, radius: 1, fx:0.5, fy:0.5, stop:0.32 #aaa, stop:0.32001 rgba(85, 170, 238, 100));
+    border: none;
+    border-radius: 9px;
+    width: 18px;
+    margin: -8px -3;
+}
+QSlider::handle:hover {
+    background: #aaa;
+}
+
+QProgressBar#test {
+	max-height: 6px;
+	min-height: 6px;
+    border: none;
+    border-radius: 4px;
+}
+
+QProgressBar#test::chunk {
+    background-color: #27e;
+    width: 20px;
+}
 
 QToolButton
 {
@@ -164,20 +194,62 @@ QPushButton::menu-indicator
     right: 2px;
     bottom: -1px;
 }
-/*
-QCheckBox
-{
-	margin-bottom: 1px;
-	margin-top: 4px;
-	background-color: none;
+
+QCheckBox {
+    spacing: 6px;
+}
+QCheckBox:focus {
+	color: #5ae;
+}
+QCheckBox::indicator {
+	background: #333;
+	border: 1px solid #222;
+	border-radius: 2px;
+    /*image: url(img/menu_indicator.svg);*/
+    width: 12px;
+    height: 12px;
+}
+QCheckBox::indicator:hover {
+	border: 1px solid #777;
+}
+QCheckBox::indicator:focus {
+	border: 1px solid #5ae;
 }
 
-QCheckBox:focus
-{
-	background-color: #444;
-	border: 1px dotted #777;
+QCheckBox::indicator:checked {
+    image: url(img/check2.png);
 }
-*/
+QCheckBox::indicator:indeterminate{
+    image: url(img/close.png);
+}
+
+QRadioButton {
+    spacing: 6px;
+}
+QRadioButton:focus {
+	color: #5ae;
+}
+QRadioButton::indicator {
+	background: #333;
+	border: 1px solid #222;
+	border-radius: 3px;
+    /*image: url(img/menu_indicator.svg);*/
+    width: 12px;
+    height: 12px;
+}
+QRadioButton::indicator:hover {
+	border: 1px solid #777;
+}
+QRadioButton::indicator:focus {
+	border: 1px solid #5ae;
+}
+
+QRadioButton::indicator:checked {
+    image: url(img/check2.png);
+}
+QRadioButton::indicator:indeterminate{
+    image: url(img/close.png);
+}
 
 QSplitter::handle
 {
@@ -243,27 +315,3 @@ DropDownMenuPage QScrollBar::handle
 {
 	border-radius: 4px;
 }
-/*
-QCheckBox
-{
-	margin: 0px;
-}
-
-QCheckBox::indicator:unchecked
-{
-	background-color: #555;
-	border: 1px solid #333;
-	border-radius: 2px;
-}
-
-QCheckBox::indicator:unchecked:hover
-{
-	border: 1px solid #222;
-	border-radius: 2px;
-}
-
-QCheckBox::indicator:checked
-{
-	border: 1px solid #5ae;
-	border-radius: 2px;
-}*/

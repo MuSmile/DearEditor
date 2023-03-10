@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QMenu, QToolBar, QToolButton, QPushButton, QButtonGroup, QHBoxLayout, QGridLayout, QSizePolicy
-from editor.widgets.control.button import CheckableToolButton, IconTextToolButton, ToggleableToolButton, PopupPushButton, PopupToolButton
+from editor.widgets.basic.button import CheckableToolButton, IconTextToolButton, ToggleableToolButton, PopupPushButton, PopupToolButton
 from editor.common.icon_cache import getThemeIcon
 
 class ToolButtonGroup(QWidget):

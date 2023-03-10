@@ -7,7 +7,7 @@ class WaitingSpinner(QWidget):
 		super().__init__(parent)
 		self.angle = 0
 
-		self.color = color or QColor(50, 50, 50)
+		self.color = color or QColor(200, 200, 200)
 		self.spinnerCount = spinnerCount
 		self.clockwise = clockwise
 
