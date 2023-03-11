@@ -3,6 +3,22 @@ About
 
 Hello world!
 
+
+Contents
+--------
+
+.. toctree::
+   :maxdepth: 1
+
+   about/introduction
+   about/frequently_asked_questions
+   about/troubleshooting
+   about/license
+
+
+CodeBlock
+---------
+
 .. code-block:: python
    :lineno-start: 10
    :emphasize-lines: 9

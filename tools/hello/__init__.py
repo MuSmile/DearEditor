@@ -17,7 +17,7 @@ def hello():
 	   ide             start Dear Editor ide
 	   run             run game without ide
 	   build           build game binaries
-	   -----           -----------------------
+	   -----           ------------------------
 	   install         install required py pkgs
 	   list            list all available commands
 

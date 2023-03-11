@@ -27,14 +27,14 @@ extensions = [
 # https://sphinx-autoapi.readthedocs.io/en/latest/reference/config.html
 autoapi_type = 'python'
 autoapi_dirs = [
-	'../../editor',
-	'../../engine',
-	# '../../extensions',
-	'../../launcher',
-	'../../tools',
+	'../editor',
+	'../engine',
+	# '../extensions',
+	'../launcher',
+	'../tools',
 ]
 autoapi_options = [
-	'members',
+	# 'members',
 	'undoc-members',
 	# 'private-members',
 	# 'special-members',
@@ -63,9 +63,9 @@ html_show_sourcelink = False
 # -- Options for ReadTheDocs theme -------------------------------------------------
 # https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html
 html_theme_options = {
+    'titles_only'         : True,
     'display_version'     : True,
     'collapse_navigation' : False,
     'navigation_depth'    : -1,
 }
-
 

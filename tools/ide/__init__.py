@@ -2,7 +2,7 @@ import os, sys, platform, argparse
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPalette
-from editor.common.logger import log, ilog
+from editor.common.logger import log, error
 from editor.theme_manager import loadTheme, setupThemeWatcher
 from editor.editor_prefs import EditorPrefs
 from editor.main_window import MainWindow
@@ -75,18 +75,17 @@ def description():
 def main( argv ):
 	parser = argparse.ArgumentParser(prog = 'dear ide', description = description())
 	parser.add_argument('-p', '--prj', help='specify working prject path')
-	parser.add_argument('--theme', help='specify ide editor theme')
-	parser.add_argument('--stdout', action='store_true', help='enable standard output', default=True)
+	parser.add_argument('--theme', help='specify ide editor theme', default='dark')
+	parser.add_argument('--stdout', action=argparse.BooleanOptionalAction, help='enable standard output', default=True)
 	parser.add_argument('--host', action='store_true', help='start with host mode', default=False)
 	args = parser.parse_args(argv)
+
+	# if not args.prj: return error('raise ide with failure: prj not specified!')
 
 	setupBundleInfo()
 	enableStdout(args.stdout)
 
-	prj = args.prj or None
-	theme = args.theme or 'dark'
-
 	ide = Ide(argv)
 	ide.setupPalette()
-	ide.raiseWindow(prj, theme)
+	ide.raiseWindow(args.prj, args.theme)
 

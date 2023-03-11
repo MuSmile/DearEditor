@@ -13,7 +13,9 @@ Contents
 .. toctree::
 	:maxdepth: 1
 
-	about
+	_docs/about
+	_docs/manual
+	_docs/contributing
 	autoapi/index
 
 
