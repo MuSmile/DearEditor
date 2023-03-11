@@ -10,7 +10,7 @@
 			"name": "IDE",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path"
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
@@ -26,9 +26,44 @@
 			"cmd":
 			[
 				"dear",
-				"run"
+				"doc"
 			],
-			"name": "Run",
+			"name": "Doc",
+			"shell": true,
+			"target": "exec_in_window",
+		},
+		{
+			"cmd":
+			[
+				"dear",
+				"doc",
+				"gen"
+			],
+			"name": "Doc Gen",
+			"shell": true,
+			"target": "exec_in_window",
+		},
+		{
+			"cmd":
+			[
+				"dear",
+				"doc",
+				"clean"
+			],
+			"name": "Doc Clean",
+			"shell": true,
+			"target": "exec_in_window",
+		},
+		{
+			"cmd":
+			[
+				"python",
+				"-u",
+				"$file"
+			],
+			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
+			"name": "Python",
+			"selector": "source.python",
 			"shell": true,
 			"target": "exec_in_window",
 			"working_dir": "$project_path"
@@ -49,13 +84,21 @@
 		{
 			"cmd":
 			[
-				"python",
-				"-u",
-				"$file"
+				"dear",
+				"run"
 			],
-			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Python",
-			"selector": "source.python",
+			"name": "Run",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path"
+		},
+		{
+			"cmd":
+			[
+				"dear",
+				"build"
+			],
+			"name": "Build",
 			"shell": true,
 			"target": "exec_in_window",
 			"working_dir": "$project_path"
@@ -69,7 +112,7 @@
 				"-DADS_VERSION=4.0.2"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Config qtads",
+			"name": "QtAds Config",
 			"shell": true,
 			"target": "exec_in_window",
 			"working_dir": "$project_path/.support/pyside6_qtads/build"
@@ -87,7 +130,7 @@
 				"-j6"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Compile qtads",
+			"name": "QtAds Compile",
 			"shell": true,
 			"target": "exec_in_window",
 			"working_dir": "$project_path/.support/pyside6_qtads/build"
@@ -100,7 +143,7 @@
 				"testpkg.py"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Test qtads",
+			"name": "QtAds Testcase",
 			"selector": "source.python",
 			"shell": true,
 			"target": "exec_in_window",
@@ -113,7 +156,7 @@
 				"/s/q",
 				"*"
 			],
-			"name": "Clear qtads",
+			"name": "QtAds Clear",
 			"shell": true,
 			"target": "exec_in_window",
 			"working_dir": "$project_path/.support/pyside6_qtads/build"
@@ -170,13 +213,17 @@
 			"IDE",
 			"Browse IDE",
 			"-------------------------------------",
+			"Doc",
+			"Doc Gen",
+			"Doc Clean",
+			"-------------------------------------",
 			"Python",
 			"Python with IDE",
 			"-------------------------------------",
-			"Config qtads",
-			"Compile qtads",
-			"Test qtads",
-			"Clear qtads",
+			"QtAds Config",
+			"QtAds Compile",
+			"QtAds Testcase",
+			"QtAds Clear",
 		],
 		"show_panel_on_build": false,
 		"tab_size": 4

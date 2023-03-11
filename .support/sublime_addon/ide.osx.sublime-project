@@ -9,28 +9,44 @@
 			"name": "IDE",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path"
+			"working_dir": "$project_path",
+
 		},
 		{
 			"cmd":
 			[
-				"dear",
-				"run"
+				"open $project_path",
 			],
-			"name": "Run",
+			"name": "Browse IDE",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path"
 		},
 		{
 			"cmd":
 			[
-				"dear python --script $file"
+				"dear doc",
 			],
-			"name": "Python with IDE",
+			"name": "Doc",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path"
+		},
+		{
+			"cmd":
+			[
+				"dear doc gen",
+			],
+			"name": "Doc Gen",
+			"shell": true,
+			"target": "exec_in_window",
+		},
+		{
+			"cmd":
+			[
+				"dear doc clean",
+			],
+			"name": "Doc Clean",
+			"shell": true,
+			"target": "exec_in_window",
 		},
 		{
 			"cmd":
@@ -42,7 +58,37 @@
 			"selector": "source.python",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path"
+			"working_dir": "$project_path",
+		},
+		{
+			"cmd":
+			[
+				"dear python --script $file"
+			],
+			"name": "Python with IDE",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path",
+		},
+		{
+			"cmd":
+			[
+				"dear run"
+			],
+			"name": "Run",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path",
+		},
+		{
+			"cmd":
+			[
+				"dear build"
+			],
+			"name": "Build",
+			"shell": true,
+			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
@@ -50,10 +96,10 @@
 				"arch -arm64 cmake -DCMAKE_BUILD_TYPE=Release .. -DADS_VERSION=4.0.2"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Config qtads",
+			"name": "QtAds Config",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads/build"
+			"working_dir": "$project_path/.support/pyside6_qtads/build",
 		},
 		{
 			"cmd":
@@ -61,10 +107,10 @@
 				"arch -arm64 cmake --build . --target install --config Release -j12"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Compile qtads",
+			"name": "QtAds Compile",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads/build"
+			"working_dir": "$project_path/.support/pyside6_qtads/build",
 		},
 		{
 			"cmd":
@@ -72,29 +118,20 @@
 				"arch -arm64 python testpkg.py"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
-			"name": "Test qtads",
+			"name": "QtAds Testcase",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads"
+			"working_dir": "$project_path/.support/pyside6_qtads",
 		},
 		{
 			"cmd":
 			[
 				"rm -rf build; mkdir build",
 			],
-			"name": "Clear qtads",
+			"name": "QtAds Clean",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads"
-		},
-		{
-			"cmd":
-			[
-				"open $project_path",
-			],
-			"name": "Browse IDE",
-			"shell": true,
-			"target": "exec_in_window",
+			"working_dir": "$project_path/.support/pyside6_qtads",
 		}
 	],
 	"folders":
@@ -149,13 +186,17 @@
 			"IDE",
 			"Browse IDE",
 			"-------------------------------------",
+			"Doc",
+			"Doc Gen",
+			"Doc Clean",
+			"-------------------------------------",
 			"Python",
 			"Python with IDE",
 			"-------------------------------------",
-			"Config qtads",
-			"Compile qtads",
-			"Test qtads",
-			"Clear qtads",
+			"QtAds Config",
+			"QtAds Compile",
+			"QtAds Testcase",
+			"QtAds Clean",
 		],
 		"show_panel_on_build": false,
 		"tab_size": 4
