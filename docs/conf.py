@@ -56,7 +56,7 @@ exclude_patterns = ['_build', '.DS_Store']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
-html_title = 'Welcome to DearDoc!'
+# html_title = 'Welcome to DearDoc!'
 html_favicon = '_static/favicon.ico'
 html_show_sourcelink = False
 
@@ -65,6 +65,7 @@ html_show_sourcelink = False
 html_theme_options = {
     'titles_only'         : True,
     'display_version'     : True,
+    'sticky_navigation'   : True,
     'collapse_navigation' : False,
     'navigation_depth'    : -1,
 }
