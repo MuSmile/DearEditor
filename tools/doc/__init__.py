@@ -53,9 +53,15 @@ def main( argv ):
 		return
 
 	if cmd == 'clean':
-		import shutil
 		if os.path.exists(buildFolder):
-			shutil.rmtree(buildFolder)
+			import shutil
+			for f in os.scandir(buildFolder):
+				if f.name == '.git': continue
+				if f.name == '.gitignore': continue
+				if f.name == '.nojekyll': continue
+				if f.name == 'readme.md': continue
+				if f.is_dir(): shutil.rmtree(f)
+				else: os.remove(f)
 			print('doc clean completed.')
 		else:
 			print('doc cleaned already.')
