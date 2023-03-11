@@ -61,7 +61,7 @@ def _createToolBarImpl():
 
 	btnSearch = QToolButton()
 	btnSearch.setIcon(getThemeIcon('search.png'))
-	btnSearch.setFixedWidth(20)
+	btnSearch.setFixedWidth(22)
 
 	btnBuild = IconTextToolButton('Build', 'build.png')
 	btnLayer = PopupPushButton('Layer')

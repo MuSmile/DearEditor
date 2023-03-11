@@ -1,6 +1,8 @@
 # README
 
-[![Stability](https://img.shields.io/badge/Stability-WIP-lightgrey.svg)]() [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1) [![Documentation](https://img.shields.io/badge/Docs-passing-brightgreen.svg)](https://musmile.github.io/DearDoc/)
+[![Stability](https://img.shields.io/badge/Stability-WIP-lightgrey.svg)](https://github.com/MuSmile/DearEditor)
+[![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
+[![Documentation](https://img.shields.io/badge/Docs-passing-brightgreen.svg)](https://musmile.github.io/DearDoc/)
 
 > Your next Unity is not a Unity...
 

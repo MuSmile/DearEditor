@@ -11,7 +11,7 @@ def hello():
 	/_____/\___/\__,_/_/     /_____/\__,_/_/\__/\____/_/     
 	---------------------------------------------------------
 
-	usage: dear {ide, run, build, list, ...} [-h] [--help] ...
+	usage: dear {ide, run, build, list, ...} [-h, --help] ...
 
 	commands:
 	   ide             start Dear Editor ide
