@@ -1,3 +1,6 @@
 [submodule ".support/pyside6_qtads/Qt-Advanced-Docking-System"]
 	path = .support/pyside6_qtads/Qt-Advanced-Docking-System
 url=git@github.com:MuSmile/Qt-Advanced-Docking-System.git
+[submodule "docs/_build"]
+	path = docs/_build
+	url = git@github.com:MuSmile/DearDoc.git
