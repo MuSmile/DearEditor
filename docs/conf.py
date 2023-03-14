@@ -17,7 +17,7 @@ release = 'dev'
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.mathjax',
+    # 'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'autoapi.extension',
@@ -34,7 +34,7 @@ autoapi_dirs = [
 	'../tools',
 ]
 autoapi_options = [
-	# 'members',
+	'members',
 	'undoc-members',
 	# 'private-members',
 	# 'special-members',
@@ -44,6 +44,15 @@ autoapi_options = [
 autoapi_ignore = [
 	'*pyqtads*',
 ]
+autoapi_python_class_content = 'both'
+
+# def skip(app, what, name, obj, skip, options):
+# 	if name.endswith('__init__') and obj.docstring:
+# 		return False
+# 	return skip
+
+# def setup(sphinx):
+# 	sphinx.connect('autoapi-skip-member', skip)
 
 
 templates_path = ['_templates']
@@ -67,6 +76,7 @@ html_theme_options = {
     'display_version'     : True,
     'sticky_navigation'   : True,
     'collapse_navigation' : False,
+    'style_external_links': False,
     'navigation_depth'    : -1,
 }
 

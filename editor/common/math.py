@@ -1,3 +1,6 @@
+"""This module provide math toolkit.
+"""
+
 from math import cos, sin, atan2, degrees, radians
 from random import random, uniform
 

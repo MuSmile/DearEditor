@@ -13,7 +13,6 @@ Contents
    about/introduction
    about/frequently_asked_questions
    about/troubleshooting
-   about/license
 
 
 CodeBlock

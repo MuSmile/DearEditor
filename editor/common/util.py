@@ -1,3 +1,6 @@
+"""This module provide uncategorized misc toolkit.
+"""
+
 import sys, os, time
 from PySide6.QtCore import Qt, QPropertyAnimation, QPoint
 from PySide6.QtGui import QPainter, QPixmap, QBrush
@@ -7,27 +10,50 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
 #############################################
 _ide = None
 def getIde():
+	"""Get DearEditor ide instance.
+	
+	Returns:
+		QApplication: The instance of Ide/QApplication.
+	"""
 	global _ide
 	if not _ide: _ide = QApplication.instance()
 	return _ide
 
 def getMainWindow():
+	"""Get DearEditor ide main window instance.
+	
+	Returns:
+		QMainWindow: The instance of ide's main window.
+	"""
 	app = QApplication.instance()
 	for widget in app.topLevelWidgets():
 		if isinstance(widget, QMainWindow):
 			return widget
 
 def restartApp():
+	"""Restart DearEditor ide.
+	"""
 	quitApp()
 	py = sys.executable
 	os.execl(py, py, *sys.argv)
 
 def quitApp():
+	"""Exit DearEditor ide.
+	"""
 	getMainWindow().close()
 
 
 #############################################
 def isParentOfWidget(test, wgt):
+	"""Check a given qt widget is parent of another.
+	
+	Args:
+		QWidget test: Given widget to check.
+		QWidget wgt: Given widget to check against.
+
+	Returns:
+		bool: Weather given qt widget is parent of another or not.
+	"""
 	if not wgt: return False
 	if not test: return False
 	p = wgt.parent()

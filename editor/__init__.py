@@ -1,2 +1,2 @@
-"""DearEditor's main editor module
+"""DearEditor's main editor module.
 """

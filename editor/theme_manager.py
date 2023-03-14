@@ -1,3 +1,15 @@
+"""This module provide theme manage functions.
+
+Typical usage example:
+
+.. code-block:: python
+   :linenos:
+
+   from editor import theme_manager
+   theme_manager.loadTheme('dark')
+   theme_manager.setupThemeWatcher()
+"""
+
 import os, re, time, platform
 from PySide6.QtCore import QSettings, QTimer
 
@@ -8,6 +20,7 @@ from editor.common.util import getIde
 
 
 _themeFolder = os.environ[ 'DEAR_THEME_PATH' ]
+_themeWatcher = None
 _activeTheme = None
 _lastModifyTime = 0
 
@@ -112,15 +125,36 @@ def _onThemeModified(evt):
 
 ######################  APIS  #####################
 def listThemes():
+	"""List all available themes.
+
+	Returns:
+		list[str]: All available themes.
+	"""
 	return [ f.name for f in os.scandir(_themeFolder) if f.is_dir() ]
 
 def activeTheme():
+	"""Get current active theme.
+
+	Returns:
+		str: Active theme name.
+	"""
 	return _activeTheme
 
 def activeThemeFolder():
+	"""Get current active theme source folder.
+	
+	Returns:
+		str: Active theme folder path.
+	"""
 	return f'{_themeFolder}/{_activeTheme}'
 
 def loadTheme(name, reset = False):
+	"""Load theme by certain name.
+	
+	Args:
+		str name: Theme name to load.
+		bool reset: Reset exsiting style state. (Mainly used by theme watcher for hot-reloading usage.)
+	"""
 	assert name in listThemes()
 	global _activeTheme
 	_activeTheme = name
@@ -133,11 +167,20 @@ def loadTheme(name, reset = False):
 	ide.setStyleSheet(_parseTheme(name))
 
 def setupThemeWatcher():
-	global watcher # to keep alive
+	"""Setup theme watcher on all themes.
+	"""
+	global _themeWatcher # to keep alive
 	ignores = ['.*__qsscache__.*', '.*img.*']
-	watcher = RegexWatcher(ignoreRegexes = ignores, onModified = _onThemeModified)
-	watcher.start(_themeFolder)
+	_themeWatcher = RegexWatcher(ignoreRegexes = ignores, onModified = _onThemeModified)
+	_themeWatcher.start(_themeFolder)
 
+def disposeThemeWatcher():
+	"""Shutdown current theme watcher
+	"""
+	global _themeWatcher
+	if not _themeWatcher: return
+	_themeWatcher.stop()
+	_themeWatcher = None
 
 ######################  TEST  #####################
 if __name__ == '__main__':

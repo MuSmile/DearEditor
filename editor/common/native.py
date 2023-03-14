@@ -1,9 +1,17 @@
+"""This module provide os native toolkit.
+
+.. warning::
+    Native module only support MacOS and Windows for now!
+"""
+
 import platform
 from PySide6.QtCore import Qt
 
 __system__ = platform.system()
 
 def setDarkAppearance():
+	"""Enable system dark mode appearance.
+	"""
 	if __system__ == 'Windows':
 		pass
 
@@ -13,6 +21,8 @@ def setDarkAppearance():
 		NSApp.setAppearance_(appearance)
 
 def setLightAppearance():
+	"""Enable system light mode appearance.
+	"""
 	if __system__ == 'Windows':
 		pass
 

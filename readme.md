@@ -2,13 +2,13 @@
 
 [![Stability](https://img.shields.io/badge/Stability-WIP-lightgrey.svg)](https://github.com/MuSmile/DearEditor)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
-[![Documentation](https://img.shields.io/badge/Docs-passing-brightgreen.svg)](https://musmile.github.io/DearDoc/)
+[![Documentation](https://img.shields.io/badge/Docs-click_me-brightgreen.svg)](https://musmile.github.io/DearDoc/)
 
 > Your next Unity is not a Unity...
 
 DearEditor is a PySide6 based runtime-free game engine editor.
 
-The aim of DearEditor is to create an open and unite editor solution for all engine runtime(especially in-house engines).
+DearEditor aim to create an open and unite editor solution for all engine runtime(especially in-house engines).
 
 
 ## Screenshots

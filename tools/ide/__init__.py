@@ -3,8 +3,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QPalette
 from editor.common.logger import log, error
+from editor.models.editor.editor_prefs import EditorPrefs
 from editor.theme_manager import loadTheme, setupThemeWatcher
-from editor.editor_prefs import EditorPrefs
 from editor.main_window import MainWindow
 
 

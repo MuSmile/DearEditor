@@ -1,3 +1,6 @@
+"""This module provide common ease functions.
+"""
+
 from math import cos, sin, pow, sqrt
 from math import pi as PI
 

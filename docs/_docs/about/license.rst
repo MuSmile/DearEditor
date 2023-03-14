@@ -1,4 +1,0 @@
-License
--------
-
-__placeholder__
