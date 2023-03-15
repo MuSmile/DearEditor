@@ -30,8 +30,8 @@ class PatternWatcher(QObject):
 		Args:
 			list[str] patterns: Patterns to allow matching event paths.
 			list[str] ignorePatterns: Patterns to ignore matching event paths.
-			bool ignoreDirectories: ``True`` if directories should be ignored; ``False`` otherwise.
-			bool caseSensitive: ``True`` if path names should be matched sensitive to case; ``False`` otherwise.
+			bool ignoreDirectories: If directories should be ignored.
+			bool caseSensitive: If path names should be matched sensitive to case.
 			function onCreated: Called when a file or directory is created.
 			function onDeleted: Called when a file or directory is deleted.
 			function onModified: Called when a file or directory is modified.
@@ -65,7 +65,7 @@ class PatternWatcher(QObject):
 		
 		Args:
 			str path: Directory path that will be monitored.
-			bool recursive: ``True`` if events will be emitted for sub-directories traversed recursively; ``False`` otherwise.
+			bool recursive: If events will be emitted for sub-directories traversed recursively.
 		"""
 		_observer.schedule(self.handler, path, recursive)
 		_observer.start()
@@ -97,8 +97,8 @@ class RegexWatcher(QObject):
 		Args:
 			list[str] regexes: Regexes to allow matching event paths.
 			list[str] ignoreRegexes: Regexes to ignore matching event paths.
-			bool ignoreDirectories: ``True`` if directories should be ignored; ``False`` otherwise.
-			bool caseSensitive: ``True`` if path names should be matched sensitive to case; ``False`` otherwise.
+			bool ignoreDirectories: If directories should be ignored.
+			bool caseSensitive: If path names should be matched sensitive to case.
 			function onCreated: Called when a file or directory is created.
 			function onDeleted: Called when a file or directory is deleted.
 			function onModified: Called when a file or directory is modified.
@@ -133,7 +133,7 @@ class RegexWatcher(QObject):
 		
 		Args:
 			str path: Directory path that will be monitored.
-			bool recursive: ``True`` if events will be emitted for sub-directories traversed recursively; ``False`` otherwise.
+			bool recursive: If events will be emitted for sub-directories traversed recursively.
 		"""
 		self.watch = _observer.schedule(self.handler, path, recursive)
 		_observer.start()

@@ -6,7 +6,7 @@ TreeView
 	qproperty-treePaddingLeft: 2;
 	qproperty-itemPaddingLeft: 2;
 	qproperty-itemIconSize: 16;
-	qproperty-itemHeight: 20;
+	qproperty-itemHeight: 22;
 	qproperty-indentation: 20;
 
 	qproperty-dropIndicatorMargin: 5;
@@ -32,6 +32,10 @@ TreeView
 	qproperty-backgroundSelectedUnfocused: #6d6d74;
 	qproperty-backgroundHovered: #555555;
 	qproperty-useAlternatingBackground: true;
+
+	qproperty-backgroundSeparator: #303030;
+	qproperty-useBackgroundSeparator: true;
+
 	qproperty-branchArrowOffset: 0;
 
 	font-size: 12px;
@@ -45,7 +49,7 @@ TreeView > #qt_scrollarea_viewport > QLineEdit
 	border: 1px solid #555;
 	border-radius: 0px;
 	padding-left: 0px;
-	color: #eee;
+	color: #fff;
 }
 TreeView > #qt_scrollarea_viewport > QLineEdit:focus
 {
@@ -82,6 +86,7 @@ TreeStackedWidget > TreeView
 	qproperty-branchArrowOffset: 10;
 	qproperty-branchLineFilterDepth: 10000;
 
+	qproperty-useBackgroundSeparator: false;
 	qproperty-useAlternatingBackground: false;
 	qproperty-background: transparent;
 
@@ -116,7 +121,7 @@ TreeStackedWidget::handle:vertical
 GalleryView > #searchbar
 {
 	background-color: none;
-	border-bottom: 1px solid #333;
+	border-bottom: 1px solid #222;
 }
 
 /*TreeItemEditor:focus

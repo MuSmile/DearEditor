@@ -2,7 +2,7 @@
 
 [![Stability](https://img.shields.io/badge/Stability-WIP-lightgrey.svg)](https://github.com/MuSmile/DearEditor)
 [![License: LGPL v2.1](https://img.shields.io/badge/License-LGPL_v2.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1)
-[![Documentation](https://img.shields.io/badge/Docs-click_me-brightgreen.svg)](https://musmile.github.io/DearDoc/)
+[![Documentation](https://img.shields.io/badge/Docs-Click_Me-brightgreen.svg)](https://musmile.github.io/DearDoc/)
 
 > Your next Unity is not a Unity...
 

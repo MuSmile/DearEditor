@@ -26,6 +26,7 @@ class TreeItemDelegate(QItemDelegate):
 		left = rect.x() + view.treePaddingLeft
 		if index.data(Qt.DecorationRole): left += view.indentation() + view.itemPaddingLeft
 		rect.setLeft(left - 3)
+		if view.useBackgroundSeparator: rect.setHeight(rect.height() - 1)
 		editor.setGeometry(rect)
 
 	def paint(self, painter, option, index):
@@ -63,6 +64,12 @@ class TreeItemDelegate(QItemDelegate):
 			alternate = view.useAlternatingBackground and self.view._flatVisibleRowNumber(index, self.view.model()) % 2
 			bgColor = view.backgroundAlternate if alternate else view.background
 		painter.fillRect(rect, bgColor)
+		b, w = rect.bottom(), rect.width()
+
+		if view.useBackgroundSeparator:
+			srect = QRect(0, b, w, 1)
+			painter.fillRect(srect, view.backgroundSeparator)
+
 	def drawContent(self, painter, rect, index):
 		view = self.view
 		textOffset = view.treePaddingLeft
@@ -72,13 +79,14 @@ class TreeItemDelegate(QItemDelegate):
 			indentation = view.indentation()
 			rectSize = view.itemHeight
 			textOffset += indentation + view.itemPaddingLeft
-			cx, cy = rect.left() + round(indentation / 2), rect.top() + round(rect.height() / 2)
+			cx, cy = rect.left() + round(indentation / 2), rect.top() + round(rect.height() / 2) - 1
 			iconSize = view.itemIconSize
 			halfSize = iconSize / 2
 			x, y = cx - halfSize + view.treePaddingLeft, cy - halfSize
 			painter.drawPixmap(x, y, iconSize, iconSize, decoration)
 
 		painter.drawText(rect.adjusted(textOffset, -1, 0, 0), Qt.AlignVCenter, index.data())
+	
 	def drawBranchLines(self, painter, rect, index):
 		view = self.view
 		if not view.drawBranchLine: return
@@ -105,6 +113,7 @@ class TreeItemDelegate(QItemDelegate):
 					painter.drawPixmap(x, t, indentation, h, getThemePixmap('icon_branch_L.png'))
 				curr = curr.parent()
 			painter.setOpacity(1)
+	
 	def drawBranchArrow(self, painter, rect, index):
 		if not index.model().hasChildren(index): return
 
@@ -125,7 +134,6 @@ class TreeItemDelegate(QItemDelegate):
 			depth += 1
 			parent = parent.parent()
 		return depth
-
 
 class PingAnimPhase(Enum):
 	ZoomIn  = 0
@@ -288,8 +296,7 @@ class TreeItemPingOverlay(QWidget):
 		index = self.index
 
 		rect = view.visualRect(index)
-		painter = QPainter()
-		painter.begin(self)
+		painter = QPainter(self)
 		painter.setRenderHints(QPainter.Antialiasing, True)
 
 		option = QStyleOption()
@@ -324,8 +331,6 @@ class TreeItemPingOverlay(QWidget):
 		painter.setPen(pen)
 		delegate = view.itemDelegate(index)
 		delegate.drawContent(painter, rect, index)
-
-		painter.end()
 
 class TreeView(QTreeView):
 	@Property(int)
@@ -486,13 +491,25 @@ class TreeView(QTreeView):
 	@backgroundHovered.setter
 	def backgroundHovered(self, value):
 		self._backgroundHovered = value
-
 	@Property(bool)
 	def useAlternatingBackground(self):
 		return self._useAlternatingBackground
 	@useAlternatingBackground.setter
 	def useAlternatingBackground(self, value):
 		self._useAlternatingBackground = value
+
+	@Property(QColor)
+	def backgroundSeparator(self):
+		return self._backgroundSeparator
+	@backgroundSeparator.setter
+	def backgroundSeparator(self, value):
+		self._backgroundSeparator = value
+	@Property(bool)
+	def useBackgroundSeparator(self):
+		return self._useBackgroundSeparator
+	@useBackgroundSeparator.setter
+	def useBackgroundSeparator(self, value):
+		self._useBackgroundSeparator = value
 
 	
 	def __init__(self, parent = None):
@@ -520,6 +537,8 @@ class TreeView(QTreeView):
 		self._backgroundSelectedUnfocused = QColor('#6d7284')
 		self._backgroundHovered = QColor('#454768')
 		self._useAlternatingBackground = True
+		self._backgroundSeparator = QColor('#2c2c2c')
+		self._useBackgroundSeparator = True
 
 		self.hoveredIndex = None
 		self.underAnimating = None

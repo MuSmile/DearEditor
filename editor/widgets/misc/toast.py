@@ -49,8 +49,7 @@ class Toast(QWidget):
 
 	def paintEvent(self, a0):
 		rect = self.rect()
-		painter = QPainter()
-		painter.begin(self) 
+		painter = QPainter(self)
 		painter.setRenderHints(QPainter.Antialiasing, True)
 		painter.setBrush(QBrush(QColor(100, 100, 100, self._alpha)))
 		painter.setPen(Qt.transparent)
@@ -58,7 +57,6 @@ class Toast(QWidget):
 		painter.setPen(QColor(230, 230, 230, self._alpha))
 		painter.setFont(_toastFont)
 		painter.drawText(rect, Qt.AlignCenter, self.msg)
-		painter.end()
 
 	def moveCenter(self):
 		rect = self.parent().rect()

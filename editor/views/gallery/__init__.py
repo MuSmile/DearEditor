@@ -3,7 +3,7 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
-from editor.widgets.basic.slider import RangeSlider
+from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.line_edit import LineEdit
 from editor.widgets.basic.search_edit import SearchEdit
 from editor.widgets.container.collapsible import CollapsibleWidget
@@ -310,22 +310,32 @@ class GalleryView(DockView):
 		slider1 = QSlider(Qt.Horizontal)
 		slider1.setMinimum(0)
 		slider1.setMaximum(100)
-		slider1.setSingleStep(1) 
-		slider1.setFixedWidth(100)
+		slider1.setSingleStep(1)
+		slider1.setFixedWidth(200)
 		slider1.setValue(20)
-		slider1.sliderMoved.connect(lambda v: progressBar.setValue(v))
+		slider1.valueChanged.connect(lambda v: progressBar.setValue(v))
 		slider1.setFocusPolicy(Qt.StrongFocus)
-		slider2 = RangeSlider(Qt.Horizontal)
-		slider2.setMinimumHeight(30)
-		slider2.setMinimum(0)
-		slider2.setMaximum(255)
-		slider2.setLow(15)
-		slider2.setHigh(35)
-		slider2.setTickPosition(QSlider.TicksBelow)
-		slider2.setFixedWidth(100)
+		# slider2 = RangeSlider(Qt.Horizontal)
+		# slider2.setMinimumHeight(30)
+		# slider2.setMinimum(0)
+		# slider2.setMaximum(255)
+		# slider2.setLow(15)
+		# slider2.setHigh(35)
+		# slider2.setTickPosition(QSlider.TicksBelow)
+		# slider2.setFixedWidth(200)
+		# slider2.setFocusPolicy(Qt.StrongFocus)
+
+		slider3 = RangeSlider()
+		# slider1.setMinimum(0)
+		# slider1.setMaximum(100)
+		# slider1.setSingleStep(1)
+		# slider1.setValue(20)
+		slider3.setFixedWidth(200)
+		slider3.setFocusPolicy(Qt.StrongFocus)
 
 		sliderLayout.addWidget(slider1)
-		sliderLayout.addWidget(slider2)
+		# sliderLayout.addWidget(slider2)
+		sliderLayout.addWidget(slider3)
 		layout.addLayout(sliderLayout)
 
 		return preview

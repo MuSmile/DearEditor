@@ -11,6 +11,7 @@ class MyPopup(QWidget):
 		super().__init__()
 		self.setWindowFlag(Qt.Popup, True)
 		self.setWindowFlag(Qt.FramelessWindowHint, True)
+		self.setWindowFlag(Qt.NoDropShadowWindowHint, True)
 		self.setAttribute(Qt.WA_NoSystemBackground, True)
 		self.setAttribute(Qt.WA_TranslucentBackground, True)
 		# self.setWindowOpacity(0.1)
