@@ -4,6 +4,7 @@ from PySide6.QtWidgets import *
 from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
+from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit
 from editor.widgets.basic.search_edit import SearchEdit
 from editor.widgets.container.collapsible import CollapsibleWidget
@@ -286,9 +287,9 @@ class GalleryView(DockView):
 		comboBoxLayout.setSpacing(20)
 		comboBoxLayout.setAlignment(Qt.AlignLeft)
 
-		progressBar = QProgressBar()
-		progressBar.setValue(30)
-		progressBar.setObjectName('test')
+		progressBar = ProgressBar()
+		progressBar.setFixedWidth(200)
+		# progressBar.setValue(30)
 		progressBar2 = QProgressBar()
 		progressBar2.setValue(30)
 

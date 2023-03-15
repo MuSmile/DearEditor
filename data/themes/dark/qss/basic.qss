@@ -110,6 +110,15 @@ RangeSlider
 	qproperty-handleHovered: #ddd;
 }
 
+ProgressBar
+{
+	qproperty-progressHeight: 6;
+	qproperty-borderRadius: 3;
+	qproperty-borderColor: transparent;
+	qproperty-background: #282828;
+	qproperty-overlay: #0071ff;
+}
+
 QToolButton
 {
 	background-color: #444;

@@ -1,8 +1,7 @@
-import sys, os
-from PySide6.QtCore import Qt, Property, QSize, QRectF, QTimer, QPointF, QEvent, Signal
-from PySide6.QtWidgets import QWidget, QApplication, QStyle, QStyleOption, QStylePainter
-from PySide6.QtGui import QPen, QBrush, QPainter, QColor, QPixmap, QMouseEvent
-from editor.common.math import lerp, rangeMap
+from PySide6.QtCore import Qt, Property, Signal, QRectF
+from PySide6.QtWidgets import QWidget
+from PySide6.QtGui import QPainter, QColor
+from editor.common.math import rangeMap
 
 class RangeSlider(QWidget):
 	minRangeChanged = Signal(int)
