@@ -1,4 +1,4 @@
-"""This module provide uncategorized misc toolkit.
+"""This module provides uncategorized misc toolkit.
 """
 
 import sys, os, time

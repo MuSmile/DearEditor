@@ -1,4 +1,4 @@
-"""This module provide math toolkit.
+"""This module provides math toolkit.
 """
 
 from math import cos, sin, atan2, degrees, radians

@@ -1,4 +1,4 @@
-"""This module provide theme related icon/pixmap cache toolkit.
+"""This module provides theme related icon/pixmap cache toolkit.
 """
 
 from PySide6.QtGui import QIcon, QPixmap

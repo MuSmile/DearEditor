@@ -1,4 +1,4 @@
-"""This module provide global signal toolkit.
+"""This module provides global signal toolkit.
 
 Typical usage example:
 

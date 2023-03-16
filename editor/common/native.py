@@ -1,4 +1,4 @@
-"""This module provide os native toolkit.
+"""This module provides os native toolkit.
 
 .. warning::
     Native module only support MacOS and Windows for now!

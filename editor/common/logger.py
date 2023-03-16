@@ -1,4 +1,4 @@
-"""This module provide standard log toolkit.
+"""This module provides standard log toolkit.
 
 Typical usage example:
 

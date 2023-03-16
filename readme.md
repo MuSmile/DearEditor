@@ -8,7 +8,7 @@
 
 DearEditor is a PySide6 based runtime-free game engine editor.
 
-DearEditor aim to create an open and unite editor solution for all engine runtime(especially in-house engines).
+DearEditor aims to create an open and unite editor solution for all engine runtime(especially in-house engines).
 
 
 ## Screenshots

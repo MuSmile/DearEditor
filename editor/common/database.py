@@ -1,4 +1,4 @@
-"""This module provide database manipulating toolkit.
+"""This module provides database manipulating toolkit.
 
 Typical usage example:
 

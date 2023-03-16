@@ -1,4 +1,4 @@
-"""This module provide file watcher toolkit.
+"""This module provides file watcher toolkit.
 
 Whole module is built on a python package named `watchdog <https://github.com/gorakhargosh/watchdog>`_.
 """

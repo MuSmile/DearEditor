@@ -40,10 +40,14 @@ QLineEdit
 	color: #eee;
 	selection-background-color: #36a;
 }
-LineEdit[text='']
+QLineEdit[clearButtonEnabled=true]
 {
-	font-size: 10px;
-	color: #999;
+	padding-right: -10px;
+}
+QLineEdit > QToolButton /* ClearButton */
+{
+	min-width: 24px;
+	qproperty-icon: url(img/close-button.svg);
 }
 QLineEdit:hover
 {
@@ -55,6 +59,12 @@ QLineEdit:focus
 }
 QLineEdit:read-only {
     background: gray;
+}
+
+LineEdit[text='']
+{
+	font-size: 10px;
+	color: #999;
 }
 
 SearchEdit
@@ -90,14 +100,14 @@ QSlider::handle:horizontal {
     margin: -5px 0;
 }
 QSlider::handle:horizontal:focus {
-    background: qradialgradient(cx:0.5, cy:0.5, radius: 1, fx:0.5, fy:0.5, stop:0.28 #ddd, stop:0.32001 rgba(85, 170, 238, 60));
+    background: qradialgradient(cx:0.5, cy:0.5, radius: 1, fx:0.5, fy:0.5, stop:0.28 #ccc, stop:0.32001 rgba(85, 170, 238, 60));
     border: none;
     border-radius: 10px;
     width: 20px;
     margin: -9px -4;
 }
 QSlider::handle:hover {
-    background: #ddd;
+    background: #ccc;
 }
 
 RangeSlider
@@ -107,7 +117,7 @@ RangeSlider
 	qproperty-handleRadius: 6;
 	qproperty-grooveBackground: #777;
 	qproperty-handleBackground: #888;
-	qproperty-handleHovered: #ddd;
+	qproperty-handleHovered: #ccc;
 }
 
 ProgressBar
@@ -207,6 +217,7 @@ QPushButton::menu-indicator
 
 QCheckBox {
     spacing: 6px;
+    color: #ccc;
 }
 QCheckBox:focus {
 	color: #5ae;
@@ -235,6 +246,7 @@ QCheckBox::indicator:indeterminate{
 
 QRadioButton {
     spacing: 6px;
+    color: #ccc;
 }
 QRadioButton:focus {
 	color: #5ae;

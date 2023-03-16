@@ -231,6 +231,7 @@ class GalleryView(DockView):
 		comboBoxLayout.setAlignment(Qt.AlignLeft)
 
 		lineEdit1 = QLineEdit()
+		lineEdit1.setClearButtonEnabled(True)
 		lineEdit2 = LineEdit()
 		lineEdit2.setPlaceholderText('placeholder')
 

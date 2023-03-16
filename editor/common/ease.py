@@ -1,4 +1,6 @@
-"""This module provide common ease functions.
+"""This module provides common ease functions.
+
+Check `easings.net <https://easings.net/>`_ for detailed introduction.
 """
 
 from math import cos, sin, pow, sqrt
