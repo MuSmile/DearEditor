@@ -80,9 +80,9 @@ TreeItemPingOverlay
 /****************************************************/
 TreeStackedWidget > TreeView
 {
-	qproperty-itemHeight: 24;
+	qproperty-itemHeight: 22;
 	qproperty-indentation: 13;
-	qproperty-treePaddingLeft: 24;
+	qproperty-treePaddingLeft: 22;
 	qproperty-branchArrowOffset: 10;
 	qproperty-branchLineFilterDepth: 10000;
 

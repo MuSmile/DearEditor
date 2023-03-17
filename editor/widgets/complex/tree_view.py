@@ -31,6 +31,7 @@ class TreeItemDelegate(QItemDelegate):
 
 	def paint(self, painter, option, index):
 		painter.setRenderHint(QPainter.Antialiasing, True)
+		painter.setRenderHint(QPainter.TextAntialiasing, True)
 
 		view = self.view
 		rect = option.rect
@@ -142,7 +143,7 @@ class PingAnimPhase(Enum):
 	Fade    = 4
 
 class TreeItemPingOverlay(QWidget):
-	InstanceList = []
+	InstanceTable = {}
 
 	@Property(int)
 	def pingZoomDuration(self):
@@ -199,8 +200,8 @@ class TreeItemPingOverlay(QWidget):
 	def pingOutlineRound(self, value):
 		self._pingOutlineRound = value
 
-	def __init__(self, treeview):
-		super().__init__(treeview)
+	def __init__(self, view):
+		super().__init__(view)
 		self._pingZoomDuration = 100
 		self._pingIdleDuration = 2000
 		self._pingFadeDuration = 1000
@@ -213,11 +214,11 @@ class TreeItemPingOverlay(QWidget):
 		self.setAttribute(Qt.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
 
-		treeview.installEventFilter(self)
+		view.installEventFilter(self)
 
 	def syncTreeViewRect(self):
-		treeview = self.parent()
-		viewport = treeview.viewport()
+		view = self.parent()
+		viewport = view.viewport()
 		self.setGeometry(viewport.rect())
 
 	def eventFilter(self, obj, evt):
@@ -230,12 +231,15 @@ class TreeItemPingOverlay(QWidget):
 		self.index = index
 		self.state = PingAnimPhase.Idle
 
-		list = TreeItemPingOverlay.InstanceList
+		view = self.parent()
+		table = TreeItemPingOverlay.InstanceTable
+		if view not in table: table[ view ] = []
+		list = table[ view ]
 		instanceCount = len(list)
 		for i in range(instanceCount):
 			instance = list[instanceCount - i - 1]
 			if (instance.index == index): instance.stopPing()
-		self.InstanceList.append(self)
+		list.append(self)
 
 		self.timer = QTimer()
 		self.timer.timeout.connect(self.tickPingAnim)
@@ -244,14 +248,18 @@ class TreeItemPingOverlay(QWidget):
 		self.syncTreeViewRect()
 
 	def stopPing(self):
-		self.InstanceList.remove(self)
+		view = self.parent()
+		table = TreeItemPingOverlay.InstanceTable
+		table[ view ].remove(self)
 		self.timer.stop()
 		self.timer.deleteLater()
 		self.deleteLater()
 
 	@staticmethod
-	def stopAll():
-		list = TreeItemPingOverlay.InstanceList
+	def stopAll(view):
+		table = TreeItemPingOverlay.InstanceTable
+		if view not in table: return
+		list = table[ view ]
 		instanceCount = len(list)
 		for i in range(instanceCount):
 			instance = list[instanceCount - i - 1]
@@ -612,7 +620,7 @@ class TreeView(QTreeView):
 			return True
 
 	def mousePressEvent(self, evt):
-		TreeItemPingOverlay.stopAll()
+		TreeItemPingOverlay.stopAll(self)
 		if self.testClickBranchArrow(evt, False): return
 		super().mousePressEvent(evt)
 
@@ -1130,9 +1138,11 @@ class TreeView(QTreeView):
 			curr = curr.parent()
 		return seq
 
+
 def runTreeDemo():
 	view = TreeView()
 	view.setWindowFlags(Qt.Window)
+	view.setAttribute(Qt.WA_DeleteOnClose, True)
 	model = QStandardItemModel()
 	for i in range(5):
 		n = QStandardItem(f'Item_{i}')

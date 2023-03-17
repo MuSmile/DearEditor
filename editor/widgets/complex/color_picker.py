@@ -662,14 +662,16 @@ class _ColorHexEdit(QLineEdit):
 
 
 #####################  PUBLIC  #####################
+_touchMode = False
+
 class ColorPicker(QWidget):
 	colorChanged = Signal(QColor, str) # color: QColor, reason: str
 	
 	ColorSpace = _ColorSpaceRgb
-	Instanced = False
+	Instance = False
 	PrevLoc = None
 
-	def __init__(self, initColor):
+	def __init__(self, initColor = None):
 		ide = getIde()
 		super().__init__(ide.activeWindow())
 		ide.focusChanged.connect(self.onFocusChange)
@@ -683,7 +685,7 @@ class ColorPicker(QWidget):
 		self.initColor = QColor(initColor)
 		self.currentColor = QColor(initColor)
 		if ColorPicker.PrevLoc: self.move(ColorPicker.PrevLoc)
-		ColorPicker.Instanced = True
+		ColorPicker.Instance = self
 
 		btn = _ColorPickerBtn(self)
 		btn.clicked.connect(self.pickScreenshotColor)
@@ -761,11 +763,11 @@ class ColorPicker(QWidget):
 	def closeEvent(self, evt):
 		super().closeEvent(evt)
 		getIde().focusChanged.disconnect(self.onFocusChange)
-		ColorPicker.PrevLoc = self.pos()
-		ColorPicker.Instanced = False
+		if not _touchMode: ColorPicker.PrevLoc = self.pos()
+		ColorPicker.Instance = None
 
 	def onFocusChange(self, old, now):
-		if not now: return
+		if not now or _touchMode: return
 		if not isinstance(now, QWidget): return
 		if now != self and not isParentOfWidget(self, now): self.close()
 
@@ -949,6 +951,14 @@ class ColorPresetEditor(QWidget):
 		self.parent().presetEditor = None
 
 def createColorPicker(initColor):
-	if ColorPicker.Instanced: return
+	if ColorPicker.Instance: return
 	ColorPicker(initColor).show()
 
+def touchColorPicker():
+	global _touchMode
+	_touchMode = True
+	cp = ColorPicker('red')
+	cp.show()
+	faraway = 1000000
+	cp.move(faraway, faraway)
+	QTimer.singleShot(1, lambda: (cp.close(), _touchMode := False))

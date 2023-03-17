@@ -7,15 +7,15 @@
 import platform
 from PySide6.QtCore import Qt
 
-__system__ = platform.system()
+__sys__ = platform.system()
 
 def setDarkAppearance():
 	"""Enable system dark mode appearance.
 	"""
-	if __system__ == 'Windows':
+	if __sys__ == 'Windows':
 		pass
 
-	elif __system__ == 'Darwin':
+	elif __sys__ == 'Darwin':
 		from Cocoa import NSApp, NSAppearance
 		appearance = NSAppearance.appearanceNamed_('NSAppearanceNameVibrantDark')
 		NSApp.setAppearance_(appearance)
@@ -23,20 +23,20 @@ def setDarkAppearance():
 def setLightAppearance():
 	"""Enable system light mode appearance.
 	"""
-	if __system__ == 'Windows':
+	if __sys__ == 'Windows':
 		pass
 
-	elif __system__ == 'Darwin':
+	elif __sys__ == 'Darwin':
 		from Cocoa import NSApp, NSAppearance
 		appearance = NSAppearance.appearanceNamed_('NSAppearanceNameVibrantLight')
 		NSApp.setAppearance_(appearance)
 
 
 # def setDarkAppearanceForWindow(widget):
-# 	if __system__ == 'Windows':
+# 	if __sys__ == 'Windows':
 # 		pass
 
-# 	elif __system__ == 'Darwin':
+# 	elif __sys__ == 'Darwin':
 # 		from objc import objc_object
 # 		from Cocoa import NSAppearance
 
@@ -56,10 +56,10 @@ def setLightAppearance():
 # 		window.setAppearance_(appearance)
 
 # def setLightAppearanceForWindow(widget):
-# 	if __system__ == 'Windows':
+# 	if __sys__ == 'Windows':
 # 		pass
 
-# 	elif __system__ == 'Darwin':
+# 	elif __sys__ == 'Darwin':
 # 		from objc import objc_object
 # 		from Cocoa import NSAppearance
 
