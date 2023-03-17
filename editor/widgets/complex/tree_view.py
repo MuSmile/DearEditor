@@ -1,11 +1,12 @@
-import functools, time
+import time, functools
 from enum import Enum
 from math import floor
-from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QMimeData, QItemSelectionModel, QEvent
-from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QAbstractItemView, QItemDelegate, QStyle, QStyleOption, QStylePainter
-from PySide6.QtGui import QStandardItemModel, QStandardItem, QPen, QBrush, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent, QRadialGradient
+from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QItemSelectionModel, QEvent
+from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle, QStyleOption
+from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
 from editor.common.math import clamp, lerp
 from editor.common.ease import easeInOutQuad, easeOutQuad
+from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex
 from editor.common.icon_cache import getThemePixmap
 
 
@@ -92,7 +93,7 @@ class TreeItemDelegate(QItemDelegate):
 		view = self.view
 		if not view.drawBranchLine: return
 
-		itemDepth = self._depth(index)
+		itemDepth = modelIndexDepth(index)
 		drawDepth = itemDepth - view.branchLineFilterDepth
 		if drawDepth >= 0:
 			painter.setOpacity(0.4)
@@ -126,15 +127,6 @@ class TreeItemDelegate(QItemDelegate):
 		rect = QRect(cx - sizeHalf - view.branchArrowOffset, cy - sizeHalf, size, size)
 		branchArrow = view.isExpanded(index) and view.branchOpened or view.branchClosed
 		painter.drawPixmap(rect, branchArrow)
-
-	####################  UTILS  ####################
-	def _depth(self, index):
-		depth = 0
-		parent = index.parent()
-		while parent.isValid():
-			depth += 1
-			parent = parent.parent()
-		return depth
 
 class PingAnimPhase(Enum):
 	ZoomIn  = 0
@@ -572,13 +564,13 @@ class TreeView(QTreeView):
 		self.dropAccepted = None
 		self.setDragEnabled(True)
 		self.setAcceptDrops(True)
-		self.setDragDropMode(QAbstractItemView.InternalMove)
-		self.setSelectionMode(QAbstractItemView.ExtendedSelection)
+		self.setDragDropMode(self.InternalMove)
+		self.setSelectionMode(self.ExtendedSelection)
 
-		self.setEditTriggers(QAbstractItemView.SelectedClicked)
+		self.setEditTriggers(self.SelectedClicked)
 		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-		self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+		self.setVerticalScrollMode(self.ScrollPerPixel)
 		# self.verticalScrollBar().setSingleStep(5)
 
 		self.verticalScrollBar().valueChanged.connect(self.onScrollerValueChange)
@@ -707,7 +699,7 @@ class TreeView(QTreeView):
 		elif key == Qt.Key_Delete or (key == Qt.Key_Backspace and mods & Qt.ControlModifier):
 			model = self.model()
 			selections = self.selectionModel().selectedIndexes()
-			selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and 1 or -1))
+			selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and 1 or -1))
 			for idx in selections: model.removeRow(idx.row(), idx.parent())
 
 		elif key == Qt.Key_Escape:
@@ -727,14 +719,14 @@ class TreeView(QTreeView):
 		model = self.model()
 		selectionModel = self.selectionModel()
 		selections = selectionModel.selectedIndexes()
-		selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and -1 or 1))
+		selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and -1 or 1))
 
 		# detect children and remove
 		for i in range(len(selections) - 1, 0, -1):
 			curr = selections[i]
 			for j in range(i - 1, -1, -1):
 				test = selections[j]
-				if self._checkIsChildOf(curr, test):
+				if isChildOfModelIndex(curr, test):
 					del selections[i]
 					break
 
@@ -768,14 +760,14 @@ class TreeView(QTreeView):
 		model = self.model()
 		selectionModel = self.selectionModel()
 		selections = selectionModel.selectedIndexes()
-		selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and -1 or 1))
+		selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and -1 or 1))
 		
 		# detect children and remove
 		for i in range(len(selections) - 1, 0, -1):
 			curr = selections[i]
 			for j in range(i - 1, -1, -1):
 				test = selections[j]
-				if self._checkIsChildOf(curr, test):
+				if isChildOfModelIndex(curr, test):
 					del selections[i]
 					break
 
@@ -887,7 +879,7 @@ class TreeView(QTreeView):
 		if selectionModel.isSelected(hovered): return False
 		for select in selectionModel.selectedIndexes():
 			# todo: check root index
-			if self._checkIsChildOf(hovered, select): return False
+			if isChildOfModelIndex(hovered, select): return False
 		return True
 
 	def dragMoveEvent(self, evt):
@@ -934,7 +926,7 @@ class TreeView(QTreeView):
 			model = self.model()
 			selectionModel = self.selectionModel()
 			selections = selectionModel.selectedIndexes()
-			selections.sort(key = functools.cmp_to_key(lambda e1, e2: self._checkIsAboveOf(e1, e2) and 1 or -1))
+			selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and 1 or -1))
 			selectionModel.clear()
 
 			dropInsertRow, dropParent = None, None
@@ -1078,7 +1070,7 @@ class TreeView(QTreeView):
 		if not self.model().hasChildren(self.hoveredIndex): return
 		for selection in self.selectedIndexes():
 			if self.hoveredIndex == selection: return
-			if self._checkIsChildOf(self.hoveredIndex, selection): return
+			if isChildOfModelIndex(self.hoveredIndex, selection): return
 		if self.isExpanded(self.hoveredIndex): return
 		self.toggleExpand(self.hoveredIndex, False)
 		# self.expandInstant(self.hoveredIndex, False)
@@ -1111,35 +1103,8 @@ class TreeView(QTreeView):
 		for row in range(result - 1): result += self._visibleRowCountRecursive(model.index(row, 0, parent), model)
 		return result + self._flatVisibleRowNumber(parent, model)
 
-	def _checkIsChildOf(self, index, test):
-		parent = index.parent()
-		while parent.isValid():
-			if parent == test: return True
-			parent = parent.parent()
-		return False
-
-	def _checkIsAboveOf(self, index, test):
-		seq1 = self._getRowSequence(index)
-		seq2 = self._getRowSequence(test)
-		len1 = len(seq1)
-		len2 = len(seq2)
-		for i in range(min(len1, len2)):
-			row1 = seq1[i]
-			row2 = seq2[i]
-			if row1 < row2: return True
-			if row1 > row2: return False
-		return len1 < len2
-
-	def _getRowSequence(self, index):
-		seq = []
-		curr = index
-		while curr.isValid():
-			seq.insert(0, curr.row())
-			curr = curr.parent()
-		return seq
-
-
 def runTreeDemo():
+	from PySide6.QtGui import QStandardItemModel, QStandardItem
 	view = TreeView()
 	view.setWindowFlags(Qt.Window)
 	view.setAttribute(Qt.WA_DeleteOnClose, True)

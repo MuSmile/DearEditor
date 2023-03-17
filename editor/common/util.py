@@ -44,19 +44,88 @@ def quitApp():
 
 
 #############################################
-def isParentOfWidget(test, wgt):
+def modelIndexDepth(index):
+	"""Calculate depth of a QModelIndex.
+	
+	Args:
+		QModelIndex index: Given index to calculate.
+
+	Returns:
+		int: depth of given QModelIndex.
+	"""
+	depth = 0
+	parent = index.parent()
+	while parent.isValid():
+		depth += 1
+		parent = parent.parent()
+	return depth
+
+def modelIndexRowSequence(index):
+	"""Calculate row number sequence of a QModelIndex.
+	
+	Args:
+		QModelIndex index: Given index to calculate.
+
+	Returns:
+		list[int]: number sequence of given QModelIndex.
+	"""
+	seq = []
+	curr = index
+	while curr.isValid():
+		seq.insert(0, curr.row())
+		curr = curr.parent()
+	return seq
+
+def isAboveOfModelIndex(test, index):
+	"""Check a given QModelIndex is above of another in model.
+	
+	Args:
+		QModelIndex test: Given QModelIndex to check.
+		QModelIndex index: Given QModelIndex to check against.
+
+	Returns:
+		bool: Weather given QModelIndex is above of another or not.
+	"""
+	seq1 = modelIndexRowSequence(test)
+	seq2 = modelIndexRowSequence(index)
+	len1 = len(seq1)
+	len2 = len(seq2)
+	for i in range(min(len1, len2)):
+		row1 = seq1[i]
+		row2 = seq2[i]
+		if row1 < row2: return True
+		if row1 > row2: return False
+	return len1 < len2
+
+def isChildOfModelIndex(test, index):
+	"""Check a given QModelIndex is child of another.
+	
+	Args:
+		QModelIndex test: Given QModelIndex to check.
+		QModelIndex index: Given QModelIndex to check against.
+
+	Returns:
+		bool: Weather given QModelIndex is child of another or not.
+	"""
+	p = test.parent()
+	while p.isValid():
+		if p == index: return True
+		p = p.parent()
+	return False
+
+def isParentOfWidget(test, widget):
 	"""Check a given qt widget is parent of another.
 	
 	Args:
 		QWidget test: Given widget to check.
-		QWidget wgt: Given widget to check against.
+		QWidget widget: Given widget to check against.
 
 	Returns:
 		bool: Weather given qt widget is parent of another or not.
 	"""
-	if not wgt: return False
+	if not widget: return False
 	if not test: return False
-	p = wgt.parent()
+	p = widget.parent()
 	while p:
 		if p == test: return True
 		p = p.parent()

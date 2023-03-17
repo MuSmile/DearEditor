@@ -9,7 +9,7 @@ from editor.widgets.basic.line_edit import LineEdit
 from editor.widgets.basic.search_edit import SearchEdit
 from editor.widgets.container.collapsible import CollapsibleWidget
 from editor.widgets.container.sliding_stacked import SlidingStackedWidget
-from editor.widgets.misc.waiting_spinner import WaitingSpinner
+from editor.widgets.misc.spinner import WaitingSpinner
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
 from editor.common.util import createTestMenu
@@ -43,7 +43,7 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
 		treeStacked.addStackedWidget('Container/Collapsible', self.createCollapsiblePreview())
 		treeStacked.addStackedWidget('Container/SlidingStacked', self.createSlidingStackedPreview())
-		treeStacked.addStackedWidget('Misc/WaitingSpinner', self.createWaitingSpinnerPreview())
+		treeStacked.addStackedWidget('Misc/Spinner', self.createSpinnerPreview())
 		treeStacked.tree.expandAll()
 		layout.addWidget(treeStacked)
 
@@ -416,7 +416,7 @@ class GalleryView(DockView):
 
 
 		return preview
-	def createWaitingSpinnerPreview(self):
+	def createSpinnerPreview(self):
 		preview = QWidget(self)
 
 		layout = QVBoxLayout()
