@@ -1,4 +1,4 @@
-"""This module provides basic types.
+"""This module provides basic types support.
 """
 
 from PySide6.QtGui import QColor

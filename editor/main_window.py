@@ -1,15 +1,21 @@
+"""DearEditor's main window module.
+"""
+
 import platform
+__sys__ = platform.system()
+
 from PySide6.QtCore import Qt, QTimer, QEvent
 from PySide6.QtWidgets import QMainWindow
+from editor.common.util import getIde
+from editor.view_manager import createDockManager, createDockView
 from editor.widgets.menubar import createMenuBar
 from editor.widgets.toolbar import createToolBar
 from editor.widgets.statusbar import createStatusBar
-from editor.view_manager import createDockManager, createDockView
-from editor.common.util import getIde
-import editor.views, extensions
 from editor.widgets.complex.color_picker import touchColorPicker
 
-__sys__ = platform.system()
+# init editor views and all extensions
+import editor.views, extensions
+
 
 class MainWindow(QMainWindow):
 	def __init__(self, parent = None):
@@ -21,14 +27,14 @@ class MainWindow(QMainWindow):
 		self.addToolBar(createToolBar(self))
 		self.setStatusBar(createStatusBar(self))
 
-		self.setupEditorViews()
-		self.activateWindow()
-
 		# There is a stupid issue on MacOS is, when open a complex top-level widget
 		# with existing floating dock, the dock(s) will render with strange wrong behavior...
 		# However if we open any complex top-level widget before floating docks, the issue disappears,
 		# So let's touch ColorPicker for simply fixing...
 		if __sys__ == 'Darwin': touchColorPicker()
+
+		self.setupEditorViews()
+		self.activateWindow()
 
 
 	def setupEditorViews(self):

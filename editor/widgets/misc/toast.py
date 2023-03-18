@@ -51,6 +51,7 @@ class Toast(QWidget):
 		rect = self.rect()
 		painter = QPainter(self)
 		painter.setRenderHints(QPainter.Antialiasing, True)
+		painter.setRenderHints(QPainter.TextAntialiasing, True)
 		painter.setBrush(QBrush(QColor(100, 100, 100, self._alpha)))
 		painter.setPen(Qt.transparent)
 		painter.drawRoundedRect(rect, 15, 15)

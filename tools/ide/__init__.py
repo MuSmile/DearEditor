@@ -14,6 +14,7 @@ def enableStdout(enabled):
 		sys.stdout = sys.__stdout__
 		sys.stderr = sys.__stderr__
 	else:
+		print('sss')
 		devnull = open(os.devnull, 'w')
 		sys.stdout = devnull
 		sys.stderr = devnull

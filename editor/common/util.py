@@ -132,6 +132,14 @@ def isParentOfWidget(test, widget):
 	return False
 
 def createTestMenu(parent):
+	"""Create a simple QMenu for test usage.
+	
+	Args:
+		QWidget parent: QMenu's parent.
+
+	Returns:
+		QMenu: Required test menu.
+	"""
 	menu = QMenu(parent)
 	menu.addAction("Item 1")
 	menu.addAction("Item 2")
@@ -141,11 +149,30 @@ def createTestMenu(parent):
 
 #############################################
 def toInt(text, default = 0):
+	"""Convert a text to corresponding integer.
+	
+	Args:
+		str text: Given text to convert.
+		int default: Return this value when given text is not a valid integer text.
+
+	Returns:
+		int: Converted integer from given text.
+	"""
 	try:
 		return int(text)
 	except ValueError:
 		return default
-def toFloat(text, default = 0.0):
+
+def toFloat(text, default = 0):
+	"""Convert a text to corresponding float number.
+	
+	Args:
+		str text: Given text to convert.
+		float default: Return this value when given text is not a valid float text.
+
+	Returns:
+		float: Converted float number from given text.
+	"""
 	try:
 		return float(text)
 	except ValueError:
@@ -153,7 +180,16 @@ def toFloat(text, default = 0.0):
 
 
 #############################################
-def fuzzyContains(str, substr):
+def fuzzyContains(text, subtext):
+	"""Check if a text fuzzy contains another.
+	
+	Args:
+		str text: Given text to check against.
+		str subtext: Given text to check.
+
+	Returns:
+		bool: Weather text fuzzy contains subtext or not.
+	"""
 	len1, len2 = len(str), len(substr)
 	if len1 < len2: return False
 	if len1 == len2 and str == substr: return True
@@ -168,17 +204,28 @@ def fuzzyContains(str, substr):
 #############################################
 _lastRecordTime = None
 def record():
+	"""Record start time of some operation. Use ``report()`` to get elapsed time since ``record()``.
+	"""
 	global _lastRecordTime
 	_lastRecordTime = time.perf_counter()
 
 def report():
+	"""Report elapsed time since last ``record()``.
+
+	Returns:
+		float: Elapsed time in millisecond.
+	"""
 	return (time.perf_counter() - _lastRecordTime) * 1000
 
 
 #############################################
 _transparentBgPixmap = None
-_transparentBgBrush = None
 def requestTransparentBgPixmap():
+	"""Request grid-tyle transparent background pixmap.
+
+	Returns:
+		QPixmap: Required transparent background pixmap.
+	"""
 	global _transparentBgPixmap
 	if not _transparentBgPixmap:
 		_transparentBgPixmap = QPixmap(8, 8)
@@ -188,7 +235,14 @@ def requestTransparentBgPixmap():
 		_painter.fillRect(4, 0, 4, 4, Qt.white)
 		_painter.fillRect(0, 4, 4, 4, Qt.white)
 	return _transparentBgPixmap
+
+_transparentBgBrush = None
 def requestTransparentBgBrush():
+	"""Request grid-tyle transparent background brush.
+
+	Returns:
+		QBrush: Required transparent background brush.
+	"""
 	global _transparentBgBrush
 	if not _transparentBgBrush:
 		pixmap = requestTransparentBgPixmap()
@@ -198,6 +252,11 @@ def requestTransparentBgBrush():
 
 #############################################
 def shakeWidget(target):
+	"""Apply simple position shaking animation on specified target.
+
+	Args:
+		QWidget target: Given target widget to shake.
+	"""
 	if hasattr(target, '_shakeing'): return
 	animation = QPropertyAnimation(target, b'pos', target)
 	animation.finished.connect(lambda: delattr(target, '_shakeing'))

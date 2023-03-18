@@ -61,20 +61,54 @@ QLineEdit:read-only {
     background: gray;
 }
 
-LineEdit[text='']
+PlaceholderLineEdit[text='']
 {
 	font-size: 10px;
 	color: #999;
 }
 
-SearchEdit
+SearchLineEdit
+{
+	qproperty-searchIcon: url(img/search.png);
+	qproperty-closeButtonLineColor: #ccc;
+	qproperty-closeButtonLineWidth: 1;
+}
+
+PathLineEdit
+{
+	border-radius: 2px;
+	qproperty-buttonRadius: 2;
+
+	qproperty-buttonIcon: url(img/folder_close.png);
+	qproperty-buttonColor: #444;
+	qproperty-buttonColorHovered: #666;
+}
+
+ColorEdit
 {
 	border: 1px solid #222;
+	min-height: 18px;
+	max-height: 18px;
+
 	border-radius: 2px;
-	padding-right: 12px;
-	padding-left: 16px;
-	color: #eee;
+	qproperty-buttonRadius: 2;
+
+	qproperty-buttonIcon: url(img/color_picker.png);
+	qproperty-buttonColor: #444;
+	qproperty-buttonColorHovered: #666;
 }
+ColorEdit:hover
+{
+	border: 1px solid #777;
+}
+ColorEdit:focus
+{
+	border: 1px solid #5ae;
+}
+ColorEdit:read-only {
+    background: gray;
+}
+
 
 /*
 Slider

@@ -72,6 +72,7 @@ class _ColorRing(QWidget):
 		painter = QPainter(self)
 		if self.overridePaintFunc: return self.overridePaintFunc(painter)
 		painter.setRenderHint(QPainter.Antialiasing)
+		painter.setRenderHint(QPainter.SmoothPixmapTransform)
 		painter.fillPath(self.ringPath, self.ringGradient)
 		painter.drawImage(self.colorRect, self.colorRectImage)
 
@@ -159,7 +160,7 @@ class _ColorPickerBtn(QWidget):
 
 	def paintEvent(self, evt):
 		painter = QPainter(self)
-		# painter.setRenderHint(QPainter.Antialiasing)
+		painter.setRenderHint(QPainter.SmoothPixmapTransform)
 		painter.drawPixmap(self.rect(), getThemePixmap('color_picker.png'))
 
 class _ColorPreview(QWidget):
@@ -309,23 +310,24 @@ class _ColorCptSlot(QWidget):
 		rect = self.rect()
 		w, h = rect.width(), rect.height()
 		painter = QPainter(self)
+		painter.setRenderHint(QPainter.Antialiasing)
+		painter.setPen(QColor('#222'))
 		if self.isAlpha:
 			brush = requestTransparentBgBrush()
-			painter.fillRect(rect, brush)
+			painter.setBrush(brush)
+			painter.drawRect(rect)
 
 		hw = self.handleWidth
 		gradient = self.buildGradient()
 		gradient.setStart(hw/2, 0)
 		gradient.setFinalStop(w - hw/2, 0)
-		painter.fillRect(rect, gradient)
-
-		painter.setPen(QColor('#222'))
-		painter.drawRect(0, 0, w-1, h-1)
+		painter.setBrush(gradient)
+		painter.drawRect(rect)
 
 		painter.setPen(QColor('#aaa'))
 		painter.setBrush(QColor('#ccc'))
 		x = round((w - hw) * self.value)
-		painter.drawRect(x, 0, hw, h-1)
+		painter.drawRect(x, 0, hw, h)
 
 	def mousePressEvent(self, evt):
 		x = evt.x()
@@ -656,14 +658,13 @@ class _ColorHexEdit(QLineEdit):
 	def paintEvent(self, evt):
 		super().paintEvent(evt)
 		painter = QPainter(self)
+		painter.setRenderHint(QPainter.TextAntialiasing)
 		painter.setPen(QColor('#bbb'))
 		painter.setFont(self.font())
 		painter.drawText(5, 14, '#')
 
 
 #####################  PUBLIC  #####################
-_touchMode = False
-
 class ColorPicker(QWidget):
 	colorChanged = Signal(QColor, str) # color: QColor, reason: str
 	
@@ -754,6 +755,17 @@ class ColorPicker(QWidget):
 		self.colorCpt3 = cpt3
 		self.colorCptA = cptA
 		self.presetEditor = None
+		self.touchMode = False
+
+	def beginTouchMode(self):
+		self.touchMode = True
+		self.show()
+		faraway = 1000000
+		self.move(faraway, faraway)
+
+	def endTouchMode(self):
+		self.close()
+		self.touchMode = False
 
 	def paintEvent(self, evt):
 		painter = QPainter(self)
@@ -763,11 +775,11 @@ class ColorPicker(QWidget):
 	def closeEvent(self, evt):
 		super().closeEvent(evt)
 		getIde().focusChanged.disconnect(self.onFocusChange)
-		if not _touchMode: ColorPicker.PrevLoc = self.pos()
+		if not self.touchMode: ColorPicker.PrevLoc = self.pos()
 		ColorPicker.Instance = None
 
 	def onFocusChange(self, old, now):
-		if not now or _touchMode: return
+		if not now or self.touchMode: return
 		if not isinstance(now, QWidget): return
 		if now != self and not isParentOfWidget(self, now): self.close()
 
@@ -955,10 +967,6 @@ def createColorPicker(initColor):
 	ColorPicker(initColor).show()
 
 def touchColorPicker():
-	global _touchMode
-	_touchMode = True
-	cp = ColorPicker('red')
-	cp.show()
-	faraway = 1000000
-	cp.move(faraway, faraway)
-	QTimer.singleShot(1, lambda: (cp.close(), _touchMode := False))
+	cp = ColorPicker()
+	cp.beginTouchMode()
+	QTimer.singleShot(1, cp.endTouchMode)

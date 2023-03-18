@@ -33,6 +33,7 @@ class TreeItemDelegate(QItemDelegate):
 	def paint(self, painter, option, index):
 		painter.setRenderHint(QPainter.Antialiasing, True)
 		painter.setRenderHint(QPainter.TextAntialiasing, True)
+		# painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
 
 		view = self.view
 		rect = option.rect
@@ -298,6 +299,7 @@ class TreeItemPingOverlay(QWidget):
 		rect = view.visualRect(index)
 		painter = QPainter(self)
 		painter.setRenderHints(QPainter.Antialiasing, True)
+		painter.setRenderHints(QPainter.TextAntialiasing, True)
 
 		option = QStyleOption()
 		option.initFrom(self)
@@ -560,6 +562,7 @@ class TreeView(QTreeView):
 		self.setAlternatingRowColors(False)
 		self.setExpandsOnDoubleClick(False)
 		self.setItemsExpandable(False)
+		self.setFocusPolicy(Qt.ClickFocus)
 
 		self.dropAccepted = None
 		self.setDragEnabled(True)

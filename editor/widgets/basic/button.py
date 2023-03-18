@@ -58,7 +58,7 @@ class PopupPushButton(QPushButton):
 		act2.setChecked(True)
 		act3 = menu.addAction("Quit")
 		act4 = menu.addAction("Long item")
-		if (self.text() == 'build'):
+		if (self.text() == 'Layout'):
 			act4.setShortcut('Meta+T')
 			act4.triggered.connect(lambda: print('shit'))
 			act4.setShortcutContext(Qt.ApplicationShortcut)

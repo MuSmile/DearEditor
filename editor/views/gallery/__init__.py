@@ -5,11 +5,11 @@ from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.progress_bar import ProgressBar
-from editor.widgets.basic.line_edit import LineEdit
-from editor.widgets.basic.search_edit import SearchEdit
+from editor.widgets.basic.line_edit import TextLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
+from editor.widgets.basic.color_edit import ColorEdit
+from editor.widgets.basic.spinner import WaitingSpinner
 from editor.widgets.container.collapsible import CollapsibleWidget
 from editor.widgets.container.sliding_stacked import SlidingStackedWidget
-from editor.widgets.misc.spinner import WaitingSpinner
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
 from editor.common.util import createTestMenu
@@ -25,14 +25,14 @@ class GalleryView(DockView):
 		self.layout().addLayout(layout)
 
 		searchbar = QWidget(self)
-		searchbar.setFixedHeight(25)
+		searchbar.setFixedHeight(24)
 		searchbar.setObjectName('searchbar')
 		searchbarLayout = QHBoxLayout(searchbar)
 		searchbarLayout.setContentsMargins(0, 2, 2, 4)
 		searchbarLayout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
 		layout.addWidget(searchbar)
 
-		searchEdit = SearchEdit(self)
+		searchEdit = SearchLineEdit(self)
 		searchEdit.setFixedWidth(300)
 		searchbarLayout.addWidget(searchEdit)
 
@@ -41,9 +41,9 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/CheckBox', self.createCheckBoxPreview())
 		treeStacked.addStackedWidget('Basic/LineEdit', self.createLineEditPreview())
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
+		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
 		treeStacked.addStackedWidget('Container/Collapsible', self.createCollapsiblePreview())
 		treeStacked.addStackedWidget('Container/SlidingStacked', self.createSlidingStackedPreview())
-		treeStacked.addStackedWidget('Misc/Spinner', self.createSpinnerPreview())
 		treeStacked.tree.expandAll()
 		layout.addWidget(treeStacked)
 
@@ -230,10 +230,9 @@ class GalleryView(DockView):
 		comboBoxLayout.setSpacing(20)
 		comboBoxLayout.setAlignment(Qt.AlignLeft)
 
-		lineEdit1 = QLineEdit()
+		lineEdit1 = TextLineEdit()
 		lineEdit1.setClearButtonEnabled(True)
-		lineEdit2 = LineEdit()
-		lineEdit2.setPlaceholderText('placeholder')
+		lineEdit2 = PlaceholderLineEdit('placeholder')
 
 		comboBoxLayout.addWidget(lineEdit1)
 		comboBoxLayout.addWidget(lineEdit2)
@@ -249,10 +248,43 @@ class GalleryView(DockView):
 		searchEditLayout.setSpacing(20)
 		searchEditLayout.setAlignment(Qt.AlignLeft)
 
-		searchEdit = SearchEdit()
+		searchEdit = SearchLineEdit()
 
 		searchEditLayout.addWidget(searchEdit)
 		layout.addLayout(searchEditLayout)
+
+
+		#############  PATH  #############
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('PathEdit'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		pathEditLayout = QHBoxLayout()
+		pathEditLayout.setSpacing(20)
+		pathEditLayout.setAlignment(Qt.AlignLeft)
+
+		filePathEdit = PathLineEdit(False)
+		folderPathEdit = PathLineEdit(True)
+
+		pathEditLayout.addWidget(filePathEdit)
+		pathEditLayout.addWidget(folderPathEdit)
+		layout.addLayout(pathEditLayout)
+
+
+		#############  COLOR  #############
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('ColorEdit'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		colorEditLayout = QHBoxLayout()
+		colorEditLayout.setSpacing(20)
+		colorEditLayout.setAlignment(Qt.AlignLeft)
+
+		colorEdit = ColorEdit()
+		colorEdit.setFixedWidth(220)
+
+		colorEditLayout.addWidget(colorEdit)
+		layout.addLayout(colorEditLayout)
 
 
 		#############  KEYSEQ  #############
