@@ -1106,25 +1106,3 @@ class TreeView(QTreeView):
 		for row in range(result - 1): result += self._visibleRowCountRecursive(model.index(row, 0, parent), model)
 		return result + self._flatVisibleRowNumber(parent, model)
 
-def runTreeDemo():
-	from PySide6.QtGui import QStandardItemModel, QStandardItem
-	view = TreeView()
-	view.setWindowFlags(Qt.Window)
-	view.setAttribute(Qt.WA_DeleteOnClose, True)
-	model = QStandardItemModel()
-	for i in range(5):
-		n = QStandardItem(f'Item_{i}')
-		n.setData(getThemePixmap('entity.png').scaled(16, 16), Qt.DecorationRole)
-		model.appendRow(n)
-		for j in range(4):
-			c = QStandardItem(f'Child_{j}')
-			c.setData(getThemePixmap('entity.png').scaled(16, 16), Qt.DecorationRole)
-			n.appendRow(c)
-			for k in range(4):
-				s = QStandardItem(f'Subchild_{k}')
-				# s.setData(getThemePixmap('entity.png').scaled(16, 16), Qt.DecorationRole)
-				c.appendRow(s)
-
-	# model.dataChanged.connect(lambda i1, i2, r: print(r))
-	view.setModel(model)
-	view.show()

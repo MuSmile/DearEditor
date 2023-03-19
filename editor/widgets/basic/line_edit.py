@@ -1,31 +1,104 @@
 import os
-from PySide6.QtCore import Qt, QRect, Property
+from PySide6.QtCore import Qt, QRect, Property, Signal
 from PySide6.QtGui import QCursor, QPixmap, QPainter, QPen, QColor, QPainterPath
-from PySide6.QtWidgets import QLineEdit, QFileDialog
+from PySide6.QtWidgets import QLineEdit, QFileDialog, QStyle, QStyleOption
 from editor.common.icon_cache import getThemePixmap
+from editor.common.util import toInt, toFloat
+from editor.common.math import sign
 
-class TextLineEdit(QLineEdit):
+class LineEdit(QLineEdit):
 	def __init__(self, parent = None):
 		super().__init__(parent)
 		self.returnPressed.connect(self.clearFocus)
 
 	def keyPressEvent(self, evt):
-		if evt.key() == Qt.Key_Escape:
-			self.clear()
-			self.clearFocus()
-		else:
-			super().keyPressEvent(evt)
+		if evt.key() == Qt.Key_Escape: self.clearFocus()
+		super().keyPressEvent(evt)
 
 
-class IntLineEdit(QLineEdit):
-	pass
+class IntLineEdit(LineEdit):
+	valueChanged = Signal(int)
+
+	def __init__(self, value = 0, step = 1, parent = None):
+		super().__init__(parent)
+		self.step = step
+		self.value = value
+		self.setText(str(value))
+		self.textEdited.connect(self.onTextEdited)
+
+	def onTextEdited(self, text):
+		if text[-1] == '.': text = text[:-1]
+		value = toInt(text)
+		if self.value == value: return
+		self.value = value
+		self.valueChanged.emit(value)
+		
+	def setValue(self, value):
+		if self.value == value: return
+		self.value = value
+		self.setText(str(value))
+		self.valueChanged.emit(value)
+
+	def checkValue(self):
+		text = self.text()
+		if text[-1] == '.': text = text[:-1]
+		value = str(toInt(text))
+		if text != value: self.setText(value)
+
+	def focusOutEvent(self, evt):
+		super().focusOutEvent(evt)
+		self.checkValue()
+
+	def wheelEvent(self, evt):
+		if not self.hasFocus(): return
+		angleDelta = evt.angleDelta()
+		shiftPressed = evt.modifiers() & Qt.ShiftModifier
+		delta = sign(angleDelta.x()) * 10 if shiftPressed else sign(angleDelta.y())
+		self.setValue(self.value + delta * self.step)
 
 
-class FloatLineEdit(QLineEdit):
-	pass
+class FloatLineEdit(LineEdit):
+	valueChanged = Signal(float)
+
+	def __init__(self, value = 0, step = 0.01, parent = None):
+		super().__init__(parent)
+		self.step = step
+		self.value = value
+		self.sigFigures = 6
+		self.setText(str(value))
+		self.textEdited.connect(self.onTextEdited)
+
+	def onTextEdited(self, text):
+		value = round(toFloat(text), self.sigFigures)
+		if self.value == value: return
+		self.value = value
+		self.valueChanged.emit(value)
+		
+	def setValue(self, value):
+		value = round(value, self.sigFigures)
+		if self.value == value: return
+		self.value = value
+		self.setText(str(value))
+		self.valueChanged.emit(value)
+
+	def checkValue(self):
+		text = self.text()
+		value = str(round(toFloat(text), self.sigFigures))
+		if text != value: self.setText(value)
+
+	def focusOutEvent(self, evt):
+		super().focusOutEvent(evt)
+		self.checkValue()
+
+	def wheelEvent(self, evt):
+		if not self.hasFocus(): return
+		angleDelta = evt.angleDelta()
+		shiftPressed = evt.modifiers() & Qt.ShiftModifier
+		delta = sign(angleDelta.x()) * 10 if shiftPressed else sign(angleDelta.y())
+		self.setValue(self.value + delta * self.step)
 
 
-class SearchLineEdit(QLineEdit):
+class SearchLineEdit(LineEdit):
 	@Property(QPixmap)
 	def searchIcon(self):
 		return self._pixmapSearch
@@ -55,7 +128,6 @@ class SearchLineEdit(QLineEdit):
 
 		self.setMouseTracking(True)
 		self.textChanged.connect(self.onTextChange)
-		self.returnPressed.connect(self.clearFocus)
 
 		self._clearBtnVisible = False
 		self._clearBtnHovered = False
@@ -83,11 +155,8 @@ class SearchLineEdit(QLineEdit):
 			self.update()
 
 	def keyPressEvent(self, evt):
-		if evt.key() == Qt.Key_Escape:
-			self.clear()
-			self.clearFocus()
-		else:
-			super().keyPressEvent(evt)
+		if evt.key() == Qt.Key_Escape: self.clear()
+		super().keyPressEvent(evt)
 
 	def mouseMoveEvent(self, evt):
 		super().mouseMoveEvent(evt)
@@ -129,7 +198,7 @@ class SearchLineEdit(QLineEdit):
 			painter.drawLine(rect.topRight(), rect.bottomLeft())
 
 
-class PlaceholderLineEdit(QLineEdit):
+class PlaceholderLineEdit(LineEdit):
 	def __init__(self, placeholder = None, parent = None):
 		super().__init__(parent)
 		self.prevTextIsEmpty = True
@@ -143,7 +212,7 @@ class PlaceholderLineEdit(QLineEdit):
 		self.style().polish(self)
 
 
-class PathLineEdit(QLineEdit):
+class PathLineEdit(LineEdit):
 	@Property(QColor)
 	def buttonColor(self):
 		return self._btnColor
@@ -164,12 +233,42 @@ class PathLineEdit(QLineEdit):
 	def buttonIcon(self, value):
 		self._pixmapBtnIcon = value
 
+	@Property(QColor)
+	def borderColor(self):
+		return self._borderColor
+	@borderColor.setter
+	def borderColor(self, value):
+		self._borderColor = value
+	@Property(QColor)
+	def borderColorHovered(self):
+		return self._borderColorHovered
+	@borderColorHovered.setter
+	def borderColorHovered(self, value):
+		self._borderColorHovered = value
+	@Property(QColor)
+	def borderColorFocused(self):
+		return self._borderColorFocused
+	@borderColorFocused.setter
+	def borderColorFocused(self, value):
+		self._borderColorFocused = value
+	@Property(QColor)
+	def borderColorReadonly(self):
+		return self._borderColorReadonly
+	@borderColorReadonly.setter
+	def borderColorReadonly(self, value):
+		self._borderColorReadonly = value
 	@Property(int)
-	def buttonRadius(self):
-		return self._btnRadius
-	@buttonRadius.setter
-	def buttonRadius(self, value):
-		self._btnRadius = value
+	def borderWidth(self):
+		return self._penBorder.width() - 1
+	@borderWidth.setter
+	def borderWidth(self, value):
+		self._penBorder.setWidth(value + 1)
+	@Property(int)
+	def borderRadius(self):
+		return self._borderRadius
+	@borderRadius.setter
+	def borderRadius(self, value):
+		self._borderRadius = value
 
 	def __init__(self, folderPath, parent = None):
 		super().__init__(parent)
@@ -177,12 +276,17 @@ class PathLineEdit(QLineEdit):
 		self._btnColor = QColor('#444')
 		self._btnColorHovered = QColor('#666')
 		self._pixmapBtnIcon = getThemePixmap('folder_close.png')
-		self._btnRadius = 2
+
+		self._borderColor = QColor('#222')
+		self._borderColorHovered = QColor('#777')
+		self._borderColorFocused = QColor('#5ae')
+		self._borderColorReadonly = QColor('gray')
+		self._borderRadius = 2
+		self._penBorder = QPen(self._borderColor, 2)
 		
 		self._btnHovered = False
 
 		self.setMouseTracking(True)
-		self.returnPressed.connect(self.clearFocus)
 		self.folderPath = folderPath
 
 	def onButtonClick(self):
@@ -209,13 +313,6 @@ class PathLineEdit(QLineEdit):
 		w, h = self.width(), self.height()
 		self._btnRect = QRect(w - h, 0, h, h)
 		self.setStyleSheet(f'PathLineEdit{{ padding-right: {h}px; }}')
-
-	def keyPressEvent(self, evt):
-		if evt.key() == Qt.Key_Escape:
-			self.clear()
-			self.clearFocus()
-		else:
-			super().keyPressEvent(evt)
 
 	def mouseMoveEvent(self, evt):
 		super().mouseMoveEvent(evt)
@@ -252,10 +349,21 @@ class PathLineEdit(QLineEdit):
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing)
 		# painter.setRenderHint(QPainter.SmoothPixmapTransform)
+		rect = self.rect()
 		path = QPainterPath()
-		radius = max(self._btnRadius - 1, 0)
-		path.addRoundedRect(self.rect().adjusted(1, 1, -1, -1), radius, radius)
+		path.addRoundedRect(rect, self._borderRadius, self._borderRadius)
 		painter.setClipPath(path)
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
 		painter.drawPixmap(self._btnRect.adjusted(3, 3, -3, -3), self._pixmapBtnIcon)
 
+		option = QStyleOption()
+		option.initFrom(self)
+		if option.state & QStyle.State_HasFocus:
+			self._penBorder.setColor(self._borderColorFocused)
+		elif option.state & QStyle.State_MouseOver:
+			self._penBorder.setColor(self._borderColorHovered)
+		else:
+			self._penBorder.setColor(self._borderColor)
+
+		painter.setPen(self._penBorder)
+		painter.drawRoundedRect(rect, self._borderRadius, self._borderRadius)

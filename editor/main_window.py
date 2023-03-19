@@ -27,10 +27,12 @@ class MainWindow(QMainWindow):
 		self.addToolBar(createToolBar(self))
 		self.setStatusBar(createStatusBar(self))
 
-		# There is a stupid issue on MacOS is, when open a complex top-level widget
-		# with existing floating dock, the dock(s) will render with strange wrong behavior...
-		# However if we open any complex top-level widget before floating docks, the issue disappears,
-		# So let's touch ColorPicker for simply fixing...
+		# There is a stupid issue on MacOS:
+		# When show a complex widget window with existing floating dock container, 
+		# which contains only one dock widget, the floating container will become strange black...
+		# However if we show any complex widget window before floating docks, the issue gone...
+		
+		# P.S. this issue ocurrs on Windows too, and touching is not work for Windows...
 		if __sys__ == 'Darwin': touchColorPicker()
 
 		self.setupEditorViews()

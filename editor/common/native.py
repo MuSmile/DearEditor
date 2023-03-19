@@ -13,6 +13,15 @@ def setDarkAppearance():
 	"""Enable system dark mode appearance.
 	"""
 	if __sys__ == 'Windows':
+		# from ctypes import c_int, byref, windll
+		# from ctypes.wintypes import HWND
+		# from editor.common.util import getMainWindow
+	
+		# DwmSetWindowAttribute = windll.dwmapi.DwmSetWindowAttribute
+		# value = 2
+		# value = c_int(value)
+		# hwnd = HWND(int(getMainWindow().winId()))
+		# DwmSetWindowAttribute(hwnd, 20, byref(value), 4)
 		pass
 
 	elif __sys__ == 'Darwin':

@@ -5,8 +5,9 @@ from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.progress_bar import ProgressBar
-from editor.widgets.basic.line_edit import TextLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
+from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
 from editor.widgets.basic.color_edit import ColorEdit
+from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
 from editor.widgets.container.collapsible import CollapsibleWidget
 from editor.widgets.container.sliding_stacked import SlidingStackedWidget
@@ -188,7 +189,7 @@ class GalleryView(DockView):
 
 		#############  COMBOXBOX  #############
 		layout.addSpacing(20)
-		layout.addWidget(QLabel('ComboBox and SpinBox'))
+		layout.addWidget(QLabel('ComboBox'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
 		comboBoxLayout = QHBoxLayout()
@@ -198,17 +199,9 @@ class GalleryView(DockView):
 		comboBox1 = QComboBox()
 		comboBox1.addItems(['Zero', 'One', 'Two', 'Three'])
 		comboBox1.setCurrentIndex(2)
-
-		spinBox1 = QSpinBox()
-		spinBox2 = QDoubleSpinBox()
-
 		comboBox1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		spinBox1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		spinBox2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
 		comboBoxLayout.addWidget(comboBox1)
-		comboBoxLayout.addWidget(spinBox1)
-		comboBoxLayout.addWidget(spinBox2)
 		layout.addLayout(comboBoxLayout)
 
 		return preview
@@ -226,17 +219,33 @@ class GalleryView(DockView):
 		layout.addWidget(QLabel('LineEdit'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
-		comboBoxLayout = QHBoxLayout()
-		comboBoxLayout.setSpacing(20)
-		comboBoxLayout.setAlignment(Qt.AlignLeft)
+		lineEditLayout = QHBoxLayout()
+		lineEditLayout.setSpacing(20)
+		lineEditLayout.setAlignment(Qt.AlignLeft)
 
-		lineEdit1 = TextLineEdit()
+		lineEdit1 = LineEdit()
 		lineEdit1.setClearButtonEnabled(True)
 		lineEdit2 = PlaceholderLineEdit('placeholder')
 
-		comboBoxLayout.addWidget(lineEdit1)
-		comboBoxLayout.addWidget(lineEdit2)
-		layout.addLayout(comboBoxLayout)
+		lineEditLayout.addWidget(lineEdit1)
+		lineEditLayout.addWidget(lineEdit2)
+		layout.addLayout(lineEditLayout)
+
+
+		#############  LINEEDIT  #############
+		layout.addWidget(QLabel('NumberEdit'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		numberEditLayout = QHBoxLayout()
+		numberEditLayout.setSpacing(20)
+		numberEditLayout.setAlignment(Qt.AlignLeft)
+
+		intEdit = IntLineEdit()
+		floatEdit = FloatLineEdit()
+
+		numberEditLayout.addWidget(intEdit)
+		numberEditLayout.addWidget(floatEdit)
+		layout.addLayout(numberEditLayout)
 
 
 		#############  SEARCH  #############
@@ -285,6 +294,22 @@ class GalleryView(DockView):
 
 		colorEditLayout.addWidget(colorEdit)
 		layout.addLayout(colorEditLayout)
+
+
+		#############  REFERENCE  #############
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('ReferenceEdit'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		referanceEditLayout = QHBoxLayout()
+		referanceEditLayout.setSpacing(20)
+		referanceEditLayout.setAlignment(Qt.AlignLeft)
+
+		referanceEdit = ReferenceEdit()
+		referanceEdit.setFixedWidth(220)
+
+		referanceEditLayout.addWidget(referanceEdit)
+		layout.addLayout(referanceEditLayout)
 
 
 		#############  KEYSEQ  #############

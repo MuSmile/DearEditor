@@ -2,7 +2,6 @@ from PySide6.QtCore import Qt, QRect
 from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout
 from PySide6.QtGui import QCursor
 from editor.view_manager import DockView, dockView
-from editor.widgets.complex.tree_view import runTreeDemo
 from editor.widgets.complex.color_picker import createColorPicker
 
 
@@ -32,21 +31,17 @@ class ProjectView(DockView):
 		layout.setAlignment(Qt.AlignTop)
 		self.layout().addLayout(layout)
 
-		btn1 = QPushButton("Test Tree", self)
-		btn1.clicked.connect(runTreeDemo)
+		btn1 = QPushButton("Test Popup", self)
+		btn1.clicked.connect(self.doit)
 		layout.addWidget(btn1)
 
-		btn2 = QPushButton("Test Popup", self)
-		btn2.clicked.connect(self.doit)
+		btn2 = QPushButton("Test ColorPicker", self)
+		btn2.clicked.connect(lambda: createColorPicker('#5D99E6'))
 		layout.addWidget(btn2)
 
-		btn3 = QPushButton("Test ColorPicker", self)
-		btn3.clicked.connect(lambda: createColorPicker('#5D99E6'))
+		btn3 = QPushButton("Test Notification", self)
+		btn3.clicked.connect(lambda: self.showNotification('hello\nhello again'))
 		layout.addWidget(btn3)
-
-		btn4 = QPushButton("Test Notification", self)
-		btn4.clicked.connect(lambda: self.showNotification('hello\nhello again'))
-		layout.addWidget(btn4)
 
 
 	def doit(self):

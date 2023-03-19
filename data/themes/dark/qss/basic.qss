@@ -76,8 +76,14 @@ SearchLineEdit
 
 PathLineEdit
 {
+	qproperty-borderColor: #222;
+	qproperty-borderColorHovered: #777;
+	qproperty-borderColorFocused: #5ae;
+	qproperty-borderColorReadonly: gray;
+
 	border-radius: 2px;
-	qproperty-buttonRadius: 2;
+	qproperty-borderRadius: 2;
+	qproperty-borderWidth: 1;
 
 	qproperty-buttonIcon: url(img/folder_close.png);
 	qproperty-buttonColor: #444;
@@ -86,29 +92,46 @@ PathLineEdit
 
 ColorEdit
 {
-	border: 1px solid #222;
-	min-height: 18px;
-	max-height: 18px;
+	min-height: 20px;
+	max-height: 20px;
+
+	qproperty-borderColor: #222;
+	qproperty-borderColorHovered: #777;
+	qproperty-borderColorFocused: #5ae;
+	qproperty-borderColorReadonly: gray;
 
 	border-radius: 2px;
-	qproperty-buttonRadius: 2;
+	qproperty-borderRadius: 2;
+	qproperty-borderWidth: 1;
 
 	qproperty-buttonIcon: url(img/color_picker.png);
 	qproperty-buttonColor: #444;
 	qproperty-buttonColorHovered: #666;
 }
-ColorEdit:hover
-{
-	border: 1px solid #777;
-}
-ColorEdit:focus
-{
-	border: 1px solid #5ae;
-}
-ColorEdit:read-only {
-    background: gray;
-}
 
+ReferenceEdit
+{
+	min-height: 20px;
+	max-height: 20px;
+	font-size: 12px;
+
+	qproperty-background: #333;
+	qproperty-textColor: #eee;
+	qproperty-padding: 5;
+
+	qproperty-borderColor: #222;
+	qproperty-borderColorHovered: #777;
+	qproperty-borderColorFocused: #5ae;
+	qproperty-borderColorReadonly: gray;
+
+	border-radius: 2px;
+	qproperty-borderRadius: 2;
+	qproperty-borderWidth: 1;
+
+	qproperty-buttonIcon: url(img/reference.png);
+	qproperty-buttonColor: #444;
+	qproperty-buttonColorHovered: #666;
+}
 
 /*
 Slider
