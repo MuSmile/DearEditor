@@ -6,6 +6,7 @@ from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
+from editor.widgets.basic.text_area import TextArea
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
@@ -41,6 +42,7 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/Button', self.createButtonPreview())
 		treeStacked.addStackedWidget('Basic/CheckBox', self.createCheckBoxPreview())
 		treeStacked.addStackedWidget('Basic/LineEdit', self.createLineEditPreview())
+		treeStacked.addStackedWidget('Basic/TextArea', self.createTextAreaPreview())
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
 		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
 		treeStacked.addStackedWidget('Container/Collapsible', self.createCollapsiblePreview())
@@ -325,6 +327,32 @@ class GalleryView(DockView):
 
 		keySeqLayout.addWidget(keySeq)
 		layout.addLayout(keySeqLayout)
+
+		return preview
+	def createTextAreaPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('TextArea'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		textLayout = QHBoxLayout()
+		textLayout.setSpacing(50)
+		textLayout.setAlignment(Qt.AlignTop)
+
+		ws1 = TextArea()
+		textLayout.addWidget(ws1)
+		
+		layout.addLayout(textLayout)
+
 
 		return preview
 	def createSliderPreview(self):

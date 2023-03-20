@@ -133,6 +133,26 @@ ReferenceEdit
 	qproperty-buttonColorHovered: #666;
 }
 
+
+QTextEdit
+{
+	color: #eee;
+	background: #333;
+	border: 1px solid #222;
+	border-radius: 2px;
+	selection-background-color: #36a;
+	font-size: 12px;
+
+	qproperty-tabStopDistance: 26;
+}
+QTextEdit:hover
+{
+	border: 1px solid #777;
+}
+QTextEdit:focus
+{
+	border: 1px solid #5ae;
+}
 /*
 Slider
 {

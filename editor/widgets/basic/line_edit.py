@@ -12,7 +12,7 @@ class LineEdit(QLineEdit):
 		self.returnPressed.connect(self.clearFocus)
 
 	def keyPressEvent(self, evt):
-		if evt.key() == Qt.Key_Escape: self.clearFocus()
+		if evt.key() == Qt.Key_Escape: return self.clearFocus()
 		super().keyPressEvent(evt)
 
 
