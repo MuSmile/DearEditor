@@ -6,7 +6,7 @@ from editor.common.pyqtads import CDockManager, CDockWidget, DockWidgetArea
 from editor.common.logger import warn, error
 from editor.common.icon_cache import getThemeIcon
 from editor.common.util import getIde, isParentOfWidget
-from editor.widgets.misc.toast import notifyToast
+from editor.widgets.misc.toast import Toast
 
 
 #######################  INTERNALS  #######################
@@ -62,7 +62,7 @@ class DockView(CDockWidget):
 		self.setTitleBarActions( self.titleActions )
 
 	def showNotification(self, msg):
-		notifyToast(self, msg, 1500)
+		Toast(msg, self).show()
 
 	def addIntoEditor(self, area = 'center', anchor = None):
 		anchor = anchor or focusedDockView()

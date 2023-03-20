@@ -1,7 +1,7 @@
 import os, platform
 from PySide6.QtCore import Qt, QRect, Property, Signal
 from PySide6.QtGui import QCursor, QPixmap, QPainter, QPen, QColor, QPainterPath
-from PySide6.QtWidgets import QLineEdit, QFileDialog, QStyle, QStyleOption
+from PySide6.QtWidgets import QLineEdit, QFileDialog
 from editor.common.icon_cache import getThemePixmap
 from editor.common.util import toInt, toFloat
 from editor.common.math import sign
@@ -364,11 +364,9 @@ class PathLineEdit(LineEdit):
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
 		painter.drawPixmap(self._btnRect.adjusted(3, 3, -3, -3), self._pixmapBtnIcon)
 
-		option = QStyleOption()
-		option.initFrom(self)
-		if option.state & QStyle.State_HasFocus:
+		if self.hasFocus():
 			self._penBorder.setColor(self._borderColorFocused)
-		elif option.state & QStyle.State_MouseOver:
+		elif self.underMouse():
 			self._penBorder.setColor(self._borderColorHovered)
 		else:
 			self._penBorder.setColor(self._borderColor)

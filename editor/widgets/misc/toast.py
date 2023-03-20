@@ -1,41 +1,51 @@
-from PySide6.QtCore import Qt, QTimer, QEvent, Property, QPropertyAnimation
-from PySide6.QtGui import QFont, QPainter, QColor, QBrush
+from PySide6.QtCore import Qt, QTimer, QEvent, Property, QVariantAnimation, QEasingCurve
+from PySide6.QtGui import QPainter, QPalette
 from PySide6.QtWidgets import QWidget
-from editor.common.math import lerpI, clamp
-
-_toastFont = QFont('consolas', 13)
+from editor.common.math import clamp
 
 class Toast(QWidget):
-	def __init__(self, parent, msg, duration = 2000):
-		super(Toast, self).__init__(parent)
-		self.msg = msg
-		self.duration = duration
-		self._alpha = 220
-		QTimer.singleShot(self.duration, self.fadeToast)
+	@Property(int)
+	def fadeDuration(self):
+		return self._fadeDuration
+	@fadeDuration.setter
+	def fadeDuration(self, value):
+		self._fadeDuration = value
 
+	@Property(int)
+	def toastRadius(self):
+		return self._toastRadius
+	@toastRadius.setter
+	def toastRadius(self, value):
+		self._toastRadius = value
+
+	def __init__(self, text, parent):
+		super().__init__(parent)
+		self._text = text
+		self._toastRadius = 15
+		self._fadeDuration = 800
+		self._opacity = 220
+
+		QTimer.singleShot(2000, self.fadeToast)
 		parent.installEventFilter(self)
-		self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.SubWindow)
+
+		self.setWindowFlags(Qt.WindowStaysOnTopHint)
 		self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
 		self.setAttribute(Qt.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
-		# self.setAttribute(Qt.WA_TranslucentBackground | Qt.WA_DeleteOnClose)
 		self.moveCenter()
 
-	@Property(int)
-	def alpha(self):
-		return self._alpha
-
-	@alpha.setter
-	def alpha(self, value):
-		self._alpha = value
+	def tickFading(self, value):
+		self._opacity = value
 		self.update()
 
 	def fadeToast(self):
-		self.anim = QPropertyAnimation(self, b'alpha')
+		self.anim = QVariantAnimation(self)
 		self.anim.finished.connect(self.onFadeFinish)
-		self.anim.setStartValue(self._alpha)
-		self.anim.setDuration(800)
+		self.anim.valueChanged.connect(self.tickFading)
+		self.anim.setEasingCurve(QEasingCurve.InOutQuad)
+		self.anim.setStartValue(self._opacity)
 		self.anim.setEndValue(0)
+		self.anim.setDuration(self._fadeDuration)
 		self.anim.start()
 		
 	def onFadeFinish(self):
@@ -43,21 +53,26 @@ class Toast(QWidget):
 		self.parent().removeEventFilter(self)
 		self.close()
 
-	def eventFilter(self, obj, e):
-		if e.type() == QEvent.Resize: self.moveCenter()
+	def eventFilter(self, obj, evt):
+		if evt.type() == QEvent.Resize: self.moveCenter()
 		return False
 
-	def paintEvent(self, a0):
+	def paintEvent(self, evt):
 		rect = self.rect()
+		palette = self.palette()
 		painter = QPainter(self)
 		painter.setRenderHints(QPainter.Antialiasing, True)
 		painter.setRenderHints(QPainter.TextAntialiasing, True)
-		painter.setBrush(QBrush(QColor(100, 100, 100, self._alpha)))
+		background = palette.color(QPalette.Base)
+		background.setAlpha(self._opacity)
+		painter.setBrush(background)
 		painter.setPen(Qt.transparent)
-		painter.drawRoundedRect(rect, 15, 15)
-		painter.setPen(QColor(230, 230, 230, self._alpha))
-		painter.setFont(_toastFont)
-		painter.drawText(rect, Qt.AlignCenter, self.msg)
+		painter.drawRoundedRect(rect, self._toastRadius, self._toastRadius)
+		foreground = palette.color(QPalette.Text)
+		foreground.setAlpha(self._opacity)
+		painter.setPen(foreground)
+		painter.setFont(self.font())
+		painter.drawText(rect, Qt.AlignCenter, self._text)
 
 	def moveCenter(self):
 		rect = self.parent().rect()
@@ -67,12 +82,6 @@ class Toast(QWidget):
 		self.setFixedSize(sw, sh)
 
 		offsetToBottom = ph * 0.15
-		xPos = int((pw - sw)/2)
-		yPos = int(ph - sh - offsetToBottom)
+		xPos = round((pw - sw) / 2)
+		yPos = round(ph - sh - offsetToBottom)
 		self.move(xPos, yPos)
-
-def notifyToast(host, msg, duration):
-	toast = Toast(host, msg, duration)
-	toast.show()
-	return toast
-	

@@ -199,11 +199,12 @@ RangeSlider
 
 ProgressBar
 {
+	color: #0071ff;
+	background: #282828;
+	border-color: #f00;
 	qproperty-progressHeight: 6;
 	qproperty-borderRadius: 3;
 	qproperty-borderColor: transparent;
-	qproperty-background: #282828;
-	qproperty-overlay: #0071ff;
 }
 
 QToolButton
@@ -369,6 +370,17 @@ QSplitter::handle:vertical
 
 QScrollArea { background: #444; }
 QScrollArea > #qt_scrollarea_viewport > QWidget { background: #444; }
+
+
+Toast
+{
+	color: #eee;
+	background: #666;
+	font-size: 13px;
+
+	qproperty-fadeDuration: 800;
+	qproperty-toastRadius: 15;
+}
 
 /*QGraphicsView
 {

@@ -2,8 +2,8 @@ import time, functools
 from enum import Enum
 from math import floor
 from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QItemSelectionModel, QEvent
-from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle, QStyleOption
 from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
+from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle
 from editor.common.math import clamp, lerp
 from editor.common.ease import easeInOutQuad, easeOutQuad
 from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex
@@ -301,11 +301,8 @@ class TreeItemPingOverlay(QWidget):
 		painter.setRenderHints(QPainter.Antialiasing, True)
 		painter.setRenderHints(QPainter.TextAntialiasing, True)
 
-		option = QStyleOption()
-		option.initFrom(self)
-		fm = option.fontMetrics
 		tp, ip = view.treePaddingLeft, view.itemPaddingLeft
-		width = option.fontMetrics.boundingRect(index.data()).width() + tp * 2
+		width = self.fontMetrics().boundingRect(index.data()).width() + tp * 2
 		if index.data(Qt.DecorationRole): width += view.indentation() + ip + round((view.itemHeight - view.itemIconSize) / 2)
 		rect.setWidth(width)
 

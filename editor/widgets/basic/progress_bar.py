@@ -24,20 +24,6 @@ class ProgressBar(QWidget):
 	def borderColor(self, value):
 		self._borderColor = value
 
-	@Property(QColor)
-	def background(self):
-		return self._background
-	@background.setter
-	def background(self, value):
-		self._background = value
-
-	@Property(QColor)
-	def overlay(self):
-		return self._overlay
-	@overlay.setter
-	def overlay(self, value):
-		self._overlay = value
-
 	def __init__(self, parent = None):
 		super().__init__(parent)
 		self.minimum = 0
@@ -47,7 +33,6 @@ class ProgressBar(QWidget):
 		self._height = 6
 		self._borderRadius = 3
 		self._borderColor = Qt.transparent
-		self._background = QColor('#282828')
 		self._overlay = QColor('#0071ff')
 
 	def setValue(self, value):
@@ -67,13 +52,14 @@ class ProgressBar(QWidget):
 		r = round(self._borderRadius)
 
 		# draw background
-		painter.setBrush(self._background)
+		palette = self.palette()
+		painter.setBrush(palette.base())
 		brect = QRectF(x, t, w, self._height)
 		painter.drawRoundedRect(brect, r, r)
 
 		# draw overlay
 		painter.setPen(Qt.transparent)
-		painter.setBrush(self._overlay)
+		painter.setBrush(palette.text())
 		k = locAt(self.minimum, self.maximum, self.value)
 		orect = QRectF(x, t, w * k, self._height)
 		painter.drawRoundedRect(orect, r, r)

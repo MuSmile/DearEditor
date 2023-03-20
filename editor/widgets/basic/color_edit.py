@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QRect, Property, Signal
 from PySide6.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen
-from PySide6.QtWidgets import QWidget, QStyle, QStyleOption
+from PySide6.QtWidgets import QWidget
 from editor.common.icon_cache import getThemePixmap
 from editor.common.types import Color
 
@@ -82,7 +82,6 @@ class ColorEdit(QWidget):
 		self.setMouseTracking(True)
 		self.setFocusPolicy(Qt.StrongFocus)
 
-		self._wgtHovered = False
 		self._btnHovered = False
 
 	def resizeEvent(self, event):
@@ -106,12 +105,10 @@ class ColorEdit(QWidget):
 
 	def enterEvent(self, evt):
 		super().enterEvent(evt)
-		self._wgtHovered = True
 		self.update()
 
 	def leaveEvent(self, evt):
 		super().leaveEvent(evt)
-		self._wgtHovered = False
 		self._btnHovered = False
 		self.update()
 
@@ -137,11 +134,9 @@ class ColorEdit(QWidget):
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
 		painter.drawPixmap(self._btnRect.adjusted(3, 3, -3, -3), self._pixmapBtnIcon)
 
-		option = QStyleOption()
-		option.initFrom(self)
-		if option.state & QStyle.State_HasFocus:
+		if self.hasFocus():
 			self._penBorder.setColor(self._borderColorFocused)
-		elif self._wgtHovered: # option.state & QStyle.State_MouseOver:
+		elif self.underMouse():
 			self._penBorder.setColor(self._borderColorHovered)
 		else:
 			self._penBorder.setColor(self._borderColor)
