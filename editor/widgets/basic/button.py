@@ -49,9 +49,9 @@ class PopupPushButton(QPushButton):
 
 	def addTestMenu(self):
 		menu = QMenu(self)
-		menu.setAttribute(Qt.WA_TranslucentBackground)
-		menu.setWindowFlag(Qt.FramelessWindowHint, True)
 		act1 = menu.addAction("New")
+		act1.setShortcut('Meta+Ctrl+Alt+Shift+Tab')
+		act1.setShortcutVisibleInContextMenu(True)
 		menu.addSeparator()
 		act2 = menu.addAction("Open")
 		act2.setCheckable(True)
@@ -59,15 +59,13 @@ class PopupPushButton(QPushButton):
 		act3 = menu.addAction("Quit")
 		act4 = menu.addAction("Long item")
 		if (self.text() == 'Layout'):
-			act4.setShortcut('Meta+T')
+			act4.setShortcut('Ctrl+N')
 			act4.triggered.connect(lambda: print('shit'))
 			act4.setShortcutContext(Qt.ApplicationShortcut)
 			act4.setShortcutVisibleInContextMenu(True)
 
 
 		submenu = QMenu('test', menu)
-		submenu.setAttribute(Qt.WA_TranslucentBackground)
-		submenu.setWindowFlag(Qt.FramelessWindowHint, True)
 		subact1 = submenu.addAction("New")
 		submenu.addSeparator()
 		menu.addMenu(submenu)
@@ -87,8 +85,6 @@ class PopupToolButton(QToolButton):
 
 	def addTestMenu(self):
 		menu = QMenu(self)
-		menu.setAttribute(Qt.WA_TranslucentBackground)
-		menu.setWindowFlag(Qt.FramelessWindowHint, True)
 		act1 = menu.addAction("New")
 		menu.addSeparator()
 		act2 = menu.addAction("Open")
@@ -97,15 +93,13 @@ class PopupToolButton(QToolButton):
 		act3 = menu.addAction("Quit")
 		act4 = menu.addAction("Long item")
 		if (self.text() == 'build'):
-			act4.setShortcut('Meta+T')
+			act4.setShortcut('Meta+Ctrl+Alt+Shift+T')
 			act4.triggered.connect(lambda: print('shit'))
 			act4.setShortcutContext(Qt.ApplicationShortcut)
 			act4.setShortcutVisibleInContextMenu(True)
 
 
 		submenu = QMenu('test', menu)
-		submenu.setAttribute(Qt.WA_TranslucentBackground)
-		submenu.setWindowFlag(Qt.FramelessWindowHint, True)
 		subact1 = submenu.addAction("New")
 		submenu.addSeparator()
 		menu.addMenu(submenu)

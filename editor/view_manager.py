@@ -1,4 +1,4 @@
-import os, json, platform, uuid
+import os, json, uuid
 import xml.etree.ElementTree as ET
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction
@@ -31,7 +31,7 @@ class DockView(CDockWidget):
 		tooltip   = data['tooltip'  ] if 'tooltip'   in data else None
 		keepAlive = data['keepAlive'] if 'keepAlive' in data else False
 
-		super().__init__(title, parent)
+		super().__init__(title, parent) 
 		self.guid = uuid.uuid1().hex
 		self.setObjectName(f'{name}::{self.guid}')
 
@@ -152,9 +152,6 @@ def createDockManager(mainWin):
 	CDockManager.setConfigFlag(CDockManager.FocusHighlighting, True)
 	CDockManager.setConfigFlag(CDockManager.MiddleMouseButtonClosesTab, True)
 	CDockManager.setConfigFlag(CDockManager.DragPreviewShowsContentPixmap, False)
-
-	if platform.system() == 'Darwin':
-		CDockManager.setConfigFlag(CDockManager.AllMenusHaveCustomStyle, True)
 
 	CDockManager.setAutoHideConfigFlag(CDockManager.AutoHideFeatureEnabled, True)
 	CDockManager.setAutoHideConfigFlag(CDockManager.DockAreaHasAutoHideButton, True)

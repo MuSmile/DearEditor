@@ -244,6 +244,8 @@ ads--CAutoHideSideBar{
 	border: none;
 	qproperty-spacing: 10;
 }
+ads--CAutoHideSideBar > #qt_scrollarea_viewport > QWidget { background: #222; }
+
 
 #sideTabsContainerWidget {
 	background: transparent;
