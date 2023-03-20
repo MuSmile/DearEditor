@@ -160,9 +160,7 @@ def loadTheme(name, reset = False):
 	_activeTheme = name
 
 	initScript = f'{_themeFolder}/{name}/init.py'
-	styleScript = f'{_themeFolder}/{name}/style.py'
 	if os.path.exists(initScript): exec(open(initScript).read())
-	if os.path.exists(styleScript): exec(open(styleScript).read())
 
 	ide = getIde()
 	if reset: ide.setStyleSheet(None)
