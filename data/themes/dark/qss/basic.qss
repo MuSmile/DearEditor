@@ -115,8 +115,8 @@ ReferenceEdit
 	max-height: 20px;
 	font-size: 12px;
 
-	qproperty-background: #333;
-	qproperty-textColor: #eee;
+	color: #eee;
+	background: #333;
 	qproperty-padding: 5;
 
 	qproperty-borderColor: #222;

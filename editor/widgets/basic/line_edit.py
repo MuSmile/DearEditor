@@ -1,4 +1,4 @@
-import os
+import os, platform
 from PySide6.QtCore import Qt, QRect, Property, Signal
 from PySide6.QtGui import QCursor, QPixmap, QPainter, QPen, QColor, QPainterPath
 from PySide6.QtWidgets import QLineEdit, QFileDialog, QStyle, QStyleOption
@@ -53,9 +53,13 @@ class IntLineEdit(LineEdit):
 		if not self.hasFocus(): return
 		angleDelta = evt.angleDelta()
 		shiftPressed = evt.modifiers() & Qt.ShiftModifier
-		delta = sign(angleDelta.x()) * 10 if shiftPressed else sign(angleDelta.y())
-		self.setValue(self.value + delta * self.step)
-
+		if shiftPressed:
+			dy = sign(angleDelta.x()) if platform.system() == 'Darwin' else sign(angleDelta.y())
+			self.setValue(self.value + dy * self.step * 10)
+		else:
+			dy = sign(angleDelta.y())
+			self.setValue(self.value + dy * self.step)
+			
 
 class FloatLineEdit(LineEdit):
 	valueChanged = Signal(float)
@@ -94,8 +98,12 @@ class FloatLineEdit(LineEdit):
 		if not self.hasFocus(): return
 		angleDelta = evt.angleDelta()
 		shiftPressed = evt.modifiers() & Qt.ShiftModifier
-		delta = sign(angleDelta.x()) * 10 if shiftPressed else sign(angleDelta.y())
-		self.setValue(self.value + delta * self.step)
+		if shiftPressed:
+			dy = sign(angleDelta.x()) if platform.system() == 'Darwin' else sign(angleDelta.y())
+			self.setValue(self.value + dy * self.step * 10)
+		else:
+			dy = sign(angleDelta.y())
+			self.setValue(self.value + dy * self.step)
 
 
 class SearchLineEdit(LineEdit):

@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt, QRect, Property, Signal
-from PySide6.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen
+from PySide6.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen, QPalette
 from PySide6.QtWidgets import QWidget, QStyle, QStyleOption
 from editor.common.icon_cache import getThemePixmap
 from editor.common.types import Color
@@ -64,20 +64,6 @@ class ReferenceEdit(QWidget):
 	def borderRadius(self, value):
 		self._borderRadius = value
 
-	@Property(QColor)
-	def background(self):
-		return self._background
-	@background.setter
-	def background(self, value):
-		self._background = value
-
-	@Property(QColor)
-	def textColor(self):
-		return self._textColor
-	@textColor.setter
-	def textColor(self, value):
-		self._textColor = value
-
 	@Property(int)
 	def padding(self):
 		return self._padding
@@ -91,11 +77,7 @@ class ReferenceEdit(QWidget):
 		self._btnColor = QColor('#444')
 		self._btnColorHovered = QColor('#666')
 		self._pixmapBtnIcon = getThemePixmap('color_picker.png')
-
-		self._background = QColor('#333')
-		self._textColor = QColor('#eee')
 		self._padding = 5
-
 
 		self._borderColor = QColor('#222')
 		self._borderColorHovered = QColor('#777')
@@ -151,17 +133,17 @@ class ReferenceEdit(QWidget):
 		path.addRoundedRect(rect, self._borderRadius, self._borderRadius)
 		painter.setClipPath(path)
 		
+		option = QStyleOption()
+		option.initFrom(self)
 		w, h = rect.width(), rect.height()
-		painter.fillRect(QRect(0, 0, w - h, h), self._background)
+		painter.fillRect(QRect(0, 0, w - h, h), option.palette.color(QPalette.Base))
 		
-		painter.setPen(self._textColor)
+		painter.setPen(option.palette.color(QPalette.Text))
 		painter.drawText(QRect(self._padding, 0, w - h - self._padding * 2, h), Qt.AlignVCenter, 'None (TextAsset)')
 
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
 		painter.drawPixmap(self._btnRect.adjusted(3, 3, -3, -3), self._pixmapBtnIcon)
 
-		option = QStyleOption()
-		option.initFrom(self)
 		if option.state & QStyle.State_HasFocus:
 			self._penBorder.setColor(self._borderColorFocused)
 		elif self._wgtHovered: # option.state & QStyle.State_MouseOver:
