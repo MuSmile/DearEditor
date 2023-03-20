@@ -1,12 +1,9 @@
 from PySide6.QtCore import Qt, QRect
-from PySide6.QtGui import QPainter, QColor, QBrush, QFontMetrics, QPen
+from PySide6.QtGui import QPainter, QColor, QBrush, QFontMetrics, QPen, QPalette
 from PySide6.QtWidgets import QProxyStyle, qDrawShadeRect, qDrawShadePanel, QStyleOptionMenuItem, QMenu
 from editor.common.icon_cache import getThemePixmap
 
-import platform
-__sys__ = platform.system()
-
-class MenuStyle(QProxyStyle):
+class MenuStyleMacOS(QProxyStyle):
 	def __init__(self, conf = None):
 		super().__init__()
 		self.conf = conf or {}
@@ -52,8 +49,6 @@ class MenuStyle(QProxyStyle):
 		return self.conf['subMenuOverlap'] if 'subMenuOverlap' in self.conf else 5
 	def fontSize(self):
 		return self.conf['fontSize'] if 'fontSize' in self.conf else 12
-	def shortcutLetterSpacing(self):
-		return self.conf['shortcutLetterSpacing'] if 'shortcutLetterSpacing' in self.conf else 2
 
 	def submenuIcon(self):
 		return self.conf['submenuIcon'] if 'submenuIcon' in self.conf else 'submenu.png'
@@ -109,8 +104,7 @@ class MenuStyle(QProxyStyle):
 					
 					font = menuItem.font
 					font.setPixelSize(self.fontSize())
-					font.setLetterSpacing(font.AbsoluteSpacing, self.shortcutLetterSpacing())
-					if __sys__ == 'Darwin': font.setFamily('.AppleSystemUIFont')
+					font.setFamily('.AppleSystemUIFont')
 					newWidth = QFontMetrics(font).horizontalAdvance(shortcutText)
 					oldWidth = menuItem.fontMetrics.horizontalAdvance(shortcutText)
 
@@ -195,18 +189,15 @@ class MenuStyle(QProxyStyle):
 				if hasShortcut:
 					shortcutText = menuItem.text[tabIdx+1:]
 					painter.setPen(self.textHovered() if hovered else self.shortcut())
-					letterSpacing = self.shortcutLetterSpacing()
-					font.setLetterSpacing(font.AbsoluteSpacing, letterSpacing)
-					if __sys__ == 'Darwin': font.setFamily('.AppleSystemUIFont')
+					font.setFamily('.AppleSystemUIFont')
 					fm = QFontMetrics(font)
 					width = fm.horizontalAdvance(shortcutText)
 					y, r, h = rect.y(), rect.right(), rect.height()
-					shortcutRect = QRect(r - width - contentPadding + letterSpacing, y, width, h)
+					shortcutRect = QRect(r - width - contentPadding, y, width, h)
 					painter.setFont(font)
 					painter.drawText(shortcutRect, textFlags | Qt.AlignRight, shortcutText)
 				textRect = menuItem.rect
 				textRect.moveLeft(textLeftPadding)
-				font.setLetterSpacing(font.AbsoluteSpacing, 0)
 				font.setFamily(themeFontFamily)
 				painter.setFont(font)
 				painter.setPen(self.textHovered() if hovered else self.text())
@@ -236,10 +227,23 @@ class MenuStyle(QProxyStyle):
 	def polish(self, widget):
 		super().polish(widget)
 		if not isinstance(widget, QMenu): return
+		if widget.windowFlags() & Qt.FramelessWindowHint: return
+		widget.setWindowFlag(Qt.FramelessWindowHint, True)
 
-		if __sys__ == 'Darwin':
-			if widget.windowFlags() & Qt.FramelessWindowHint: return
-			widget.setWindowFlag(Qt.FramelessWindowHint, True)
-		
-		elif __sys__ == 'Windows':
-			pass
+
+class MenuStyleWindows(QProxyStyle):
+	def drawControl(self, element, option, painter, widget):
+		if element != self.CE_MenuItem: return super().drawControl(element, option, painter, widget)
+
+		menuItem = option
+		menuItem.__class__ = QStyleOptionMenuItem
+		mtype = menuItem.menuItemType
+		if mtype != QStyleOptionMenuItem.Normal: return super().drawControl(element, option, painter, widget)
+		textParts = option.text.split('\t')
+		if len(textParts) == 1: return super().drawControl(element, option, painter, widget)
+
+		option.text = textParts[0]
+		super().drawControl(element, option, painter, widget)
+		textFlags = Qt.AlignRight | Qt.AlignVCenter | Qt.TextShowMnemonic | Qt.TextDontClip | Qt.TextSingleLine
+		self.drawItemText(painter, option.rect.adjusted(0, 0, -10, 0), textFlags, option.palette, option.state & self.State_Enabled, textParts[1], QPalette.Text)
+

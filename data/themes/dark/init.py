@@ -1,7 +1,10 @@
+import platform
+__sys__ = platform.system()
+
 from PySide6.QtGui import QColor
 from editor.common import native
 from editor.common.util import getIde
-from editor.widgets.misc.menu_style import MenuStyle
+from editor.widgets.misc.menu_style import MenuStyleMacOS, MenuStyleWindows
 
 native.setDarkAppearance()
 # native.setLightAppearance()
@@ -20,6 +23,7 @@ menuConfLight = {
 	'shortcut'              :    QColor('#aaa'),
 	'separator'             :    QColor('#bbb'),
 
+	'fontSize'              :    13,
 	'contentPadding'        :    15,
 	'checkedPadding'        :    10,
 	'subMenuOverlap'        :    5,
@@ -31,13 +35,10 @@ menuConfLight = {
 	'itemBackgroundPadding' :    5,
 	'itemBackgroundRadius'  :    4,
 
-	'fontSize'              :    12,
-	'shortcutLetterSpacing' :    2,
-
 	'submenuIcon'           :    'submenu.png',
 	'submenuIconHovered'    :    'submenu2.png',
 	'submenuIconSize'       :    12,
-	'submenuIconOffsetX'    :    2,
+	'submenuIconOffsetX'    :    1,
 	'submenuIconOffsetY'    :    1,
 
 	'checkedIcon'           :    'check.png',
@@ -62,6 +63,7 @@ menuConfDark = {
 	'shortcut'              :    QColor('#aaa'),
 	'separator'             :    QColor('#6b6b6b'),
 
+	'fontSize'              :    13,
 	'contentPadding'        :    15,
 	'checkedPadding'        :    10,
 	'subMenuOverlap'        :    5,
@@ -73,13 +75,10 @@ menuConfDark = {
 	'itemBackgroundPadding' :    5,
 	'itemBackgroundRadius'  :    4,
 
-	'fontSize'              :    12,
-	'shortcutLetterSpacing' :    2,
-
 	'submenuIcon'           :    'submenu2.png',
 	'submenuIconHovered'    :    'submenu2.png',
 	'submenuIconSize'       :    12,
-	'submenuIconOffsetX'    :    2,
+	'submenuIconOffsetX'    :    1,
 	'submenuIconOffsetY'    :    1,
 
 	'checkedIcon'           :    'check2.png',
@@ -91,7 +90,12 @@ menuConfDark = {
 	'menuScrollerIcon'      :    'submenu2.png',
 }
 
-menuStyle = MenuStyle(menuConfDark)
-# menuStyle = MenuStyle(menuConfLight)
-getIde().setStyle(menuStyle)
+if __sys__ == 'Darwin':
+	menuStyle = MenuStyleMacOS(menuConfDark)
+	# menuStyle = MenuStyle(menuConfLight)
+	getIde().setStyle(menuStyle)
+
+elif __sys__ == 'Windows':
+	menuStyle = MenuStyleWindows()
+	getIde().setStyle(menuStyle)
 

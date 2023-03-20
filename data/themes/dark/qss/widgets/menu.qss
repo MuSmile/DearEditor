@@ -1,5 +1,5 @@
 QMenuBar {
-    /*color: #ccc;*/
+    /*color: #eee;*/
     /*background-color: #222;*/
     min-height: 18;
     padding-left: 0px;
