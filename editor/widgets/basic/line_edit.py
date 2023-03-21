@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QRect, Property, Signal
 from PySide6.QtGui import QCursor, QPixmap, QPainter, QPen, QColor, QPainterPath
 from PySide6.QtWidgets import QLineEdit, QFileDialog
 from editor.common.icon_cache import getThemePixmap
-from editor.common.util import toInt, toFloat
+from editor.common.util import toInt, toFloat, formatNumber
 from editor.common.math import sign
 
 class LineEdit(QLineEdit):
@@ -73,13 +73,15 @@ class FloatLineEdit(LineEdit):
 		self.textEdited.connect(self.onTextEdited)
 
 	def onTextEdited(self, text):
-		value = round(toFloat(text), self.sigFigures)
+		raw = round(toFloat(text), self.sigFigures)
+		value = formatNumber(raw)
 		if self.value == value: return
 		self.value = value
 		self.valueChanged.emit(value)
 		
 	def setValue(self, value):
-		value = round(value, self.sigFigures)
+		raw = round(value, self.sigFigures)
+		value = formatNumber(raw)
 		if self.value == value: return
 		self.value = value
 		self.setText(str(value))
@@ -87,8 +89,9 @@ class FloatLineEdit(LineEdit):
 
 	def checkValue(self):
 		text = self.text()
-		value = str(round(toFloat(text), self.sigFigures))
-		if text != value: self.setText(value)
+		raw = round(toFloat(text), self.sigFigures)
+		dstText = str(formatNumber(raw))
+		if text != dstText: self.setText(dstText)
 
 	def focusOutEvent(self, evt):
 		super().focusOutEvent(evt)

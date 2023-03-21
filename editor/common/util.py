@@ -178,6 +178,16 @@ def toFloat(text, default = 0):
 	except ValueError:
 		return default
 
+def formatNumber(num):
+	"""Remove the decimal point and zero of integer float, for example '.0' in 1.0.
+	
+	Args:
+		float num: Given number to format.
+
+	Returns:
+		float|int: Formatted number from given number.
+	"""
+	return int(num) if num % 1 == 0 else num
 
 #############################################
 def fuzzyContains(text, subtext):
