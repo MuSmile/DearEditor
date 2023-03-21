@@ -16,9 +16,6 @@ TreeView
 	qproperty-customAnimated: true;
 	qproperty-customAnimDuration: 80;
 
-	/* follow vsync interval, or change vsync setting for python */
-	qproperty-customAnimTickInterval: 16;
-
 	qproperty-drawBranchLine: true;
 	qproperty-branchLineFilterDepth: 1;
 	
@@ -41,7 +38,6 @@ TreeView
 	font-size: 12px;
 	min-width: 200px;
 }
-
 
 TreeView > #qt_scrollarea_viewport > QLineEdit
 {

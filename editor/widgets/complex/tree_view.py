@@ -1,7 +1,7 @@
 import time, functools
 from enum import Enum
 from math import floor
-from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QItemSelectionModel, QEvent
+from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QItemSelectionModel, QEvent, QVariantAnimation, QEasingCurve
 from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
 from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle
 from editor.common.math import clamp, lerp
@@ -52,6 +52,7 @@ class TreeItemDelegate(QItemDelegate):
 		self.drawBranchLines(painter, branchRect, index)
 		self.drawBranchArrow(painter, branchRect, index)
 		self.drawContent(painter, rect, index)
+		# super().paint(painter, option, index)
 
 	def drawBackground(self, painter, rect, state, index):
 		view = self.view
@@ -67,10 +68,9 @@ class TreeItemDelegate(QItemDelegate):
 			alternate = view.useAlternatingBackground and self.view._flatVisibleRowNumber(index, self.view.model()) % 2
 			bgColor = view.backgroundAlternate if alternate else view.background
 		painter.fillRect(rect, bgColor)
-		b, w = rect.bottom(), rect.width()
 
 		if view.useBackgroundSeparator:
-			srect = QRect(0, b, w, 1)
+			srect = QRect(0, rect.bottom(), rect.width(), 1)
 			painter.fillRect(srect, view.backgroundSeparator)
 
 	def drawContent(self, painter, rect, index):
@@ -86,7 +86,11 @@ class TreeItemDelegate(QItemDelegate):
 			iconSize = view.itemIconSize
 			halfSize = iconSize / 2
 			x, y = cx - halfSize + view.treePaddingLeft, cy - halfSize
-			painter.drawPixmap(x, y, iconSize, iconSize, decoration)
+			if isinstance(decoration, QPixmap):
+				painter.drawPixmap(x, y, iconSize, iconSize, decoration)
+			else:
+				painter.drawPixmap(x, y, iconSize, iconSize, decoration.pixmap(iconSize, iconSize))
+				# decoration.paint(painter, x, y, iconSize, iconSize)
 
 		painter.drawText(rect.adjusted(textOffset, -1, 0, 0), Qt.AlignVCenter, index.data())
 	
@@ -246,7 +250,7 @@ class TreeItemPingOverlay(QWidget):
 		table[ view ].remove(self)
 		self.timer.stop()
 		self.timer.deleteLater()
-		self.deleteLater()
+		self.close()
 
 	@staticmethod
 	def stopAll(view):
@@ -417,13 +421,6 @@ class TreeView(QTreeView):
 		self._customAnimDuration = value
 
 	@Property(int)
-	def customAnimTickInterval(self):
-		return self._customAnimTickInterval
-	@customAnimTickInterval.setter
-	def customAnimTickInterval(self, value):
-		self._customAnimTickInterval = value
-
-	@Property(int)
 	def dropIndicatorMargin(self):
 		return self._dropIndicatorMargin
 	@dropIndicatorMargin.setter
@@ -523,7 +520,6 @@ class TreeView(QTreeView):
 		self._branchArrowOffset = 0
 		self._customAnimated = True
 		self._customAnimDuration = 120
-		self._customAnimTickInterval = 16
 		self._dropIndicatorMargin = 5
 		self._itemHeight = 20
 		self._drawBranchLine = True
@@ -540,8 +536,7 @@ class TreeView(QTreeView):
 		self._useBackgroundSeparator = True
 
 		self.hoveredIndex = None
-		self.underAnimating = None
-		self.collapsingIndex = None
+		self.collapsingIndexList = []
 		self.dropIndicatorRect = None
 		self.dropPosition = None # -1 - before, 0 - inside, 1 - after
 
@@ -574,6 +569,8 @@ class TreeView(QTreeView):
 		# self.verticalScrollBar().setSingleStep(5)
 
 		self.verticalScrollBar().valueChanged.connect(self.onScrollerValueChange)
+
+		self.expandAnimTable = {} # dict[QModelIndex, dict[string, any]]
 
 
 	#################  EVENTS  #################
@@ -662,7 +659,7 @@ class TreeView(QTreeView):
 			if not curr.isValid():
 				curr = model.index(0, 0, curr)
 				if curr.isValid():
-					self.toggleExpand(curr, mods & Qt.AltModifier)
+					# self.toggleExpand(curr, mods & Qt.AltModifier)
 					self.setCurrentIndex(curr)
 				return
 
@@ -678,6 +675,9 @@ class TreeView(QTreeView):
 						return
 			else:
 				self.toggleExpand(curr, mods & Qt.AltModifier)
+				# for selection in self.selectedIndexes():
+				# 	if selection == curr: continue
+				# 	self.toggleExpand(selection, mods & Qt.AltModifier)
 
 		elif key == Qt.Key_Left:
 			# if self.underAnimating: return
@@ -695,6 +695,9 @@ class TreeView(QTreeView):
 					if row > 0: self.setCurrentIndex(curr.siblingAtRow(row - 1))
 			else:
 				self.toggleExpand(curr, mods & Qt.AltModifier)
+				# for selection in self.selectedIndexes():
+				# 	if selection == curr: continue
+				# 	self.toggleExpand(selection, mods & Qt.AltModifier)
 		
 		elif key == Qt.Key_Delete or (key == Qt.Key_Backspace and mods & Qt.ControlModifier):
 			model = self.model()
@@ -706,11 +709,7 @@ class TreeView(QTreeView):
 			self.selectionModel().clear()
 
 		elif key == Qt.Key_Space:
-			curr = self.currentIndex()
-			if not curr.isValid(): return
-			overlay = TreeItemPingOverlay(self)
-			overlay.startPing(curr)
-			overlay.show()
+			self.pingItem(self.currentIndex())
 
 		else:
 			super().keyPressEvent(evt)
@@ -913,7 +912,7 @@ class TreeView(QTreeView):
 		if not dropable: newDropIndicatorRect = None
 		self.updateDropIndicatorRect(newDropIndicatorRect)
 		self.updateHoveredIndex(hovered)
-		if src != self: self.repaint()
+		self.repaint()
 		super().dragMoveEvent(evt)
 
 	def dropEvent(self, evt):
@@ -944,7 +943,9 @@ class TreeView(QTreeView):
 			delayRemoves = [selection for selection in selections if selection.parent() == dropParent and selection.row() < dropInsertRow]
 			for selection in selections:
 				mimeData = model.mimeData([selection])
+				# model.blockSignals(True)
 				if selection not in delayRemoves: model.removeRow(selection.row(), selection.parent())
+				# model.blockSignals(False)
 				model.dropMimeData(mimeData, Qt.CopyAction, dropInsertRow, -1, dropParent)
 
 			dropCount = len(selections)
@@ -963,6 +964,12 @@ class TreeView(QTreeView):
 
 	################  ANIMATING  ################
 	def toggleExpand(self, index, recursive):
+		if index in self.expandAnimTable:
+			data = self.expandAnimTable[ index ]
+			data[ 'anim' ].stop()
+			data[ 'anim' ].deleteLater()
+			data[ 'anim' ].finished.emit()
+
 		if self.isExpanded(index):
 			def _collapse():
 				if recursive:
@@ -1007,63 +1014,68 @@ class TreeView(QTreeView):
 				list.extend(self._animChildrenList(child, includeHidden))
 			# if model.hasChildren(child): list.extend(self._animChildrenList)
 		return list
+
 	def _playExpandAnim(self, index, collapse, recursive, onFinish = None):
-		self.underAnimating = True
-		self.animElapsed = 0
-		self.prevIdxStop = 0
-		self.reverseExpanding = collapse
-		self.animIdxList = self._animChildrenList(index, recursive and not collapse)
-		self.onAnimFinish = onFinish
 		model = self.model()
+		animIdxList = self._animChildrenList(index, recursive and not collapse)
 		initHeight = 0
 		if collapse:
-			self.collapsingIndex = index
-			self.animIdxList.reverse()
+			self.collapsingIndexList.append(index)
 			initHeight = self.itemHeight
-		for idx in self.animIdxList: model.setData(idx, initHeight, Qt.SizeHintRole)
+			animIdxList.reverse()
+		for idx in animIdxList: model.setData(idx, initHeight, Qt.SizeHintRole)
 
-		self.animTimer = QTimer()
-		self.animTimer.timeout.connect(self._tickExpanding)
-		self.animTimer.start(self._customAnimTickInterval)
-		self.prevTickTime = time.time()
+		anim = QVariantAnimation(self)
+		self.expandAnimTable[ index ] = {
+			'anim': anim,
+			'reverse' : collapse,
+			'animIdxList': animIdxList,
+			'prevIdxStop': 0,
+		}
 
-	def _tickExpanding(self):
-		curr = time.time()
-		delta = (curr - self.prevTickTime) * 1000
-		self.prevTickTime = curr
-		self.animElapsed += delta
+		anim.finished.connect(lambda: self._onExpandAnimFinish(index, onFinish))
+		anim.valueChanged.connect(lambda v: self._tickExpandAnim(v, index))
+		anim.setEasingCurve(QEasingCurve.InOutQuad)
+		anim.setStartValue(0)
+		anim.setEndValue(1000)
+		anim.setDuration(self.customAnimDuration)
+		anim.start()
 
-		k = clamp(self.animElapsed / self.customAnimDuration, 0, 1)
-		progress = easeInOutQuad(k)
-		idxProgress = len(self.animIdxList) * progress
+	def _tickExpandAnim(self, value, index):
+		progress = value / 1000
+		if progress >= 1: return
+
+		model = self.model()
+		data = self.expandAnimTable[ index ]
+		reverse = data[ 'reverse' ]
+		prevIdxStop = data[ 'prevIdxStop' ]
+		animIdxList = data[ 'animIdxList' ]
+
+		idxProgress = len(animIdxList) * progress
 		idxStop = floor(idxProgress)
 		
 		resetHeight, currHeight = None, None
-		if self.reverseExpanding:
+		if reverse:
 			resetHeight, currHeight = 0, round((1 - idxProgress + idxStop) * self.itemHeight)
 		else:
 			resetHeight, currHeight = self.itemHeight, round((idxProgress - idxStop) * self.itemHeight)
 
+		for i in range(prevIdxStop, idxStop): model.setData(animIdxList[i], resetHeight, Qt.SizeHintRole)
+		model.setData(animIdxList[idxStop], currHeight, Qt.SizeHintRole)
+		data[ 'prevIdxStop' ] = idxStop
+
+	def _onExpandAnimFinish(self, index, onFinish):
 		model = self.model()
-		if progress < 1:
-			for i in range(self.prevIdxStop, idxStop): model.setData(self.animIdxList[i], resetHeight, Qt.SizeHintRole)
-			model.setData(self.animIdxList[idxStop], currHeight, Qt.SizeHintRole)
-			self.prevIdxStop = idxStop
-			# model.dataChanged.emit(self.animIdxList[self.prevIdxStop], self.animIdxList[self.idxStop], [Qt.SizeHintRole])
-		else:
-			for i in range(self.prevIdxStop, len(self.animIdxList)): model.setData(self.animIdxList[i], self.itemHeight, Qt.SizeHintRole)
-			# model.setData(self.animIdxList[-1], self.itemHeight, Qt.SizeHintRole)
-			self.underAnimating = False
-			self.animTimer.stop()
-			self.animTimer.deleteLater()
-			self.animElapsed = None
-			self.animIdxList = None
-			self.prevIdxStop = None
-			self.prevTickTime = None
-			self.collapsingIndex = None
-			if self.onAnimFinish:
-				self.onAnimFinish()
-				self.onAnimFinish = None
+		data = self.expandAnimTable[ index ]
+		reverse = data[ 'reverse' ]
+		prevIdxStop = data[ 'prevIdxStop' ]
+		animIdxList = data[ 'animIdxList' ]
+		for i in range(prevIdxStop, len(animIdxList)): model.setData(animIdxList[i], self.itemHeight, Qt.SizeHintRole)
+		# model.setData(animIdxList[-1], self.itemHeight, Qt.SizeHintRole)
+		data[ 'anim' ].deleteLater()
+		self.expandAnimTable.pop(index)
+		if reverse: self.collapsingIndexList.remove(index)
+		if onFinish: onFinish()
 
 	def expandHovered(self):
 		if not self.hoveredIndex or not self.hoveredIndex.isValid(): return
@@ -1076,7 +1088,10 @@ class TreeView(QTreeView):
 		# self.expandInstant(self.hoveredIndex, False)
 
 	def pingItem(self, index):
-		pass
+		if not index.isValid(): return
+		overlay = TreeItemPingOverlay(self)
+		overlay.startPing(index)
+		overlay.show()
 
 
 	####################  UTILS  ####################
@@ -1093,7 +1108,7 @@ class TreeView(QTreeView):
 
 	def _visibleRowCountRecursive(self, index, model):
 		count = model.rowCount(index)
-		if not self.isExpanded(index) or self.collapsingIndex == index: return 0
+		if not self.isExpanded(index) or index in self.collapsingIndexList: return 0
 		for row in range(count): count += self._visibleRowCountRecursive(model.index(row, 0, index), model)
 		return count
 	def _flatVisibleRowNumber(self, index, model):

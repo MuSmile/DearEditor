@@ -49,6 +49,9 @@ class MainWindow(QMainWindow):
 		dock2.addIntoEditor()
 
 		dock3 = createDockView('Project')
+		dock3.addIntoEditor()
+
+		dock3 = createDockView('TestRunner')
 		dock3.addIntoEditor('right')
 
 		dock4 = createDockView('Scene')
