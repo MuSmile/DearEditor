@@ -120,6 +120,15 @@ GalleryView > #searchbar
 	border-bottom: 1px solid #222;
 }
 
+
+
+ProjectView > TreeView
+{
+	qproperty-indentation: 18;
+	qproperty-drawBranchLine: false;
+	qproperty-useBackgroundSeparator: false;
+}
+
 /*TreeItemEditor:focus
 {
 	background: transparent;

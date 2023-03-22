@@ -2,10 +2,15 @@
 """
 
 import sys, os, time
-from PySide6.QtCore import Qt, QPropertyAnimation, QPoint
+from PySide6.QtCore import Qt, QPropertyAnimation, QPoint, QFileInfo 
 from PySide6.QtGui import QPainter, QPixmap, QBrush
-from PySide6.QtWidgets import QApplication, QMainWindow, QMenu
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileIconProvider 
 
+
+#############################################
+Qt_DecorationExpandedRole = Qt.UserRole + Qt.DecorationRole
+'''Qt.ItemDataRole: User role for provide item expanded icon.
+'''
 
 #############################################
 _ide = None
@@ -130,6 +135,19 @@ def isParentOfWidget(test, widget):
 		if p == test: return True
 		p = p.parent()
 	return False
+
+_provider = QFileIconProvider()
+def getFileIcon(path):
+	"""Request file icon of certain path, including folder icon.
+	
+	Args:
+		str path: Path to request of.
+
+	Returns:
+		QIcon: Required file icon.
+	"""
+	info = QFileInfo(path)
+	return _provider.icon(info)
 
 def createTestMenu(parent):
 	"""Create a simple QMenu for test usage.

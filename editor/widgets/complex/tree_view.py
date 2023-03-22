@@ -6,7 +6,7 @@ from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMous
 from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle
 from editor.common.math import clamp, lerp
 from editor.common.ease import easeInOutQuad, easeOutQuad
-from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex
+from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex, Qt_DecorationExpandedRole
 from editor.common.icon_cache import getThemePixmap
 
 
@@ -76,7 +76,8 @@ class TreeItemDelegate(QItemDelegate):
 	def drawContent(self, painter, rect, index):
 		view = self.view
 		textOffset = view.treePaddingLeft
-		decoration = index.data(Qt.DecorationRole)
+		expanded = view.isExpanded(index)
+		decoration = index.data(Qt_DecorationExpandedRole if expanded else Qt.DecorationRole)
 
 		if decoration:
 			indentation = view.indentation()
@@ -88,9 +89,9 @@ class TreeItemDelegate(QItemDelegate):
 			x, y = cx - halfSize + view.treePaddingLeft, cy - halfSize
 			if isinstance(decoration, QPixmap):
 				painter.drawPixmap(x, y, iconSize, iconSize, decoration)
-			else:
-				painter.drawPixmap(x, y, iconSize, iconSize, decoration.pixmap(iconSize, iconSize))
-				# decoration.paint(painter, x, y, iconSize, iconSize)
+			else: # draw QIcon
+				# painter.drawPixmap(x, y, iconSize, iconSize, decoration.pixmap(iconSize, iconSize))
+				decoration.paint(painter, x, y, iconSize, iconSize)
 
 		painter.drawText(rect.adjusted(textOffset, -1, 0, 0), Qt.AlignVCenter, index.data())
 	
@@ -704,6 +705,12 @@ class TreeView(QTreeView):
 			selections = self.selectionModel().selectedIndexes()
 			selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and 1 or -1))
 			for idx in selections: model.removeRow(idx.row(), idx.parent())
+			if self.hoveredIndex in selections:
+				# todo: move to rowsAboutToBeRemoved or rowsRemoved signal callback
+				self.hoveredIndex = None
+				pos = self.mapFromGlobal(QCursor.pos())
+				self.updateHoveredIndex(self.indexAt(pos))
+				self.repaint()
 
 		elif key == Qt.Key_Escape:
 			self.selectionModel().clear()
@@ -872,7 +879,7 @@ class TreeView(QTreeView):
 		self.updateHoveredIndex(None)
 
 	def checkDropable(self, hovered, source):
-		if source != self: return False
+		# if source != self: return False
 		if not hovered.isValid(): return True
 		selectionModel = self.selectionModel()
 		if selectionModel.isSelected(hovered): return False
@@ -957,6 +964,8 @@ class TreeView(QTreeView):
 
 			evt.acceptProposedAction()
 		else:
+			# mimeData = evt.mimeData()
+			# print(src, mimeData.formats(), mimeData.text())
 			evt.ignore()
 
 		self.updateDropIndicatorRect(None)

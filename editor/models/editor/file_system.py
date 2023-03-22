@@ -1,160 +1,233 @@
 import sys, os
-from PySide6.QtCore import *
-from PySide6.QtGui import *
-from PySide6.QtWidgets import *
+from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex, QMimeData
+from editor.common.util import getFileIcon, Qt_DecorationExpandedRole
+from editor.common.icon_cache import getThemePixmap
 
-class FileSystemNode:
-    def __init__(self, path):
-        self.datas = {}
-        self.children = []
-        self.parent = None
-        self.path = path
+class FileSystemItem:
+	def __init__(self, path = None):
+		self.parent = None
+		self.children = []
+		self.path = path
+		self.datas = {}
 
-    def data(self, role):
-        if role == Qt.EditRole: return self.name()
-        if role == Qt.DisplayRole: return self.name()
-        if role == Qt.DecorationRole: return self.icon()
-        if role in self.datas: return self.datas[ role ]
+	def data(self, role):
+		if role == Qt.EditRole: return self.name()
+		if role == Qt.DisplayRole: return self.name()
+		if role == Qt.DecorationRole: return self.icon()
+		if role == Qt_DecorationExpandedRole: return self.iconExpanded()
+		if role in self.datas: return self.datas[ role ]
 
-    def setData(self, data, role):
-        if role == Qt.EditRole: return
-        if role == Qt.DisplayRole: return
-        if role == Qt.DecorationRole: return
-        self.datas[ role ] = data
+	def setData(self, data, role):
+		if role == Qt.EditRole: return self.updateName(data)
+		if role == Qt.DisplayRole: return self.updateName(data)
+		if role == Qt.DecorationRole: return
+		if role == Qt_DecorationExpandedRole: return
+		self.datas[ role ] = data
 
-    def name(self):
-        return self.path
-    def icon(self):
-        base = os.environ[ 'DEAR_BASE_PATH' ]
-        info = None
-        if self.childCount() > 0:
-            info = QFileInfo(base)
-        else:
-            info = QFileInfo(base + '/main.py')
-        ip = QFileIconProvider()
-        return ip.icon(info)
+	def name(self):
+		if not self.path: return
+		basename = os.path.basename(self.path)
+		# return os.path.splitext(basename)[0]
+		return basename
 
-    def childCount(self):
-        return len(self.children)
+	def icon(self):
+		if not self.path: return
+		if os.path.isdir(self.path): return getThemePixmap('folder_close.png')
+		return getFileIcon(self.path)
 
-    def child(self, row):
-        if row >= 0 and row < len(self.children):
-            return self.children[row]
+	def iconExpanded(self):
+		if not self.path: return
+		if os.path.isdir(self.path): return getThemePixmap('folder_opened.png')
+		return getFileIcon(self.path)
 
-    def row(self):
-        if self.parent:
-            return self.parent.children.index(self)
-        else:
-            return -1
 
-    def addChild(self, child):
-        child.parent = self
-        self.children.append(child)
+	def updateName(self, name):
+		# assert(self.path)
+		# dirname = os.path.dirname(self.path)
+		# os.path.join(dirname, name)
+		pass
+
+	def childCount(self):
+		return len(self.children)
+
+	def child(self, row):
+		if 0 <= row and row < len(self.children):
+			return self.children[row]
+
+	def row(self):
+		return self.parent.children.index(self) if self.parent else -1
+
+	def appendChild(self, child):
+		child.parent = self
+		self.children.append(child)
+
+	def insertChild(self, pos, child):
+		child.parent = self
+		self.children.insert(pos, child)
+
+	def depth(self):
+		p = self.parent
+		depth = 0
+		while p:
+			depth += 1
+			p = p.parent
+		return depth
 
 
 class FileSystemModel(QAbstractItemModel):
-    def __init__(self, root):
-        super().__init__()
-        self.root = FileSystemNode(root)
-        # fetch sub folders
-        # for node in nodes:
-        #     self.root.addChild(node)
-        assetsNode = FileSystemNode(root)
-        self.root.addChild(assetsNode)
-        for x in range(5):
-            assetsNode.addChild(FileSystemNode(f'{root}/{x}'))
+	MimeType = 'application/deardear-filesystemmodel'
 
-    def rowCount(self, index):
-        if index.isValid():
-            return index.internalPointer().childCount()
-        else:
-            return self.root.childCount()
+	def __init__(self, keepFoldersOnTop = True, folderOnly = False):
+		super().__init__()
+		self.invisibleRoot = FileSystemItem()
+		self.keepFoldersOnTop = keepFoldersOnTop
+		self.folderOnly = folderOnly
 
-    def columnCount(self, index):
-        return 1
+	def acceptEntry(self, entry):
+		if self.folderOnly and entry.is_file(): return False
+		
+		name = entry.name
+		if name.startswith('.'): return False
+		if name.endswith('~'): return False
+		if name.startswith('__') and name.endswith('__'): return False
+		return True
 
-    def addChild(self, node, parent):
-        if not parent or not parent.isValid():
-            self.root.addChild(node)
-        else:
-            parent.internalPointer().addChild(node)
+	def addRootItem(self, path):
+		rootItem = FileSystemItem(path)
+		self.invisibleRoot.appendChild(rootItem)
+		# entries = [entry for entry in os.scandir(path) if self.acceptEntry(entry)]
 
-    def index(self, row, column, parent = None):
-        pnode = None
-        if not parent or not parent.isValid():
-            pnode = self.root
-        else:
-            pnode = parent.internalPointer()
+		# if self.keepFoldersOnTop:
+		# 	files, dirs = [], []
+		# 	for entry in entries:
+		# 		list = files if entry.is_file() else dirs
+		# 		list.append(entry)
+		# 	dirs.sort(key = lambda entry: entry.path)
+		# 	for d in dirs: rootItem.appendChild(FileSystemItem(d.path))
+		# 	files.sort(key = lambda entry: entry.path)
+		# 	for f in files: rootItem.appendChild(FileSystemItem(f.path))
 
-        if not QAbstractItemModel.hasIndex(self, row, column, parent):
-            return QModelIndex()
+		# else:
+		# 	entries.sort(key = lambda entry: entry.path)
+		# 	for p in entries: rootItem.appendChild(FileSystemItem(p.path))
 
-        child = pnode.child(row)
-        if child:
-            return QAbstractItemModel.createIndex(self, row, column, child)
-        else:
-            return QModelIndex()
+	def item(self, index):
+		return index.internalPointer() if index and index.isValid() else self.invisibleRoot
 
-    def parent(self, index):
-        if index.isValid():
-            p = index.internalPointer().parent
-            if p: return QAbstractItemModel.createIndex(self, p.row(), 0, p)
-        return QModelIndex()
+	def rowCount(self, index):
+		# return self.item(index).childCount()
+		item = self.item(index)
+		if item.childCount() > 0: return item.childCount()
+		if os.path.isdir(item.path):
+			entries = [entry for entry in os.scandir(item.path) if self.acceptEntry(entry)]
+			return len(entries)
+		else:
+			return 0
 
-    def data(self, index, role):
-        if not index.isValid(): return
-        return index.internalPointer().data(role)
+	def columnCount(self, index):
+		return 1
 
-    def setData(self, index, data, role):
-        if not index.isValid(): return
-        index.internalPointer().setData(data, role)
-        self.dataChanged.emit(index, index, [role])
+	def index(self, row, column = 0, parent = None):
+		item = self.item(parent).child(row)
+		return self.createIndex(row, column, item) if item else QModelIndex()
 
-    def flags(self, index):
-        # if not index.isValid(): return Qt.ItemIsSelectable | Qt.ItemIsDropEnabled | Qt.ItemIsEnabled
-        return Qt.ItemIsSelectable | Qt.ItemIsEditable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled | Qt.ItemIsEnabled
+	def sibling(self, row, column, index):
+		item = self.item(index)
+		if not item.parent: return QModelIndex()
+		if item.parent.childCount() <= row: return QModelIndex()
+		siblingItem = item.parent.children[row]
+		return self.createIndex(row, 0, siblingItem) if siblingItem else QModelIndex()
+		
+	def parent(self, index):
+		item = self.item(index)
+		parentItem = item.parent
+		if not parentItem: return QModelIndex()
+		return self.createIndex(parentItem.row(), 0, parentItem) if parentItem else QModelIndex()
 
-    def removeRows(self, row, count, parent):
-        pnode = None
-        self.beginRemoveRows(parent, row, row + count)
-        if not parent.isValid():
-            pnode = self.root
-        else:
-            pnode = parent.internalPointer()
-        for i in range(count): pnode.children.pop(row)
-        self.endRemoveRows()
-        return True
+	def data(self, index, role = Qt.DisplayRole):
+		if not index or not index.isValid(): return
+		return index.internalPointer().data(role)
 
-    def insertRows(self, row, count, parent):
-        pnode = None
-        self.beginInsertRows(parent, row, row + count)
-        if not parent.isValid():
-            pnode = self.root
-        else:
-            pnode = parent.internalPointer()
-        for i in range(count): pnode.children.insert(row, FileSystemNode(None))
-        self.endInsertRows()
-        return True
+	def setData(self, index, data, role = Qt.DisplayRole):
+		if not index or not index.isValid(): return
+		index.internalPointer().setData(data, role)
+		self.dataChanged.emit(index, index, [role])
 
-    def supportedDragActions(self):
-        return Qt.CopyAction | Qt.MoveAction
+	def flags(self, index):
+		if not index or not index.isValid(): return Qt.NoItemFlags
+		depth = index.internalPointer().depth()
+		flags = Qt.ItemIsSelectable | Qt.ItemIsDragEnabled | Qt.ItemIsDropEnabled | Qt.ItemIsEnabled
+		if depth > 1: flags |= Qt.ItemIsEditable
+		return flags
 
-    def supportedDropActions(self):
-        return Qt.CopyAction | Qt.MoveAction
+	def removeRows(self, row, count, parent):
+		self.beginRemoveRows(parent, row, row + count)
+		parentItem = self.item(parent)
+		for i in range(count): parentItem.children.pop(row)
+		self.endRemoveRows()
+		return True
 
-    def canDropMimeData(self, mimeData, dropAction, row, column, parent):
-        return True
+	def moveRows(self, srcParent, srcRow, count, dstParent, dstRow):
+		super().moveRows(srcParent, srcRow, count, dstParent, dstRow)
 
-    def mimeData(self, indexes):
-        return super().mimeData(indexes)
+	def insertRows(self, row, count, parent):
+		self.beginInsertRows(parent, row, row + count)
+		parentItem = self.item(parent)
+		for i in range(count): parentItem.insertChild(row, FileSystemItem())
+		self.endInsertRows()
+		return True
 
-    def dropMimeData(self, mimeData, dropAction, row, column, parent):
-        if not mimeData: return False
-        print(mimeData.text())
-        return True
+	def supportedDragActions(self):
+		return Qt.CopyAction | Qt.MoveAction
 
-    def canFetchMore(self, parent):
-        return parent.isValid()
+	def supportedDropActions(self):
+		return Qt.CopyAction | Qt.MoveAction
 
-    def fetchMore(self, parent):
-        pass
+	def canDropMimeData(self, mimeData, dropAction, row, column, parent):
+		return (mimeData.hasFormat(self.MimeType)
+			or mimeData.hasFormat('text/uri-list'))
+
+	def mimeData(self, indexes):
+		if not indexes: return None
+		data = QMimeData()
+		pathes = ','.join([idx.internalPointer().path for idx in indexes])
+		data.setData(self.MimeType, bytes(pathes, 'utf-8'))
+		return data
+
+	def dropMimeData(self, mimeData, dropAction, row, column, parent):
+		if not mimeData: return False
+		if mimeData.hasFormat(self.MimeType):
+			data = str(mimeData.data(self.MimeType), 'utf-8')
+			for path in data.split(','):
+				self.insertRows(row, 1, parent)
+				idx = self.index(row, 0, parent)
+				idx.internalPointer().path = path
+		return True
+
+	def canFetchMore(self, parent):
+		parentItem = self.item(parent)
+		if parentItem.childCount() > 0: return False
+		path = parentItem.path
+		if not os.path.isdir(path): return False
+		for entry in os.scandir(path):
+			if self.acceptEntry(entry):
+				return True
+		return False
+
+	def fetchMore(self, parent):
+		parentItem = parent.internalPointer()
+		entries = [entry for entry in os.scandir(parentItem.path) if self.acceptEntry(entry)]
+
+		if self.keepFoldersOnTop:
+			files, dirs = [], []
+			for entry in entries:
+				list = files if entry.is_file() else dirs
+				list.append(entry)
+			dirs.sort(key = lambda entry: entry.path)
+			for d in dirs: parentItem.appendChild(FileSystemItem(d.path))
+			files.sort(key = lambda entry: entry.path)
+			for f in files: parentItem.appendChild(FileSystemItem(f.path))
+
+		else:
+			entries.sort(key = lambda entry: entry.path)
+			for p in entries: parentItem.appendChild(FileSystemItem(p.path))
