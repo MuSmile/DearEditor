@@ -31,9 +31,7 @@ class MainWindow(QMainWindow):
 		# When show a complex widget window with existing floating dock container, 
 		# which contains only one dock widget, the floating container will become strange black...
 		# However if we show any complex widget window before floating docks, the issue gone...
-		
-		# P.S. this issue ocurrs on Windows too, and touching is not work for Windows...
-		if __sys__ == 'Darwin': touchColorPicker()
+		touchColorPicker()
 
 		self.setupEditorViews()
 		self.activateWindow()

@@ -760,7 +760,7 @@ class ColorPicker(QWidget):
 	def beginTouchMode(self):
 		self.touchMode = True
 		self.show()
-		faraway = 1000000
+		faraway = 10000
 		self.move(faraway, faraway)
 
 	def endTouchMode(self):

@@ -72,7 +72,7 @@ _model.registerMenu('Window'    , 10000)
 _model.registerMenu('Help'      , 10001)
 
 
-_model.registerMenuItem('Extenstion/__placeholder__', None, 'Meta+Ctrl+Alt+Shift+Tab')
+_model.registerMenuItem('Extenstions/__placeholder__', None, 'Meta+Ctrl+Alt+Shift+Tab')
 
 
 #####################  MENU - FILE  #####################

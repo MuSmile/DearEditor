@@ -40,7 +40,6 @@ class GalleryView(DockView):
 
 		treeStacked = TreeStackedWidget(self)
 		treeStacked.addStackedWidget('Basic/Button', self.createButtonPreview())
-		treeStacked.addStackedWidget('Basic/CheckBox', self.createCheckBoxPreview())
 		treeStacked.addStackedWidget('Basic/LineEdit', self.createLineEditPreview())
 		treeStacked.addStackedWidget('Basic/TextArea', self.createTextAreaPreview())
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
@@ -146,19 +145,28 @@ class GalleryView(DockView):
 		layout.addLayout(toolBtnLayout)
 
 
-		return preview
-	def createCheckBoxPreview(self):
-		preview = QWidget(self)
+		#############  COMBOXBOX  #############
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('DropDown'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		dropDownLayout = QHBoxLayout()
+		dropDownLayout.setSpacing(20)
+		dropDownLayout.setAlignment(Qt.AlignLeft)
 
-		layout = QVBoxLayout()
-		layout.setAlignment(Qt.AlignTop)
-		layout.setSpacing(5)
-		# layout.setContentsMargins(0, 0, 0, 0)
-		preview.setLayout(layout)
+		comboBox1 = QComboBox()
+		comboBox1.addItems(['Zero', 'One', 'Two', 'Three'])
+		comboBox1.setCurrentIndex(2)
+		comboBox1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		comboBox1.setFocusPolicy(Qt.StrongFocus)
+
+		dropDownLayout.addWidget(comboBox1)
+		layout.addLayout(dropDownLayout)
 
 
 		#############  CHECKBOX  #############
-		layout.addWidget(QLabel('CheckBox and RadioButton'))
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('CheckBox/RadioButton'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
 		checkBoxLayout = QHBoxLayout()
@@ -188,23 +196,6 @@ class GalleryView(DockView):
 		checkBoxLayout.addWidget(radioBtn2)
 		layout.addLayout(checkBoxLayout)
 
-
-		#############  COMBOXBOX  #############
-		layout.addSpacing(20)
-		layout.addWidget(QLabel('ComboBox'))
-		layout.addWidget(HLineWidget())
-		layout.addSpacing(5)
-		comboBoxLayout = QHBoxLayout()
-		comboBoxLayout.setSpacing(20)
-		comboBoxLayout.setAlignment(Qt.AlignLeft)
-
-		comboBox1 = QComboBox()
-		comboBox1.addItems(['Zero', 'One', 'Two', 'Three'])
-		comboBox1.setCurrentIndex(2)
-		comboBox1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-
-		comboBoxLayout.addWidget(comboBox1)
-		layout.addLayout(comboBoxLayout)
 
 		return preview
 	def createLineEditPreview(self):

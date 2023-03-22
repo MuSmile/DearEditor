@@ -18,8 +18,20 @@ class TextArea(QTextEdit):
 		self.currLines = clamp(self.calcDocumentLines(), self.minLines, self.maxLines)
 		self.setHeightByLineCount(minLines)
 
+		self.exceedMaxLines = False
+		self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
 	def onTextChanged(self):
 		docLines = self.calcDocumentLines()
+
+		exceedMaxLines = docLines > self.maxLines
+		if self.exceedMaxLines != exceedMaxLines:
+			self.exceedMaxLines = exceedMaxLines
+			if exceedMaxLines:
+				self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+			else:
+				self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
 		dstLines = clamp(docLines, self.minLines, self.maxLines)
 		if self.currLines != dstLines:
 			self.currLines = dstLines
@@ -39,3 +51,5 @@ class TextArea(QTextEdit):
 		if evt.key() == Qt.Key_Escape: return self.clearFocus()
 		super().keyPressEvent(evt)
 
+	def wheelEvent(self, evt):
+		super().wheelEvent(evt)
