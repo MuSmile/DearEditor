@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+from PySide6.QtCore import Qt, Signal, QRect, QRectF, QRegularExpression
+from PySide6.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, QMenu, QHBoxLayout, QVBoxLayout, QApplication
+from PySide6.QtGui import QColor, QPainter, QPainterPath, QLinearGradient, QConicalGradient, QRegularExpressionValidator, QPixmap, QImage, QCursor, QPen
 from editor.common.math import clamp, locAt, vecAngle, lerpI, getDir
 from editor.common.util import getIde, requestTransparentBgBrush, toInt, toFloat, isParentOfWidget
 from editor.common.icon_cache import getThemePixmap
@@ -220,8 +220,8 @@ class _ColorSpaceDropDown(QPushButton):
 	def initMenu(self):
 		actions = []
 		menu = QMenu(self)
-		menu.setAttribute(Qt.WA_TranslucentBackground)
-		menu.setWindowFlag(Qt.FramelessWindowHint, True)
+		# menu.setAttribute(Qt.WA_TranslucentBackground)
+		# menu.setWindowFlag(Qt.FramelessWindowHint, True)
 		for label in _ColorSpaceLabels: actions.append(menu.addAction(label))
 		for act in actions: act.setCheckable(True)
 		actions[ColorPicker.ColorSpace].setChecked(True)
@@ -343,7 +343,7 @@ class _ColorCptSlot(QWidget):
 class _ColorCptLineEdit(QLineEdit):
 	def __init__(self, parent):
 		super().__init__(parent)
-		self.setFocusPolicy(Qt.ClickFocus)
+		self.setFocusPolicy(Qt.StrongFocus)
 		self.value = None
 		self.editingFinished.connect(self.onEditingFinish)
 		self.textChanged.connect(self.onTextChange)
@@ -600,7 +600,7 @@ class _ColorHexEditValidator(QRegularExpressionValidator):
 class _ColorHexEdit(QLineEdit):
 	def __init__(self, parent):
 		super().__init__(parent)
-		self.setFocusPolicy(Qt.ClickFocus)
+		self.setFocusPolicy(Qt.StrongFocus)
 		self.setValidator(_ColorHexEditValidator(self))
 		self.setStyleSheet('padding-left: 12px;')
 		self.onCurrentColorChange(parent.currentColor, None)
@@ -669,7 +669,6 @@ class ColorPicker(QWidget):
 	colorChanged = Signal(QColor, str) # color: QColor, reason: str
 	
 	ColorSpace = _ColorSpaceRgb
-	Instance = False
 	PrevLoc = None
 
 	def __init__(self, initColor = None):
@@ -682,18 +681,16 @@ class ColorPicker(QWidget):
 		self.setWindowTitle('Color Editor')
 		self.setFocusPolicy(Qt.ClickFocus)
 		self.setFocus()
-		self.setFixedSize(234, 464)
+		self.setFixedSize(234, 468)
 		self.initColor = QColor(initColor)
 		self.currentColor = QColor(initColor)
-		if ColorPicker.PrevLoc: self.move(ColorPicker.PrevLoc)
-		ColorPicker.Instance = self
+		if self.PrevLoc: self.move(self.PrevLoc)
 
 		btn = _ColorPickerBtn(self)
 		btn.clicked.connect(self.pickScreenshotColor)
 		preview = _ColorPreview(self)
 		ring = _ColorRing(self)
 		space = _ColorSpaceDropDown(self)
-		cptA = _ColorComponentEdit(self, _ColorComponentEdit.CptA)
 		cpt1, cpt2, cpt3 = None, None, None
 		if self.ColorSpace == _ColorSpaceHsv:
 			cpt1 = _ColorComponentEdit(self, _ColorComponentEdit.CptH)
@@ -703,6 +700,7 @@ class ColorPicker(QWidget):
 			cpt1 = _ColorComponentEdit(self, _ColorComponentEdit.CptR)
 			cpt2 = _ColorComponentEdit(self, _ColorComponentEdit.CptG)
 			cpt3 = _ColorComponentEdit(self, _ColorComponentEdit.CptB)
+		cptA = _ColorComponentEdit(self, _ColorComponentEdit.CptA)
 
 		layout = QVBoxLayout(self)
 		layout.setAlignment(Qt.AlignTop)
@@ -746,7 +744,8 @@ class ColorPicker(QWidget):
 
 		presetBtn = QPushButton('Color Presets Editor', self)
 		presetBtn.setStyleSheet('QPushButton { margin: 0 10 0 10; height: 12px; }')
-		presetBtn.clicked.connect(self.toggleColorPresetEditor)
+		presetBtn.setFocusPolicy(Qt.NoFocus)
+		# presetBtn.clicked.connect(self.toggleColorPresetEditor)
 		layout.addWidget(presetBtn)
 
 		self.colorRing = ring
@@ -754,18 +753,8 @@ class ColorPicker(QWidget):
 		self.colorCpt2 = cpt2
 		self.colorCpt3 = cpt3
 		self.colorCptA = cptA
-		self.presetEditor = None
-		self.touchMode = False
 
-	def beginTouchMode(self):
-		self.touchMode = True
-		self.show()
-		faraway = 10000
-		self.move(faraway, faraway)
-
-	def endTouchMode(self):
-		self.close()
-		self.touchMode = False
+		self.screenColorPickers = {}
 
 	def paintEvent(self, evt):
 		painter = QPainter(self)
@@ -775,11 +764,9 @@ class ColorPicker(QWidget):
 	def closeEvent(self, evt):
 		super().closeEvent(evt)
 		getIde().focusChanged.disconnect(self.onFocusChange)
-		if not self.touchMode: ColorPicker.PrevLoc = self.pos()
-		ColorPicker.Instance = None
+		ColorPicker.PrevLoc = self.pos()
 
 	def onFocusChange(self, old, now):
-		if not now or self.touchMode: return
 		if not isinstance(now, QWidget): return
 		if now != self and not isParentOfWidget(self, now): self.close()
 
@@ -789,7 +776,13 @@ class ColorPicker(QWidget):
 			if self.currentColor == color: return
 			self.currentColor.setRgba(color.rgba())
 			self.updateCurrentColor('screen_pick')
-		ScreenColorPicker(self.currentColor, onPickedColorUpdate, False, self.colorRing).show()
+			for popup in self.screenColorPickers.values(): popup.close()
+			self.screenColorPickers.clear()
+
+		for screen in QApplication.screens():
+			popup = ScreenColorPicker(screen, self.currentColor, onPickedColorUpdate, self.colorRing)
+			self.screenColorPickers[ screen ] = popup
+			popup.show()
 
 	def updateCurrentColor(self, reason):
 		self.colorChanged.emit(self.currentColor, reason)
@@ -812,22 +805,6 @@ class ColorPicker(QWidget):
 		self.currentColor.setRgba(self.initColor.rgba())
 		self.updateCurrentColor('revert')
 
-	def toggleColorPresetEditor(self):
-		if self.presetEditor:
-			self.presetEditor.close()
-			self.presetEditor = None
-		else:
-			self.presetEditor = ColorPresetEditor(self)
-			self.presetEditor.show()
-
-	def moveEvent(self, evt):
-		super().moveEvent(evt)
-		if self.presetEditor:
-			# self.presetEditor.updateLoc()
-			dm = evt.pos() - evt.oldPos()
-			pos = self.presetEditor.pos()
-			self.presetEditor.move(pos + dm)
-
 	def keyPressEvent(self, evt):
 		if evt.key() == Qt.Key_Escape: self.close()
 		super().keyPressEvent(evt)
@@ -835,32 +812,44 @@ class ColorPicker(QWidget):
 class ScreenColorPicker(QWidget):
 	colorUpdated = Signal(QColor, bool)
 
-	def __init__(self, defaultColor, onColorUpdate, showPreview = True, overridePaint = None):
-		super().__init__(getIde().activeWindow())
+	def __init__(self, screen, defaultColor, onColorUpdate, overridePaint = None):
+		super().__init__()
 		self.setAttribute(Qt.WA_DeleteOnClose)
-		self.setAttribute(Qt.WA_TranslucentBackground)
-		self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
-		self.setGeometry(QApplication.primaryScreen().virtualGeometry())
-		self.setMouseTracking(True)
-		self.screen = self.grabScreen().toImage()
+		self.setAttribute(Qt.WA_NoSystemBackground, True)
+		self.setAttribute(Qt.WA_TranslucentBackground, True)
+		self.setWindowFlags(Qt.ToolTip | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint | Qt.WindowStaysOnTopHint)
+		self.setGeometry(screen.geometry())
+		self.screenOffset = self.pos()
+		self.screenshot = self.grabScreen(screen).toImage()
 		self.defaultColor = QColor(defaultColor)
+
+		self.setMouseTracking(False)
 		if onColorUpdate: self.colorUpdated.connect(onColorUpdate)
-		self.showPreview = showPreview
 		self.overridePaint = overridePaint
-		if overridePaint: overridePaint.overridePaintFunc = self.drawPreview
+
+	def enterEvent(self, evt):
+		super().enterEvent(evt)
+		self.setMouseTracking(True)
+		if self.overridePaint: self.overridePaint.overridePaintFunc = self.drawPreview
+		self.onMouseMove(QCursor.pos() - self.screenOffset)
+
+	def leaveEvent(self, evt):
+		super().leaveEvent(evt)
+		self.setMouseTracking(False)
+		self.repaint()
 
 	def closeEvent(self, evt):
 		super().closeEvent(evt)
 		if not self.overridePaint: return
 		self.overridePaint.overridePaintFunc = None
 
-	def grabScreen(self):
-		final = QPixmap(self.size())
+	def grabScreen(self, screen):
+		size = self.size()
+		final = QPixmap(size)
 		painter = QPainter(final)
-		for screen in QApplication.screens():
-			rect = screen.geometry()
-			screenshot = screen.grabWindow()
-			painter.drawPixmap(rect, screenshot)
+		rect = QRect(0, 0, size.width(), size.height())
+		screenshot = screen.grabWindow()
+		painter.drawPixmap(rect, screenshot)
 		return final
 
 	def keyPressEvent(self, evt):
@@ -877,33 +866,36 @@ class ScreenColorPicker(QWidget):
 		elif btn == Qt.MiddleButton:
 			evt.ignore()
 		else:
-			color = self.screen.pixelColor(evt.pos())
+			color = self.screenshot.pixelColor(QCursor.pos() - self.screenOffset)
 			self.colorUpdated.emit(color, True)
 			self.close()
 
 	def mouseMoveEvent(self, evt):
-		# self.screen = self.grabScreen().toImage()
-		self.colorUpdated.emit(self.screen.pixelColor(evt.pos()), False)
+		self.onMouseMove(evt.pos())
+
+	def onMouseMove(self, pos):
+		self.colorUpdated.emit(self.screenshot.pixelColor(pos), False)
 		if self.overridePaint: self.overridePaint.update()
 		self.update()
 
 	def paintEvent(self, evt):
 		rect = self.rect()
 		painter = QPainter(self)
-		painter.fillRect(rect, QColor(255, 255, 255, 1))
-		if not self.showPreview: return
+		painter.fillRect(rect, QColor(0, 0, 0, 1))
 
-		pos = QCursor.pos()
+		if not self.underMouse(): return
+
+		pos = QCursor.pos() - self.screenOffset
 		px, py = pos.x(), pos.y()
 		offset, size, halfSize = 20, 110, 55
 		x, y = px + offset, py + offset
 		w, h = rect.width(), rect.height()
 		if x + size > w: x = px - offset - size
-		if y + size > h - 45: y = py - offset - size - 35
+		if y + size > h - 30: y = py - offset - size
 		painter.setPen(QColor('#0a0'))
 		tarRect = QRect(x, y, size, size)
 		srcRect = QRect(px - 5, py - 5, 10 + 1, 10 + 1)
-		painter.drawImage(tarRect, self.screen, srcRect)
+		painter.drawImage(tarRect, self.screenshot, srcRect)
 		painter.drawLine(x, y, x + size, y)
 		painter.drawLine(x + size, y, x + size, y + size)
 		painter.drawLine(x + size, y + size, x, y + size)
@@ -911,17 +903,28 @@ class ScreenColorPicker(QWidget):
 		painter.drawLine(x + halfSize, y, x + halfSize, y + size)
 		painter.drawLine(x, y + halfSize, x + size, y + halfSize)
 
+		pos = QCursor.pos() - self.screenOffset
+		color = self.screenshot.pixelColor(pos).name().upper()
+		fm = self.fontMetrics()
+		width = fm.horizontalAdvance(color) + 8
+		height = fm.height() + 4
+		rect = QRect(x, y + size + 5, width, height)
+		painter.fillRect(rect, Qt.black)
+		painter.setPen(Qt.white)
+		painter.drawText(rect, Qt.AlignCenter, color)
+
+
 	def drawPreview(self, painter):
 		margin = 11
 		x, y = margin, margin
 		size = self.overridePaint.width() - margin * 2
 		
-		pos = QCursor.pos()
+		pos = QCursor.pos() - self.screenOffset
 		px, py = pos.x(), pos.y()
 		painter.setPen(QColor(120, 120, 120, 160))
 		srcRect = QRect(px - 10, py - 10, 20 + 1, 20 + 1)
 		tarRect = QRect(x, y, size, size)
-		painter.drawImage(tarRect, self.screen, srcRect)
+		painter.drawImage(tarRect, self.screenshot, srcRect)
 		ds = size / (20 + 1)
 		for i in range(20 + 2):
 			d = round(i * ds)
@@ -939,34 +942,5 @@ class ScreenColorPicker(QWidget):
 		ids = round(ds) + 2
 		painter.drawRect(x + offset, y + offset, ids, ids)
 
-class ColorPresetEditor(QWidget):
-	def __init__(self, parent):
-		super().__init__(parent)
-		self.setFixedSize(400, parent.height())
-		self.updateLoc()
-		self.setAttribute(Qt.WA_DeleteOnClose, True)
-		self.setWindowFlags(Qt.Tool | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
-		self.setWindowTitle('Color Presets')
-
-	def updateLoc(self):
-		parent = self.parent()
-		x, y = parent.width(), parent.frameGeometry().height() - self.frameGeometry().height()
-		px, py = parent.x() + 1, parent.y() - 1
-		self.move(px + x, py + y)
-
-	def paintEvent(self, evt):
-		painter = QPainter(self)
-		painter.fillRect(self.rect(), QColor('#444'))
-
-	def closeEvent(self, evt):
-		super().closeEvent(evt)
-		self.parent().presetEditor = None
-
 def createColorPicker(initColor):
-	if ColorPicker.Instance: return
 	ColorPicker(initColor).show()
-
-def touchColorPicker():
-	cp = ColorPicker()
-	cp.beginTouchMode()
-	QTimer.singleShot(1, cp.endTouchMode)
