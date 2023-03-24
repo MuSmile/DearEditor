@@ -47,8 +47,16 @@ class TextArea(QTextEdit):
 		contentHeight = self.fontMetrics().lineSpacing() * rows
 		self.setFixedHeight(contentHeight + totalMargins + self.frameWidth() * 2)
 
+	def clearFocusAndSelection(self):
+		cursor = self.textCursor()
+		cursor.clearSelection()
+		self.setTextCursor(cursor)
+		self.clearFocus()
+
 	def keyPressEvent(self, evt):
-		if evt.key() == Qt.Key_Escape: return self.clearFocus()
+		key = evt.key()
+		if key == Qt.Key_Escape: return self.clearFocusAndSelection()
+		if key == Qt.Key_Return and evt.modifiers() == Qt.ControlModifier: return self.clearFocusAndSelection()
 		super().keyPressEvent(evt)
 
 	def wheelEvent(self, evt):

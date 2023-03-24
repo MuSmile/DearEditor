@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QRect
 from PySide6.QtGui import QPainter, QColor, QBrush, QFontMetrics, QPen, QPalette
-from PySide6.QtWidgets import QProxyStyle, qDrawShadeRect, qDrawShadePanel, QStyleOptionMenuItem, QMenu
+from PySide6.QtWidgets import QProxyStyle, qDrawShadeRect, qDrawPlainRect, QStyleOptionMenuItem, QMenu
 from editor.common.icon_cache import getThemePixmap
 
 class MenuStyleMacOS(QProxyStyle):
@@ -160,6 +160,9 @@ class MenuStyleMacOS(QProxyStyle):
 				textRect = menuItem.rect
 				textRect.moveLeft(textLeftPadding)
 				textFlags = Qt.AlignVCenter | Qt.TextShowMnemonic | Qt.TextDontClip | Qt.TextSingleLine
+				font = menuItem.font
+				font.setPixelSize(self.fontSize())
+				painter.setFont(font)
 				painter.setPen(self.textHovered() if hovered else self.text())
 				painter.drawText(textRect, textFlags, menuItem.text)
 				
@@ -215,12 +218,19 @@ class MenuStyleMacOS(QProxyStyle):
 		if element == self.PE_PanelMenu: # menu background
 			painter.setRenderHint(QPainter.Antialiasing, True)
 			painter.setRenderHint(QPainter.TextAntialiasing, True)
-			# painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
-			painter.setBrush(self.background())
-			painter.setPen(QPen(self.border(), self.borderWidth()))
+			painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
+			
 			radius = self.borderRadius()
+			width = self.borderWidth()
+
+			painter.setBrush(self.border())
+			painter.setPen(Qt.transparent)
 			painter.drawRoundedRect(option.rect, radius, radius)
-			# qDrawShadePanel(painter, option.rect, option.palette, option.state & self.State_Sunken, 0, self.background())
+
+			radius -= width
+			painter.setBrush(self.background())
+			painter.drawRoundedRect(option.rect.adjusted(width, width, -width, -width), radius, radius)
+			# qDrawPlainRect(painter, option.rect, self.border(), self.borderWidth(), QBrush(self.background()))
 		else:
 			super().drawPrimitive(element, option, painter, widget)
 

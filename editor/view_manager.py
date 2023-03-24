@@ -7,7 +7,7 @@ from editor.common.logger import warn, error
 from editor.common.icon_cache import getThemeIcon
 from editor.common.util import getIde, isParentOfWidget
 from editor.widgets.misc.toast import Toast
-
+import shiboken6
 
 #######################  INTERNALS  #######################
 _dockManager = None
@@ -41,6 +41,7 @@ class DockView(CDockWidget):
 		self.setTabToolTip(tooltip)
 
 		self.setupTitleActions()
+		self.notification = None
 
 	def createTitleAction(self, icon, func = None, shortcut = False, checkable = False):
 		action = QAction()
@@ -62,7 +63,9 @@ class DockView(CDockWidget):
 		self.setTitleBarActions( self.titleActions )
 
 	def showNotification(self, msg):
-		Toast(msg, self).show()
+		if self.notification and shiboken6.isValid(self.notification): self.notification.close()
+		self.notification = Toast(msg, self)
+		self.notification.show()
 
 	def addIntoEditor(self, area = 'center', anchor = None):
 		anchor = anchor or focusedDockView()
@@ -165,7 +168,8 @@ def createDockManager(mainWin):
 	def focusedDockWidgetChanged(old, now):
 		focused = getIde().focusWidget()
 		if not isParentOfWidget(now, focused): now.setFocus()
-		if now.dockContainer().isFloating(): now.window().setWindowTitle(now.tabWidget().text())
+		container = now.dockContainer()
+		if container and container.isFloating(): now.window().setWindowTitle(now.tabWidget().text())
 
 	_dockManager.focusedDockWidgetChanged.connect(focusedDockWidgetChanged)
 	

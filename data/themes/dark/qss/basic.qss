@@ -23,7 +23,7 @@ QLabel
 QToolTip
 {
     background: #555;
-    border: 1px solid #111;
+    border: 1px solid #333;
     color: #eee;
     padding: 2px;
 }
@@ -76,14 +76,8 @@ SearchLineEdit
 
 PathLineEdit
 {
-	qproperty-borderColor: #222;
-	qproperty-borderColorHovered: #777;
-	qproperty-borderColorFocused: #5ae;
-	qproperty-borderColorReadonly: gray;
-
 	border-radius: 2px;
 	qproperty-borderRadius: 2;
-	qproperty-borderWidth: 1;
 
 	qproperty-buttonIcon: url(img/folder_close.png);
 	qproperty-buttonColor: #444;
@@ -92,45 +86,57 @@ PathLineEdit
 
 ColorEdit
 {
-	min-height: 20px;
-	max-height: 20px;
+	min-height: 18px;
+	max-height: 18px;
 
-	qproperty-borderColor: #222;
-	qproperty-borderColorHovered: #777;
-	qproperty-borderColorFocused: #5ae;
-	qproperty-borderColorReadonly: gray;
-
+	border: 1px solid #222;
 	border-radius: 2px;
 	qproperty-borderRadius: 2;
-	qproperty-borderWidth: 1;
 
 	qproperty-buttonIcon: url(img/color_picker.png);
 	qproperty-buttonColor: #444;
 	qproperty-buttonColorHovered: #666;
 }
+ColorEdit:hover
+{
+	border: 1px solid #777;
+}
+ColorEdit:focus
+{
+	border: 1px solid #5ae;
+}
+ColorEdit:read-only {
+    background: gray;
+}
 
 ReferenceEdit
 {
-	min-height: 20px;
-	max-height: 20px;
+	min-height: 18px;
+	max-height: 18px;
 	font-size: 12px;
 
 	color: #eee;
 	background: #333;
-	qproperty-padding: 5;
+	qproperty-padding: 6;
 
-	qproperty-borderColor: #222;
-	qproperty-borderColorHovered: #777;
-	qproperty-borderColorFocused: #5ae;
-	qproperty-borderColorReadonly: gray;
-
+	border: 1px solid #222;
 	border-radius: 2px;
 	qproperty-borderRadius: 2;
-	qproperty-borderWidth: 1;
 
 	qproperty-buttonIcon: url(img/reference.png);
 	qproperty-buttonColor: #444;
 	qproperty-buttonColorHovered: #666;
+}
+ReferenceEdit:hover
+{
+	border: 1px solid #777;
+}
+ReferenceEdit:focus
+{
+	border: 1px solid #5ae;
+}
+ReferenceEdit:read-only {
+    background: gray;
 }
 
 
@@ -201,7 +207,6 @@ ProgressBar
 {
 	color: #0071ff;
 	background: #282828;
-	border-color: #f00;
 	qproperty-progressHeight: 6;
 	qproperty-borderRadius: 3;
 	qproperty-borderColor: transparent;
@@ -264,7 +269,7 @@ QToolButton::menu-indicator {
 QPushButton
 {
 	background-color: #555;
-	border: 1px solid #3c3c3c;
+	border: 1px solid #333;
 	border-radius: 2px;
 	color: &[Palette/labelDeactive];
 	padding: 4px;
@@ -387,10 +392,23 @@ Toast
 	selection-background-color: #4bf;
 }*/
 
-DropDownMenu
+
+
+DropDown
+{
+	text-align: left;
+	padding-left: 6px;
+
+    qproperty-menuIndicator: url(img/menu_indicator.svg);
+    qproperty-menuIndicatorSize: 12;
+    qproperty-menuIndicatorOffsetX: -4;
+    qproperty-menuIndicatorOffsetY: 1;
+}
+
+DropDownPopup
 {
 	border: 1px solid #333;
-	border-radius: 2px;
+	border-radius: 4px;
 	background: #555;
 }
 

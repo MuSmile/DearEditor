@@ -1,6 +1,7 @@
 TreeView
 {
 	background: #444;
+	alternate-background-color: #444;
 	color: #eee;
 	
 	qproperty-treePaddingLeft: 2;
@@ -122,11 +123,30 @@ GalleryView > #searchbar
 
 
 
-ProjectView > TreeView
+ProjectView TreeView
 {
 	qproperty-indentation: 18;
 	qproperty-drawBranchLine: false;
 	qproperty-useBackgroundSeparator: false;
+	qproperty-useAlternatingBackground: false;
+	qproperty-background: #444;
+	qproperty-backgroundAlternate: #444;
+	min-width: 140px;
+}
+ProjectView > QSplitter::handle:horizontal
+{
+	background-color: #333;
+	width: 2px;
+}
+ProjectView > QSplitter::handle:vertical
+{
+	background-color: #333;
+	height: 2px;
+}
+ProjectView > #searchbar
+{
+	background-color: none;
+	border-bottom: 1px solid #222;
 }
 
 /*TreeItemEditor:focus

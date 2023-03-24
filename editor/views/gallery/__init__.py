@@ -6,6 +6,7 @@ from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
+from editor.widgets.basic.drop_down import DropDown
 from editor.widgets.basic.text_area import TextArea
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
@@ -71,6 +72,7 @@ class GalleryView(DockView):
 		pushBtn2 = QPushButton(getThemeIcon('project.png'), 'icon')
 		pushBtn3 = QPushButton('popup')
 		pushBtn3.setMenu(createTestMenu(pushBtn3))
+
 		pushBtn4 = QPushButton(getThemeIcon('project.png'), 'all')
 		pushBtn4.setMenu(createTestMenu(pushBtn4))
 		pushBtn4.setFixedWidth(100)
@@ -145,7 +147,7 @@ class GalleryView(DockView):
 		layout.addLayout(toolBtnLayout)
 
 
-		#############  COMBOXBOX  #############
+		#############  DROPDOWN  #############
 		layout.addSpacing(20)
 		layout.addWidget(QLabel('DropDown'))
 		layout.addWidget(HLineWidget())
@@ -154,13 +156,19 @@ class GalleryView(DockView):
 		dropDownLayout.setSpacing(20)
 		dropDownLayout.setAlignment(Qt.AlignLeft)
 
-		comboBox1 = QComboBox()
-		comboBox1.addItems(['Zero', 'One', 'Two', 'Three'])
-		comboBox1.setCurrentIndex(2)
-		comboBox1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		comboBox1.setFocusPolicy(Qt.StrongFocus)
+		dropdown1 = DropDown()
+		dropdown1.addItems(['Zero', 'One', 'Two', 'Three'])
+		dropdown1.setCurrentIndex(2)
+		dropdown1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		dropdown1.setFocusPolicy(Qt.StrongFocus)
 
-		dropDownLayout.addWidget(comboBox1)
+		dropdown2 = DropDown()
+		dropdown1.addItems(['Zero', 'One', 'Two', 'Three'])
+		dropdown1.setCurrentIndex(2)
+		dropdown2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
+		dropDownLayout.addWidget(dropdown1)
+		dropDownLayout.addWidget(dropdown2)
 		layout.addLayout(dropDownLayout)
 
 
@@ -283,7 +291,6 @@ class GalleryView(DockView):
 		colorEditLayout.setAlignment(Qt.AlignLeft)
 
 		colorEdit = ColorEdit()
-		colorEdit.setFixedWidth(220)
 
 		colorEditLayout.addWidget(colorEdit)
 		layout.addLayout(colorEditLayout)
@@ -299,7 +306,6 @@ class GalleryView(DockView):
 		referanceEditLayout.setAlignment(Qt.AlignLeft)
 
 		referanceEdit = ReferenceEdit()
-		referanceEdit.setFixedWidth(220)
 
 		referanceEditLayout.addWidget(referanceEdit)
 		layout.addLayout(referanceEditLayout)

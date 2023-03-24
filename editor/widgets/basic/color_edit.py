@@ -1,6 +1,6 @@
-from PySide6.QtCore import Qt, QRect, Property, Signal
+from PySide6.QtCore import Qt, QSize, QRect, Property, Signal
 from PySide6.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QFrame, QStyleOptionFrame, QStyle
 from editor.common.icon_cache import getThemePixmap
 from editor.common.types import Color
 
@@ -26,37 +26,7 @@ class ColorEdit(QWidget):
 	@buttonIcon.setter
 	def buttonIcon(self, value):
 		self._pixmapBtnIcon = value
-
-	@Property(QColor)
-	def borderColor(self):
-		return self._borderColor
-	@borderColor.setter
-	def borderColor(self, value):
-		self._borderColor = value
-	@Property(QColor)
-	def borderColorHovered(self):
-		return self._borderColorHovered
-	@borderColorHovered.setter
-	def borderColorHovered(self, value):
-		self._borderColorHovered = value
-	@Property(QColor)
-	def borderColorFocused(self):
-		return self._borderColorFocused
-	@borderColorFocused.setter
-	def borderColorFocused(self, value):
-		self._borderColorFocused = value
-	@Property(QColor)
-	def borderColorReadonly(self):
-		return self._borderColorReadonly
-	@borderColorReadonly.setter
-	def borderColorReadonly(self, value):
-		self._borderColorReadonly = value
-	@Property(int)
-	def borderWidth(self):
-		return self._penBorder.width() - 1
-	@borderWidth.setter
-	def borderWidth(self, value):
-		self._penBorder.setWidth(value + 1)
+		
 	@Property(int)
 	def borderRadius(self):
 		return self._borderRadius
@@ -70,13 +40,7 @@ class ColorEdit(QWidget):
 		self._btnColor = QColor('#444')
 		self._btnColorHovered = QColor('#666')
 		self._pixmapBtnIcon = getThemePixmap('color_picker.png')
-
-		self._borderColor = QColor('#222')
-		self._borderColorHovered = QColor('#777')
-		self._borderColorFocused = QColor('#5ae')
-		self._borderColorReadonly = QColor('gray')
 		self._borderRadius = 2
-		self._penBorder = QPen(self._borderColor, 2)
 		
 		self.color = Color(180, 160, 200, 100)
 		self.setMouseTracking(True)
@@ -134,12 +98,10 @@ class ColorEdit(QWidget):
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
 		painter.drawPixmap(self._btnRect.adjusted(3, 3, -3, -3), self._pixmapBtnIcon)
 
-		if self.hasFocus():
-			self._penBorder.setColor(self._borderColorFocused)
-		elif self.underMouse():
-			self._penBorder.setColor(self._borderColorHovered)
-		else:
-			self._penBorder.setColor(self._borderColor)
+		option = QStyleOptionFrame()
+		option.initFrom(self)
+		option.frameShape = QFrame.StyledPanel
+		self.style().drawPrimitive(QStyle.PE_Frame, option, painter, self)
 
-		painter.setPen(self._penBorder)
-		painter.drawRoundedRect(rect, self._borderRadius, self._borderRadius)
+	def minimumSizeHint(self):
+		return QSize(180, 20)

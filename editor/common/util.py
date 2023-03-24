@@ -2,8 +2,8 @@
 """
 
 import sys, os, time
-from PySide6.QtCore import Qt, QPropertyAnimation, QPoint, QFileInfo 
-from PySide6.QtGui import QPainter, QPixmap, QBrush
+from PySide6.QtCore import Qt, QPropertyAnimation, QPoint, QFileInfo
+from PySide6.QtGui import QPainter, QPixmap, QBrush, QCursor
 from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileIconProvider 
 
 
@@ -148,6 +148,30 @@ def getFileIcon(path):
 	"""
 	info = QFileInfo(path)
 	return _provider.icon(info)
+
+def adjustedPopupPosition(widget, width, height):
+	"""Calculate adjusted position for diaplaying popups(e.g. QMenu or other dropdown widget).
+	
+	Args:
+		QWidget widget: Anchor widget to display around.
+		int width: Popup's width.
+		int height: Popup's height.
+
+	Returns:
+		QPoint: Adjusted popup postion.
+	"""
+	rect = widget.rect()
+	# size = menu.sizeHint()
+	# w, h = size.width(), size.height()
+	pos = widget.mapToGlobal(rect.bottomLeft())
+	screen = QApplication.screenAt(QCursor.pos())
+	scrRect = screen.availableGeometry()
+	l, r, t, b = scrRect.left(), scrRect.right(), scrRect.top(), scrRect.bottom()
+	x, y = pos.x(), pos.y()
+	if x + width > r: x = r - width + 1
+	elif x < l: x = l
+	if y + height > b: y = max(y - rect.height() - height, t)
+	return QPoint(x, y + 1)
 
 def createTestMenu(parent):
 	"""Create a simple QMenu for test usage.

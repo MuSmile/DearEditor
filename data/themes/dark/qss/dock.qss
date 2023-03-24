@@ -264,7 +264,9 @@ ads--CAutoHideSideBar[sideBarLocation="2"] {
 ads--CAutoHideSideBar[sideBarLocation="3"] {
 	border-top: 1px solid #222;
 }
-
+ads--CPushButton:hover, ads--CPushButton:pressed{
+	background-color: #555;
+}
 
 /*****************************************************************************
  * CAutoHideDockContainer

@@ -7,11 +7,10 @@ __sys__ = platform.system()
 from PySide6.QtCore import Qt, QTimer, QEvent
 from PySide6.QtWidgets import QMainWindow
 from editor.common.util import getIde
-from editor.view_manager import createDockManager, createDockView
+from editor.view_manager import createDockManager, createDockView, setDockSplitterSizes
 from editor.widgets.menubar import createMenuBar
 from editor.widgets.toolbar import createToolBar
 from editor.widgets.statusbar import createStatusBar
-from editor.widgets.complex.color_picker import touchColorPicker
 
 # init editor views and all extensions
 import editor.views, extensions
@@ -27,12 +26,6 @@ class MainWindow(QMainWindow):
 		self.addToolBar(createToolBar(self))
 		self.setStatusBar(createStatusBar(self))
 
-		# There is a stupid issue on MacOS:
-		# When show a complex widget window with existing floating dock container, 
-		# which contains only one dock widget, the floating container will become strange black...
-		# However if we show any complex widget window before floating docks, the issue gone...
-		touchColorPicker()
-
 		self.setupEditorViews()
 		self.activateWindow()
 
@@ -43,17 +36,19 @@ class MainWindow(QMainWindow):
 		dock1 = createDockView('Hierarchy')
 		dock1.addIntoEditor()
 
-		dock2 = createDockView('Gallery')
+		dock2 = createDockView('Project')
 		dock2.addIntoEditor()
 
-		dock3 = createDockView('Project')
+		dock3 = createDockView('Gallery')
 		dock3.addIntoEditor()
 
-		dock3 = createDockView('TestRunner')
-		dock3.addIntoEditor('right')
+		dock4 = createDockView('TestRunner')
+		dock4.addIntoEditor('right')
 
-		dock4 = createDockView('Scene')
-		dock4.addIntoEditor('bottom')
+		dock5 = createDockView('Scene')
+		dock5.addIntoEditor('bottom')
+
+		setDockSplitterSizes(dock1.dockAreaWidget(), [2, 1])
 
 
 	def changeEvent(self, evt):

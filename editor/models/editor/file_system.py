@@ -1,4 +1,4 @@
-import sys, os
+import os
 from PySide6.QtCore import Qt, QAbstractItemModel, QModelIndex, QMimeData
 from editor.common.util import getFileIcon, Qt_DecorationExpandedRole
 from editor.common.icon_cache import getThemePixmap
@@ -32,13 +32,18 @@ class FileSystemItem:
 
 	def icon(self):
 		if not self.path: return
-		if os.path.isdir(self.path): return getThemePixmap('folder_close.png')
-		return getFileIcon(self.path)
+		if os.path.isdir(self.path):
+			return getThemePixmap('folder_close.png')
+		else:
+			return getFileIcon(self.path)
 
 	def iconExpanded(self):
 		if not self.path: return
-		if os.path.isdir(self.path): return getThemePixmap('folder_opened.png')
-		return getFileIcon(self.path)
+		if os.path.isdir(self.path):
+			if self.childCount() == 0: return
+			return getThemePixmap('folder_opened.png')
+		else:
+			return getFileIcon(self.path)
 
 
 	def updateName(self, name):
@@ -77,15 +82,16 @@ class FileSystemItem:
 class FileSystemModel(QAbstractItemModel):
 	MimeType = 'application/deardear-filesystemmodel'
 
-	def __init__(self, keepFoldersOnTop = True, folderOnly = False):
+	def __init__(self, keepFoldersOnTop = True, folderOnly = False, flat = False):
 		super().__init__()
 		self.invisibleRoot = FileSystemItem()
 		self.keepFoldersOnTop = keepFoldersOnTop
 		self.folderOnly = folderOnly
+		self.flat = flat
 
 	def acceptEntry(self, entry):
 		if self.folderOnly and entry.is_file(): return False
-		
+
 		name = entry.name
 		if name.startswith('.'): return False
 		if name.endswith('~'): return False
@@ -93,23 +99,26 @@ class FileSystemModel(QAbstractItemModel):
 		return True
 
 	def addRootItem(self, path):
+		path = os.path.realpath(path)
 		rootItem = FileSystemItem(path)
 		self.invisibleRoot.appendChild(rootItem)
-		# entries = [entry for entry in os.scandir(path) if self.acceptEntry(entry)]
 
-		# if self.keepFoldersOnTop:
-		# 	files, dirs = [], []
-		# 	for entry in entries:
-		# 		list = files if entry.is_file() else dirs
-		# 		list.append(entry)
-		# 	dirs.sort(key = lambda entry: entry.path)
-		# 	for d in dirs: rootItem.appendChild(FileSystemItem(d.path))
-		# 	files.sort(key = lambda entry: entry.path)
-		# 	for f in files: rootItem.appendChild(FileSystemItem(f.path))
+	def addRootItemsFrom(self, path):
+		parent = self.invisibleRoot
+		entries = [entry for entry in os.scandir(path) if self.acceptEntry(entry)]
+		if self.keepFoldersOnTop:
+			files, dirs = [], []
+			for entry in entries:
+				list = files if entry.is_file() else dirs
+				list.append(entry)
+			dirs.sort(key = lambda entry: entry.path)
+			for d in dirs: parent.appendChild(FileSystemItem(d.path))
+			files.sort(key = lambda entry: entry.path)
+			for f in files: parent.appendChild(FileSystemItem(f.path))
 
-		# else:
-		# 	entries.sort(key = lambda entry: entry.path)
-		# 	for p in entries: rootItem.appendChild(FileSystemItem(p.path))
+		else:
+			entries.sort(key = lambda entry: entry.path)
+			for p in entries: parent.appendChild(FileSystemItem(p.path))
 
 	def item(self, index):
 		return index.internalPointer() if index and index.isValid() else self.invisibleRoot
@@ -118,7 +127,7 @@ class FileSystemModel(QAbstractItemModel):
 		# return self.item(index).childCount()
 		item = self.item(index)
 		if item.childCount() > 0: return item.childCount()
-		if os.path.isdir(item.path):
+		if not self.flat and os.path.isdir(item.path):
 			entries = [entry for entry in os.scandir(item.path) if self.acceptEntry(entry)]
 			return len(entries)
 		else:
@@ -197,6 +206,7 @@ class FileSystemModel(QAbstractItemModel):
 	def dropMimeData(self, mimeData, dropAction, row, column, parent):
 		if not mimeData: return False
 		if mimeData.hasFormat(self.MimeType):
+			if self.canFetchMore(parent): self.fetchMore(parent)
 			data = str(mimeData.data(self.MimeType), 'utf-8')
 			for path in data.split(','):
 				self.insertRows(row, 1, parent)
@@ -205,6 +215,7 @@ class FileSystemModel(QAbstractItemModel):
 		return True
 
 	def canFetchMore(self, parent):
+		if self.flat: return False
 		parentItem = self.item(parent)
 		if parentItem.childCount() > 0: return False
 		path = parentItem.path
@@ -217,6 +228,7 @@ class FileSystemModel(QAbstractItemModel):
 	def fetchMore(self, parent):
 		parentItem = parent.internalPointer()
 		entries = [entry for entry in os.scandir(parentItem.path) if self.acceptEntry(entry)]
+		# self.beginInsertRows(parent, 0, len(entries))
 
 		if self.keepFoldersOnTop:
 			files, dirs = [], []
@@ -231,3 +243,11 @@ class FileSystemModel(QAbstractItemModel):
 		else:
 			entries.sort(key = lambda entry: entry.path)
 			for p in entries: parentItem.appendChild(FileSystemItem(p.path))
+
+		# self.endInsertRows()
+
+	def reset(self):
+		self.beginResetModel()
+		self.invisibleRoot.children = []
+		self.endResetModel()
+

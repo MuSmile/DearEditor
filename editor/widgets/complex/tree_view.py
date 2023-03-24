@@ -3,7 +3,7 @@ from enum import Enum
 from math import floor
 from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QItemSelectionModel, QEvent, QVariantAnimation, QEasingCurve
 from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
-from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle
+from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle, QStyleOptionViewItem
 from editor.common.math import clamp, lerp
 from editor.common.ease import easeInOutQuad, easeOutQuad
 from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex, Qt_DecorationExpandedRole
@@ -48,15 +48,15 @@ class TreeItemDelegate(QItemDelegate):
 
 		bgRect = QRect(0, t, r, h)
 		branchRect = QRect(0, t, l, h)
-		self.drawBackground(painter, bgRect, option.state, index)
+		self.drawBackground(painter, bgRect, option, index)
 		self.drawBranchLines(painter, branchRect, index)
 		self.drawBranchArrow(painter, branchRect, index)
 		self.drawContent(painter, rect, index)
 		# super().paint(painter, option, index)
 
-	def drawBackground(self, painter, rect, state, index):
+	def drawBackground(self, painter, rect, option, index):
 		view = self.view
-		selected = state & QStyle.State_Selected
+		selected = option.state & QStyle.State_Selected
 		hovered  = index == view.hoveredIndex # option.state & QStyle.State_MouseOver
 		bgColor  = None
 		if selected:
@@ -64,8 +64,8 @@ class TreeItemDelegate(QItemDelegate):
 		elif hovered and view.dropIndicatorRect == None:
 			bgColor = view.backgroundHovered
 		else:
-			# alternate = option.features & QStyleOptionViewItem.Alternate
-			alternate = view.useAlternatingBackground and self.view._flatVisibleRowNumber(index, self.view.model()) % 2
+			alternate = view.useAlternatingBackground and option.features & QStyleOptionViewItem.Alternate
+			# alternate = view.useAlternatingBackground and (self.view.visualRect(index).y() // self.view.itemHeight) % 2
 			bgColor = view.backgroundAlternate if alternate else view.background
 		painter.fillRect(rect, bgColor)
 
@@ -76,8 +76,10 @@ class TreeItemDelegate(QItemDelegate):
 	def drawContent(self, painter, rect, index):
 		view = self.view
 		textOffset = view.treePaddingLeft
-		expanded = view.isExpanded(index)
-		decoration = index.data(Qt_DecorationExpandedRole if expanded else Qt.DecorationRole)
+
+		decoration = None
+		if view.isExpanded(index): decoration = index.data(Qt_DecorationExpandedRole)
+		if not decoration: decoration = index.data(Qt.DecorationRole)
 
 		if decoration:
 			indentation = view.indentation()
@@ -89,8 +91,7 @@ class TreeItemDelegate(QItemDelegate):
 			x, y = cx - halfSize + view.treePaddingLeft, cy - halfSize
 			if isinstance(decoration, QPixmap):
 				painter.drawPixmap(x, y, iconSize, iconSize, decoration)
-			else: # draw QIcon
-				# painter.drawPixmap(x, y, iconSize, iconSize, decoration.pixmap(iconSize, iconSize))
+			else: # if isinstance(decoration, QIcon):
 				decoration.paint(painter, x, y, iconSize, iconSize)
 
 		painter.drawText(rect.adjusted(textOffset, -1, 0, 0), Qt.AlignVCenter, index.data())
@@ -552,7 +553,7 @@ class TreeView(QTreeView):
 
 		self.setAnimated(False)
 		self.setHeaderHidden(True)
-		self.setAlternatingRowColors(False)
+		self.setAlternatingRowColors(True)
 		self.setExpandsOnDoubleClick(False)
 		self.setItemsExpandable(False)
 		self.setFocusPolicy(Qt.ClickFocus)
@@ -991,7 +992,7 @@ class TreeView(QTreeView):
 				_collapse()
 		else:
 			if recursive:
-				self.expandRecursively(index)
+				self._expandRecursively(index)
 			else:
 				self.expand(index)
 			if self.customAnimated: self._playExpandAnim(index, False, recursive)
@@ -1003,7 +1004,7 @@ class TreeView(QTreeView):
 		list = self._animChildrenList(index, recursive)
 		for idx in list: model.setData(idx, height, Qt.SizeHintRole)
 		if recursive:
-			self.expandRecursively(index)
+			self._expandRecursively(index)
 		else:
 			self.expand(index)
 
@@ -1011,7 +1012,15 @@ class TreeView(QTreeView):
 		self.collapse(index)
 		model = self.model()
 		count = model.rowCount(index)
-		for r in range(count): self._collapseRecursively(model.index(r, 0, index))
+		for r in range(count):
+			child = model.index(r, 0, index)
+			if child.isValid():	self._collapseRecursively(child)
+	def _expandRecursively(self, index):
+		self.expand(index)
+		model = self.model()
+		if model.canFetchMore(index): model.fetchMore(index)
+		count = model.rowCount(index)
+		for r in range(count): self._expandRecursively(model.index(r, 0, index))
 	def _animChildrenList(self, index, includeHidden):
 		list = []
 		model = self.model()

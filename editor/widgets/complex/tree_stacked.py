@@ -15,7 +15,7 @@ class TreeStackedWidget(QSplitter):
 
 		self.setOrientation(Qt.Horizontal)
 		self.setChildrenCollapsible(False)
-		self.setSizes([100, 300])
+		self.setSizes([120, 300])
 
 	def eventFilter(self, obj, evt):
 		if obj == self.tree and evt.type() == QEvent.KeyPress:

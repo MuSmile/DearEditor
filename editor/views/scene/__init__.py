@@ -3,6 +3,9 @@ from OpenGL import GL as gl
 from PySide6.QtOpenGL import QOpenGLShader, QOpenGLShaderProgram, QOpenGLBuffer
 from PySide6.QtOpenGLWidgets import QOpenGLWidget
 from editor.view_manager import DockView, dockView
+from PySide6.QtCore import *
+from PySide6.QtGui import *
+from PySide6.QtWidgets import *
 
 class OpenGLWidget(QOpenGLWidget):
 	def initializeGL(self):
@@ -46,5 +49,18 @@ class OpenGLWidget(QOpenGLWidget):
 class SceneView(DockView):
 	def __init__(self, parent, **data):
 		super().__init__(parent, **data)
-		self.setWidget(OpenGLWidget(self))
+		
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		self.layout().addLayout(layout)
+
+		btn1 = QPushButton("Test Notification", self)
+		btn1.clicked.connect(lambda: self.showNotification('hello\nhello again'))
+		layout.addWidget(btn1)
+
+		t = OpenGLWidget(self)
+		t.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		layout.addWidget(t)
+
+		# self.setWidget(OpenGLWidget(self))
 

@@ -13,7 +13,7 @@ native.setDarkAppearance()
 menuConfLight = {
 	# 'border'              :    QColor('#aaa'),
 	'borderWidth'           :    0,
-	'borderRadius'          :    6,
+	'borderRadius'          :    7,
 
 	'background'            :    QColor('#e8e8e8'),
 	'backgroundHovered'     :    QColor('#498afd'),
@@ -53,13 +53,13 @@ menuConfLight = {
 menuConfDark = {
 	'border'                :    QColor('#6b6b6b'),
 	'borderWidth'           :    1,
-	'borderRadius'          :    6,
+	'borderRadius'          :    7,
 
 	'background'            :    QColor('#383736'),
 	'backgroundHovered'     :    QColor('#47f'),
 	
-	'text'                  :    QColor('#fff'),
-	'textHovered'           :    QColor('#fff'),
+	'text'                  :    QColor('#eee'),
+	'textHovered'           :    QColor('#eee'),
 	'shortcut'              :    QColor('#aaa'),
 	'separator'             :    QColor('#6b6b6b'),
 

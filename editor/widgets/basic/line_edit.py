@@ -1,7 +1,7 @@
 import os, platform
 from PySide6.QtCore import Qt, QRect, Property, Signal
 from PySide6.QtGui import QCursor, QPixmap, QPainter, QPen, QColor, QPainterPath
-from PySide6.QtWidgets import QLineEdit, QFileDialog
+from PySide6.QtWidgets import QLineEdit, QFileDialog, QFrame, QStyleOptionFrame, QStyle
 from editor.common.icon_cache import getThemePixmap
 from editor.common.util import toInt, toFloat, formatNumber
 from editor.common.math import sign
@@ -50,7 +50,7 @@ class IntLineEdit(LineEdit):
 		self.checkValue()
 
 	def wheelEvent(self, evt):
-		if not self.hasFocus(): return
+		if not self.hasFocus(): return evt.ignore()
 		angleDelta = evt.angleDelta()
 		shiftPressed = evt.modifiers() & Qt.ShiftModifier
 		if shiftPressed:
@@ -98,7 +98,7 @@ class FloatLineEdit(LineEdit):
 		self.checkValue()
 
 	def wheelEvent(self, evt):
-		if not self.hasFocus(): return
+		if not self.hasFocus(): return evt.ignore()
 		angleDelta = evt.angleDelta()
 		shiftPressed = evt.modifiers() & Qt.ShiftModifier
 		if shiftPressed:
@@ -244,36 +244,6 @@ class PathLineEdit(LineEdit):
 	def buttonIcon(self, value):
 		self._pixmapBtnIcon = value
 
-	@Property(QColor)
-	def borderColor(self):
-		return self._borderColor
-	@borderColor.setter
-	def borderColor(self, value):
-		self._borderColor = value
-	@Property(QColor)
-	def borderColorHovered(self):
-		return self._borderColorHovered
-	@borderColorHovered.setter
-	def borderColorHovered(self, value):
-		self._borderColorHovered = value
-	@Property(QColor)
-	def borderColorFocused(self):
-		return self._borderColorFocused
-	@borderColorFocused.setter
-	def borderColorFocused(self, value):
-		self._borderColorFocused = value
-	@Property(QColor)
-	def borderColorReadonly(self):
-		return self._borderColorReadonly
-	@borderColorReadonly.setter
-	def borderColorReadonly(self, value):
-		self._borderColorReadonly = value
-	@Property(int)
-	def borderWidth(self):
-		return self._penBorder.width() - 1
-	@borderWidth.setter
-	def borderWidth(self, value):
-		self._penBorder.setWidth(value + 1)
 	@Property(int)
 	def borderRadius(self):
 		return self._borderRadius
@@ -287,13 +257,7 @@ class PathLineEdit(LineEdit):
 		self._btnColor = QColor('#444')
 		self._btnColorHovered = QColor('#666')
 		self._pixmapBtnIcon = getThemePixmap('folder_close.png')
-
-		self._borderColor = QColor('#222')
-		self._borderColorHovered = QColor('#777')
-		self._borderColorFocused = QColor('#5ae')
-		self._borderColorReadonly = QColor('gray')
 		self._borderRadius = 2
-		self._penBorder = QPen(self._borderColor, 2)
 		
 		self._btnHovered = False
 
@@ -365,14 +329,9 @@ class PathLineEdit(LineEdit):
 		path.addRoundedRect(rect, self._borderRadius, self._borderRadius)
 		painter.setClipPath(path)
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
-		painter.drawPixmap(self._btnRect.adjusted(3, 3, -3, -3), self._pixmapBtnIcon)
+		painter.drawPixmap(self._btnRect.adjusted(2, 2, -2, -2), self._pixmapBtnIcon)
 
-		if self.hasFocus():
-			self._penBorder.setColor(self._borderColorFocused)
-		elif self.underMouse():
-			self._penBorder.setColor(self._borderColorHovered)
-		else:
-			self._penBorder.setColor(self._borderColor)
-
-		painter.setPen(self._penBorder)
-		painter.drawRoundedRect(rect, self._borderRadius, self._borderRadius)
+		option = QStyleOptionFrame()
+		option.initFrom(self)
+		option.frameShape = QFrame.StyledPanel
+		self.style().drawPrimitive(QStyle.PE_Frame, option, painter, self)
