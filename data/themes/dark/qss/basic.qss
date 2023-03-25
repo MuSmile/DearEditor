@@ -25,7 +25,7 @@ QToolTip
     background: #555;
     border: 1px solid #333;
     color: #eee;
-    padding: 2px;
+    padding: 0px 2 0 2;
 }
 
 QLineEdit
@@ -69,9 +69,8 @@ PlaceholderLineEdit[text='']
 
 SearchLineEdit
 {
+	qproperty-clearIcon: url(img/close.png);
 	qproperty-searchIcon: url(img/search.png);
-	qproperty-closeButtonLineColor: #ccc;
-	qproperty-closeButtonLineWidth: 1;
 }
 
 PathLineEdit
@@ -324,7 +323,7 @@ QCheckBox::indicator:checked {
     image: url(img/check2.png);
 }
 QCheckBox::indicator:indeterminate{
-    image: url(img/close.png);
+    image: url(img/indeterminate.png);
 }
 
 QRadioButton {

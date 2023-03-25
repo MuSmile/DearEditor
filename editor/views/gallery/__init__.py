@@ -47,6 +47,7 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
 		treeStacked.addStackedWidget('Container/Collapsible', self.createCollapsiblePreview())
 		treeStacked.addStackedWidget('Container/SlidingStacked', self.createSlidingStackedPreview())
+		treeStacked.tree.setCurrentByPath('Basic/Button')
 		treeStacked.tree.expandAll()
 		layout.addWidget(treeStacked)
 

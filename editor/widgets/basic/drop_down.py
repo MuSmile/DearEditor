@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt, Property, QRect
 from PySide6.QtGui import QPixmap, QPainter, QCursor, QColor, QPen, QPainterPath
-from PySide6.QtWidgets import QPushButton, QWidget, QFrame, QStyleOptionFrame, QStyle
+from PySide6.QtWidgets import QPushButton, QWidget, QFrame, QStyleOptionFrame, QStyle, QVBoxLayout, QSizePolicy, QListView
+from editor.widgets.basic.line_edit import SearchLineEdit
 from editor.common.icon_cache import getThemePixmap
 from editor.common.util import adjustedPopupPosition
 
@@ -81,6 +82,17 @@ class DropDownPopup(QWidget):
 		self.setAttribute(Qt.WA_NoSystemBackground, True)
 		self.setAttribute(Qt.WA_TranslucentBackground, True)
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setContentsMargins(2, 2, 2, 0)
+
+		searchEdit = SearchLineEdit(self)
+		searchEdit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		searchEdit.setFocus()
+		layout.addWidget(searchEdit)
+
+		self.setLayout(layout)
 
 	def paintEvent(self, event):
 		painter = QPainter(self)

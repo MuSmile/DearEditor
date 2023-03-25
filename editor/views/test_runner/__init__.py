@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt, QRect
 from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout
 from PySide6.QtGui import QCursor
 from editor.view_manager import DockView, dockView
-from editor.widgets.complex.color_picker import createColorPicker
+from editor.widgets.complex.color_picker import ColorPicker
 
 
 class MyPopup(QWidget):
@@ -36,7 +36,7 @@ class TestRunnerView(DockView):
 		layout.addWidget(btn1)
 
 		btn2 = QPushButton("Test ColorPicker", self)
-		btn2.clicked.connect(lambda: createColorPicker('#5D99E6'))
+		btn2.clicked.connect(lambda: ColorPicker('#5D99E6').show())
 		layout.addWidget(btn2)
 
 		btn3 = QPushButton("Test Notification", self)

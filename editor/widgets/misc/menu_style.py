@@ -242,18 +242,56 @@ class MenuStyleMacOS(QProxyStyle):
 
 
 class MenuStyleWindows(QProxyStyle):
+	def __init__(self, conf = None):
+		super().__init__()
+		self.conf = conf or {}
+
+	def background(self):
+		return self.conf['background'] if 'background' in self.conf else QColor('#f0f0f0')
+	def backgroundHovered(self):
+		return self.conf['backgroundHovered'] if 'backgroundHovered' in self.conf else QColor('#90c8f6')
+	def submenuIcon(self):
+		return self.conf['submenuIcon'] if 'submenuIcon' in self.conf else 'submenu.png'
+	def submenuIconHovered(self):
+		return self.conf['submenuIconHovered'] if 'submenuIconHovered' in self.conf else 'submenu.png'
+	def submenuIconSize(self):
+		return self.conf['submenuIconSize'] if 'submenuIconSize' in self.conf else 10
+	def submenuIconOffsetX(self):
+		return self.conf['submenuIconOffsetX'] if 'submenuIconOffsetX' in self.conf else 0
+	def submenuIconOffsetY(self):
+		return self.conf['submenuIconOffsetY'] if 'submenuIconOffsetY' in self.conf else 1
+
 	def drawControl(self, element, option, painter, widget):
 		if element != self.CE_MenuItem: return super().drawControl(element, option, painter, widget)
 
 		menuItem = option
 		menuItem.__class__ = QStyleOptionMenuItem
 		mtype = menuItem.menuItemType
-		if mtype != QStyleOptionMenuItem.Normal: return super().drawControl(element, option, painter, widget)
-		textParts = option.text.split('\t')
-		if len(textParts) == 1: return super().drawControl(element, option, painter, widget)
 
-		option.text = textParts[0]
-		super().drawControl(element, option, painter, widget)
-		textFlags = Qt.AlignRight | Qt.AlignVCenter | Qt.TextShowMnemonic | Qt.TextDontClip | Qt.TextSingleLine
-		self.drawItemText(painter, option.rect.adjusted(0, 0, -10, 0), textFlags, option.palette, option.state & self.State_Enabled, textParts[1], QPalette.Text)
 
+		if mtype == QStyleOptionMenuItem.SubMenu:
+			hovered = menuItem.state & self.State_Selected and menuItem.state & self.State_Enabled
+			super().drawControl(element, option, painter, widget)
+
+			rect = menuItem.rect
+			y, w, h = rect.center().y(), rect.width(), rect.height()
+			iconSize = self.submenuIconSize()
+			offsetX, offsetY = self.submenuIconOffsetX(), self.submenuIconOffsetY()
+			iconPadding = 5
+			iconRect = QRect(w - iconSize - iconPadding + offsetX, y - iconSize / 2 + offsetY, iconSize, iconSize)
+			iconPath = self.submenuIconHovered() if hovered else self.submenuIcon()
+			painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
+			painter.fillRect(iconRect, self.backgroundHovered() if hovered else self.background())
+			painter.drawPixmap(iconRect, getThemePixmap(iconPath))
+
+		elif mtype == QStyleOptionMenuItem.Normal:
+			textParts = option.text.split('\t')
+			if len(textParts) == 1:
+				super().drawControl(element, option, painter, widget)
+			else:
+				option.text = textParts[0]
+				super().drawControl(element, option, painter, widget)
+				textFlags = Qt.AlignRight | Qt.AlignVCenter | Qt.TextShowMnemonic | Qt.TextDontClip | Qt.TextSingleLine
+				self.drawItemText(painter, option.rect.adjusted(0, 0, -10, 0), textFlags, option.palette, option.state & self.State_Enabled, textParts[1], QPalette.Text)
+		else:
+			super().drawControl(element, option, painter, widget)

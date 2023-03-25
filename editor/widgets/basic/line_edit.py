@@ -117,25 +117,18 @@ class SearchLineEdit(LineEdit):
 	def searchIcon(self, value):
 		self._pixmapSearch = value
 
-	@Property(QColor)
-	def closeButtonLineColor(self):
-		return self._penCloseButton.color()
-	@closeButtonLineColor.setter
-	def closeButtonLineColor(self, value):
-		self._penCloseButton.setColor(value)
-	@Property(int)
-	def closeButtonLineWidth(self):
-		return self._penCloseButton.width()
-	@closeButtonLineWidth.setter
-	def closeButtonLineWidth(self, value):
-		self._penCloseButton.setWidth(value)
+	@Property(QPixmap)
+	def clearIcon(self):
+		return self._pixmapClear
+	@clearIcon.setter
+	def clearIcon(self, value):
+		self._pixmapClear = value
 
 	def __init__(self, parent = None):
 		super().__init__(parent)
 
 		self._pixmapSearch = getThemePixmap('search.png')
-		# self._pixmapClear  = getThemePixmap('close.png')
-		self._penCloseButton = QPen(QColor('#ccc'), 1.5)
+		self._pixmapClear  = getThemePixmap('close.png')
 
 		self.setMouseTracking(True)
 		self.textChanged.connect(self.onTextChange)
@@ -198,15 +191,10 @@ class SearchLineEdit(LineEdit):
 	def paintEvent(self, event):
 		super().paintEvent(event)
 		painter = QPainter(self)
-		painter.setRenderHint(QPainter.Antialiasing)
 		painter.setRenderHint(QPainter.SmoothPixmapTransform)
 		painter.drawPixmap(self._searchRect, self._pixmapSearch)
 		if self._clearBtnVisible:
-			# painter.drawPixmap(self._closeRect, self._pixmapClear)
-			painter.setPen(self._penCloseButton)
-			rect = self._closeRect.adjusted(4, 4, -4, -4)
-			painter.drawLine(rect.topLeft(), rect.bottomRight())
-			painter.drawLine(rect.topRight(), rect.bottomLeft())
+			painter.drawPixmap(self._closeRect, self._pixmapClear)
 
 
 class PlaceholderLineEdit(LineEdit):

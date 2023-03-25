@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt, QSize, QRect, Property, Signal
 from PySide6.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget, QFrame, QStyleOptionFrame, QStyle
+from editor.widgets.complex.color_picker import ColorPicker
 from editor.common.icon_cache import getThemePixmap
 from editor.common.types import Color
 
@@ -65,7 +66,7 @@ class ColorEdit(QWidget):
 		if self._btnHovered:
 			print('>>>> pick screen color')
 		else:
-			print('>>>> open color picker')
+			ColorPicker(self.color.rgba64()).show()
 
 	def enterEvent(self, evt):
 		super().enterEvent(evt)

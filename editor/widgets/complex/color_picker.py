@@ -153,6 +153,7 @@ class _ColorPickerBtn(QWidget):
 	def __init__(self, parent):
 		super().__init__(parent)
 		self.setFixedSize(20, 20)
+		self.setToolTip('Pick a color from the screen')
 
 	def mousePressEvent(self, evt):
 		if evt.button() == Qt.LeftButton:
@@ -669,7 +670,6 @@ class ColorPicker(QWidget):
 	colorChanged = Signal(QColor, str) # color: QColor, reason: str
 	
 	ColorSpace = _ColorSpaceRgb
-	PrevLoc = None
 
 	def __init__(self, initColor = None):
 		ide = getIde()
@@ -678,13 +678,20 @@ class ColorPicker(QWidget):
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
 		self.setWindowFlags(Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
 		# self.setWindowFlags(Qt.Drawer | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
-		self.setWindowTitle('Color Editor')
+		self.setWindowTitle('Color Picker')
 		self.setFocusPolicy(Qt.ClickFocus)
 		self.setFocus()
-		self.setFixedSize(234, 468)
+
+		w, h = 234, 468
+		self.setFixedSize(w, h)
+		pos = QCursor.pos()
+		screen = self.screen().geometry()
+		pos.setX(clamp(pos.x(), screen.left(), screen.right() - w))
+		pos.setY(clamp(pos.y() - 30, screen.top(), screen.bottom() - h))
+
+		self.move(pos)
 		self.initColor = QColor(initColor)
 		self.currentColor = QColor(initColor)
-		if self.PrevLoc: self.move(self.PrevLoc)
 
 		btn = _ColorPickerBtn(self)
 		btn.clicked.connect(self.pickScreenshotColor)
@@ -764,7 +771,6 @@ class ColorPicker(QWidget):
 	def closeEvent(self, evt):
 		super().closeEvent(evt)
 		getIde().focusChanged.disconnect(self.onFocusChange)
-		ColorPicker.PrevLoc = self.pos()
 
 	def onFocusChange(self, old, now):
 		if not isinstance(now, QWidget): return
@@ -773,11 +779,12 @@ class ColorPicker(QWidget):
 	def pickScreenshotColor(self):
 		def onPickedColorUpdate(color, finish):
 			if not finish: return
-			if self.currentColor == color: return
-			self.currentColor.setRgba(color.rgba())
-			self.updateCurrentColor('screen_pick')
-			for popup in self.screenColorPickers.values(): popup.close()
-			self.screenColorPickers.clear()
+			if self.currentColor != color:
+				self.currentColor.setRgba(color.rgba())
+				self.updateCurrentColor('screen_pick')
+			if self.screenColorPickers:
+				for popup in self.screenColorPickers.values(): popup.close()
+				self.screenColorPickers.clear()
 
 		for screen in QApplication.screens():
 			popup = ScreenColorPicker(screen, self.currentColor, onPickedColorUpdate, self.colorRing)
@@ -806,6 +813,9 @@ class ColorPicker(QWidget):
 		self.updateCurrentColor('revert')
 
 	def keyPressEvent(self, evt):
+		if self.screenColorPickers:
+			for popup in self.screenColorPickers.values():
+				if popup.underMouse(): return popup.keyPressEvent(evt)
 		if evt.key() == Qt.Key_Escape: self.close()
 		super().keyPressEvent(evt)
 
@@ -842,6 +852,7 @@ class ScreenColorPicker(QWidget):
 		super().closeEvent(evt)
 		if not self.overridePaint: return
 		self.overridePaint.overridePaintFunc = None
+		self.overridePaint.update()
 
 	def grabScreen(self, screen):
 		size = self.size()
@@ -852,6 +863,13 @@ class ScreenColorPicker(QWidget):
 		painter.drawPixmap(rect, screenshot)
 		return final
 
+	def screenshotColorAt(self, pos):
+		pos.setX(clamp(pos.x(), 0, self.width() - 1))
+		pos.setY(clamp(pos.y(), 0, self.height() - 1))
+		return self.screenshot.pixelColor(pos)
+
+	# can not invoked from event system with window type Qt::ToolTip,
+	# let corresponding ColorPicker redirect its key event to here...
 	def keyPressEvent(self, evt):
 		key = evt.key()
 		if key == Qt.Key_Escape:
@@ -866,7 +884,7 @@ class ScreenColorPicker(QWidget):
 		elif btn == Qt.MiddleButton:
 			evt.ignore()
 		else:
-			color = self.screenshot.pixelColor(QCursor.pos() - self.screenOffset)
+			color = self.screenshotColorAt(QCursor.pos() - self.screenOffset)
 			self.colorUpdated.emit(color, True)
 			self.close()
 
@@ -874,7 +892,8 @@ class ScreenColorPicker(QWidget):
 		self.onMouseMove(evt.pos())
 
 	def onMouseMove(self, pos):
-		self.colorUpdated.emit(self.screenshot.pixelColor(pos), False)
+		if not self.underMouse(): return
+		self.colorUpdated.emit(self.screenshotColorAt(pos), False)
 		if self.overridePaint: self.overridePaint.update()
 		self.update()
 
@@ -904,7 +923,7 @@ class ScreenColorPicker(QWidget):
 		painter.drawLine(x, y + halfSize, x + size, y + halfSize)
 
 		pos = QCursor.pos() - self.screenOffset
-		color = self.screenshot.pixelColor(pos).name().upper()
+		color = self.screenshotColorAt(pos).name().upper()
 		fm = self.fontMetrics()
 		width = fm.horizontalAdvance(color) + 8
 		height = fm.height() + 4
@@ -941,6 +960,3 @@ class ScreenColorPicker(QWidget):
 		offset = round(10 * ds) - 1
 		ids = round(ds) + 2
 		painter.drawRect(x + offset, y + offset, ids, ids)
-
-def createColorPicker(initColor):
-	ColorPicker(initColor).show()

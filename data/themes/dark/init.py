@@ -92,7 +92,7 @@ menuConfDark = {
 
 if __sys__ == 'Darwin':
 	menuStyle = MenuStyleMacOS(menuConfDark)
-	# menuStyle = MenuStyle(menuConfLight)
+	# menuStyle = MenuStyleMacOS(menuConfLight)
 	getIde().setStyle(menuStyle)
 
 elif __sys__ == 'Windows':

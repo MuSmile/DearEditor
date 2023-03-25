@@ -141,8 +141,8 @@ def setDockSplitterSizes(dockArea, sizes):
 
 def createDockManager(mainWin):
 	CDockManager.setConfigFlag(CDockManager.RetainTabSizeWhenCloseButtonHidden, True)
-	CDockManager.setConfigFlag(CDockManager.FloatingContainerHasWidgetIcon, False)
 	CDockManager.setConfigFlag(CDockManager.FloatingContainerHasWidgetTitle, False)
+	CDockManager.setConfigFlag(CDockManager.FloatingContainerHasWidgetIcon, False)
 	CDockManager.setConfigFlag(CDockManager.OpaqueSplitterResize, True)
 	CDockManager.setConfigFlag(CDockManager.TabCloseButtonIsToolButton, False)
 	CDockManager.setConfigFlag(CDockManager.DockAreaHasUndockButton, False)
@@ -168,8 +168,8 @@ def createDockManager(mainWin):
 	def focusedDockWidgetChanged(old, now):
 		focused = getIde().focusWidget()
 		if not isParentOfWidget(now, focused): now.setFocus()
-		container = now.dockContainer()
-		if container and container.isFloating(): now.window().setWindowTitle(now.tabWidget().text())
+		# container = now.dockContainer()
+		# if container and container.isFloating(): now.window().setWindowTitle(now.tabWidget().text())
 
 	_dockManager.focusedDockWidgetChanged.connect(focusedDockWidgetChanged)
 	

@@ -1,7 +1,7 @@
 import time, functools
 from enum import Enum
 from math import floor
-from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QItemSelectionModel, QEvent, QVariantAnimation, QEasingCurve
+from PySide6.QtCore import Qt, Property, QSize, QRect, QTimer, QPointF, QItemSelectionModel, QEvent, QVariantAnimation, QEasingCurve, QModelIndex
 from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMouseEvent
 from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle, QStyleOptionViewItem
 from editor.common.math import clamp, lerp
@@ -1110,6 +1110,22 @@ class TreeView(QTreeView):
 		overlay = TreeItemPingOverlay(self)
 		overlay.startPing(index)
 		overlay.show()
+
+	def setCurrentByPath(self, path):
+		model = self.model()
+		parent = QModelIndex()
+		pathes = path.split('/')
+		for name in pathes:
+			rowCount = model.rowCount(parent)
+			found = None
+			for i in range(model.rowCount(parent)):
+				idx = model.index(i, 0, parent)
+				if idx.data() == name:
+					found = idx
+					break
+			if not found: return
+			parent = found
+		self.setCurrentIndex(parent)
 
 
 	####################  UTILS  ####################
