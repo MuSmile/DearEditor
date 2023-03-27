@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, Signal, QRect, QRectF, QRegularExpression
+from PySide6.QtCore import Qt, Signal, QRect, QRectF, QRegularExpression, QTimer
 from PySide6.QtWidgets import QWidget, QPushButton, QLineEdit, QLabel, QMenu, QHBoxLayout, QVBoxLayout, QApplication
 from PySide6.QtGui import QColor, QPainter, QPainterPath, QLinearGradient, QConicalGradient, QRegularExpressionValidator, QPixmap, QImage, QCursor, QPen
 from editor.common.math import clamp, locAt, vecAngle, lerpI, getDir
@@ -676,7 +676,7 @@ class ColorPicker(QWidget):
 		super().__init__(ide.activeWindow())
 		ide.focusChanged.connect(self.onFocusChange)
 		self.setAttribute(Qt.WA_DeleteOnClose, True)
-		self.setWindowFlags(Qt.Dialog | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
+		self.setWindowFlags(Qt.Window | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
 		# self.setWindowFlags(Qt.Drawer | Qt.WindowCloseButtonHint | Qt.WindowTitleHint | Qt.CustomizeWindowHint)
 		self.setWindowTitle('Color Picker')
 		self.setFocusPolicy(Qt.ClickFocus)
@@ -761,8 +761,6 @@ class ColorPicker(QWidget):
 		self.colorCpt3 = cpt3
 		self.colorCptA = cptA
 
-		self.screenColorPickers = {}
-
 	def paintEvent(self, evt):
 		painter = QPainter(self)
 		painter.fillRect(self.rect(), QColor('#444'))
@@ -777,19 +775,11 @@ class ColorPicker(QWidget):
 		if now != self and not isParentOfWidget(self, now): self.close()
 
 	def pickScreenshotColor(self):
-		def onPickedColorUpdate(color, finish):
-			if not finish: return
-			if self.currentColor != color:
+		def onColorUpdate(color, picked):
+			if picked and self.currentColor != color:
 				self.currentColor.setRgba(color.rgba())
 				self.updateCurrentColor('screen_pick')
-			if self.screenColorPickers:
-				for popup in self.screenColorPickers.values(): popup.close()
-				self.screenColorPickers.clear()
-
-		for screen in QApplication.screens():
-			popup = ScreenColorPicker(screen, self.currentColor, onPickedColorUpdate, self.colorRing)
-			self.screenColorPickers[ screen ] = popup
-			popup.show()
+		ScreenColorPicker.showScreenColorPicker(self.currentColor, onColorUpdate, self.colorRing)
 
 	def updateCurrentColor(self, reason):
 		self.colorChanged.emit(self.currentColor, reason)
@@ -813,14 +803,41 @@ class ColorPicker(QWidget):
 		self.updateCurrentColor('revert')
 
 	def keyPressEvent(self, evt):
-		if self.screenColorPickers:
-			for popup in self.screenColorPickers.values():
-				if popup.underMouse(): return popup.keyPressEvent(evt)
-		if evt.key() == Qt.Key_Escape: self.close()
-		super().keyPressEvent(evt)
+		if ScreenColorPicker.redirectKeyPressEvent(evt): return
+		key = evt.key()
+		if key == Qt.Key_Escape:
+			self.revertColor()
+			self.close()
+		elif key == Qt.Key_Return or key == Qt.Key_Enter:
+			self.close()
+		else:
+			super().keyPressEvent(evt)
 
 class ScreenColorPicker(QWidget):
 	colorUpdated = Signal(QColor, bool)
+
+	ShowHexColor = True
+	InstanceTable = {}
+
+	@staticmethod
+	def showScreenColorPicker(defaultColor, onColorUpdate, overridePaint = None):
+		for screen in QApplication.screens():
+			popup = ScreenColorPicker(screen, defaultColor, onColorUpdate, overridePaint)
+			ScreenColorPicker.InstanceTable[ screen ] = popup
+			popup.show()
+	@staticmethod
+	def closeScreenColorPicker():
+		# if not ScreenColorPicker.InstanceTable: return
+		for popup in ScreenColorPicker.InstanceTable.values(): popup.close()
+		ScreenColorPicker.InstanceTable.clear()
+	@staticmethod
+	def redirectKeyPressEvent(evt):
+		if not ScreenColorPicker.InstanceTable: return False
+		for popup in ScreenColorPicker.InstanceTable.values():
+			if popup.underMouse():
+				popup.keyPressEvent(evt)
+				return True
+		return False
 
 	def __init__(self, screen, defaultColor, onColorUpdate, overridePaint = None):
 		super().__init__()
@@ -874,19 +891,32 @@ class ScreenColorPicker(QWidget):
 		key = evt.key()
 		if key == Qt.Key_Escape:
 			self.colorUpdated.emit(self.defaultColor, True)
-			self.close()
+			self.closeScreenColorPicker()
+		elif key == Qt.Key_C:
+			pos = QCursor.pos() - self.screenOffset
+			color = self.screenshotColorAt(pos)
+			if self.ShowHexColor:
+				color = color.name().upper()
+			else:
+				color = f'{color.red()}, {color.green()}, {color.blue()}'
+			QApplication.clipboard().setText(color)
+			self.colorUpdated.emit(self.defaultColor, True)
+			self.closeScreenColorPicker()
+		elif key == Qt.Key_Shift:
+			ScreenColorPicker.ShowHexColor = not self.ShowHexColor
+			self.update()
 
 	def mousePressEvent(self, evt):
 		btn = evt.button()
 		if btn == Qt.RightButton:
 			self.colorUpdated.emit(self.defaultColor, True)
-			self.close()
-		elif btn == Qt.MiddleButton:
-			evt.ignore()
-		else:
+			QTimer.singleShot(0, self.closeScreenColorPicker)
+		elif btn == Qt.LeftButton:
 			color = self.screenshotColorAt(QCursor.pos() - self.screenOffset)
 			self.colorUpdated.emit(color, True)
-			self.close()
+			self.closeScreenColorPicker()
+		else:
+			evt.ignore()
 
 	def mouseMoveEvent(self, evt):
 		self.onMouseMove(evt.pos())
@@ -923,7 +953,11 @@ class ScreenColorPicker(QWidget):
 		painter.drawLine(x, y + halfSize, x + size, y + halfSize)
 
 		pos = QCursor.pos() - self.screenOffset
-		color = self.screenshotColorAt(pos).name().upper()
+		color = self.screenshotColorAt(pos)
+		if self.ShowHexColor:
+			color = color.name().upper()
+		else:
+			color = f'RGB({color.red()}, {color.green()}, {color.blue()})'
 		fm = self.fontMetrics()
 		width = fm.horizontalAdvance(color) + 8
 		height = fm.height() + 4

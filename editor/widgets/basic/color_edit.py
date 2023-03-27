@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt, QSize, QRect, Property, Signal
 from PySide6.QtGui import QPixmap, QPainter, QColor, QPainterPath, QPen
 from PySide6.QtWidgets import QWidget, QFrame, QStyleOptionFrame, QStyle
-from editor.widgets.complex.color_picker import ColorPicker
+from editor.widgets.complex.color_picker import ColorPicker, ScreenColorPicker
 from editor.common.icon_cache import getThemePixmap
 from editor.common.types import Color
 
@@ -64,9 +64,22 @@ class ColorEdit(QWidget):
 
 	def mousePressEvent(self, evt):
 		if self._btnHovered:
-			print('>>>> pick screen color')
+			def onColorPick(color, picked):
+				a = self.color.raw.alpha()
+				self.color.raw = color
+				self.color.raw.setAlpha(a)
+				self.update()
+			ScreenColorPicker.showScreenColorPicker(self.color.raw, onColorPick)
 		else:
-			ColorPicker(self.color.rgba64()).show()
+			def onColorPick(color, reason):
+				self.color.raw = color
+				self.update()
+			colorPicker = ColorPicker(self.color.raw)
+			colorPicker.colorChanged.connect(onColorPick)
+			colorPicker.show()
+	
+	def keyPressEvent(self, evt):
+		ScreenColorPicker.redirectKeyPressEvent(evt)
 
 	def enterEvent(self, evt):
 		super().enterEvent(evt)
@@ -90,9 +103,10 @@ class ColorEdit(QWidget):
 		x, y, w, h = rect.x(), rect.y(), rect.width(), rect.height()
 		alphaH = 4 # round(h * 0.22)
 		colorW = w - h
-		preview = QColor(self.color.r, self.color.g, self.color.b)
+		preview = QColor(self.color.raw)
+		preview.setAlphaF(1)
 		painter.fillRect(QRect(0, 0, colorW, h - alphaH), preview)
-		alphaW = round(self.color.alphaF() * colorW)
+		alphaW = round(self.color.raw.alphaF() * colorW)
 		painter.fillRect(QRect(0, h - alphaH, alphaW, alphaH), Qt.white)
 		painter.fillRect(QRect(alphaW + 1, h - alphaH, colorW - alphaW, alphaH), Qt.black)
 
