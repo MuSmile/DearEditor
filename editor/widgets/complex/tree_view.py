@@ -6,7 +6,7 @@ from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMous
 from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle, QStyleOptionViewItem
 from editor.common.math import clamp, lerp
 from editor.common.ease import easeInOutQuad, easeOutQuad
-from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex, Qt_DecorationExpandedRole
+from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex, Qt_DecorationExpandedRole, Qt_AlternateRole
 from editor.common.icon_cache import getThemePixmap
 
 
@@ -64,9 +64,10 @@ class TreeItemDelegate(QItemDelegate):
 		elif hovered and view.dropIndicatorRect == None:
 			bgColor = view.backgroundHovered
 		else:
-			alternate = view.useAlternatingBackground and option.features & QStyleOptionViewItem.Alternate
+			alternate = view.useAlternatingBackground and bool(option.features & QStyleOptionViewItem.Alternate)
 			# alternate = view.useAlternatingBackground and (self.view.visualRect(index).y() // self.view.itemHeight) % 2
 			bgColor = view.backgroundAlternate if alternate else view.background
+			view.model().setData(index, alternate, Qt_AlternateRole)
 		painter.fillRect(rect, bgColor)
 
 		if view.useBackgroundSeparator:
@@ -327,8 +328,8 @@ class TreeItemPingOverlay(QWidget):
 			painter.translate(-tx, -ty)
 
 		pen = painter.pen()
-		alternate = view._flatVisibleRowNumber(index, view.model()) % 2
-		bgColor = alternate and view.background or view.backgroundAlternate
+		alternate = index.data(Qt_AlternateRole)
+		bgColor = view.backgroundAlternate if alternate else view.background
 		painter.setBrush(bgColor)
 		painter.setPen(self._pingOutlinePen)
 		painter.drawRoundedRect(rect.adjusted(-12 + tp, 0, 12 - tp, 0), self._pingOutlineRound, self._pingOutlineRound)
@@ -1126,29 +1127,4 @@ class TreeView(QTreeView):
 			if not found: return
 			parent = found
 		self.setCurrentIndex(parent)
-
-
-	####################  UTILS  ####################
-	def _rowCountRecursive(self, index, model):
-		count = model.rowCount(index)
-		for row in range(count): count += self._rowCountRecursive(model.index(row, 0, index), model)
-		return count
-	def _flatRowNumber(self, index, model):
-		if not index.isValid(): return -1
-		result = index.row() + 1
-		parent = index.parent()
-		for row in range(result - 1): result += self._rowCountRecursive(model.index(row, 0, parent), model)
-		return result + self._flatRowNumber(parent, model)
-
-	def _visibleRowCountRecursive(self, index, model):
-		count = model.rowCount(index)
-		if not self.isExpanded(index) or index in self.collapsingIndexList: return 0
-		for row in range(count): count += self._visibleRowCountRecursive(model.index(row, 0, index), model)
-		return count
-	def _flatVisibleRowNumber(self, index, model):
-		if not index.isValid(): return -1
-		result = index.row() + 1
-		parent = index.parent()
-		for row in range(result - 1): result += self._visibleRowCountRecursive(model.index(row, 0, parent), model)
-		return result + self._flatVisibleRowNumber(parent, model)
 

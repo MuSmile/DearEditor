@@ -8,8 +8,11 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QMenu, QFileIconProvide
 
 
 #############################################
-Qt_DecorationExpandedRole = Qt.UserRole + Qt.DecorationRole
+Qt_DecorationExpandedRole = Qt.UserRole + Qt.DecorationRole # == 1
 '''Qt.ItemDataRole: User role for provide item expanded icon.
+'''
+Qt_AlternateRole = Qt.UserRole + 2
+'''Qt.ItemDataRole: User role for indicate whether item use alternate background or not.
 '''
 
 #############################################
