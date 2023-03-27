@@ -207,7 +207,7 @@ Vector4.one  = Vector4(1, 1, 1, 1)
 
 
 ###############  COLOR ###############
-class Color(QColor):
+class Color:
 	"""Represent a color data.
 
 	Provide a group of class members for quick usage:
@@ -237,46 +237,47 @@ class Color(QColor):
 	def r(self):
 		"""int: Color red channel, support both setter and getter.
 		"""
-		return super().red()
+		return self.raw.red()
 	@r.setter
-	def r(self, value): self.setRed(value)
+	def r(self, value): self.raw.setRed(value)
 	@property
 	def g(self):
 		"""int: Color green channel, support both setter and getter.
 		"""
-		return super().green()
+		return self.raw.green()
 	@g.setter
-	def g(self, value): self.setGreen(value)
+	def g(self, value): self.raw.setGreen(value)
 	@property
 	def b(self):
 		"""int: Color blue channel, support both setter and getter.
 		"""
-		return super().blue()
+		return self.raw.blue()
 	@b.setter
-	def b(self, value): self.setBlue(value)
+	def b(self, value): self.raw.setBlue(value)
 	@property
 	def a(self):
 		"""int: Color alpha channel, support both setter and getter.
 		"""
-		return super().alpha()
+		return self.raw.alpha()
 	@a.setter
-	def a(self, value): self.setAlpha(value)
+	def a(self, value): self.raw.setAlpha(value)
 
 	def __init__(self, r, g, b, a = 255):
-		super().__init__(r, g, b, a)
+		self.raw = QColor(r, g, b, a)
 
 	def __mul__(self, other):
-		r = round(self.redF()   * other.redF()   * 255)
-		g = round(self.greenF() * other.greenF() * 255)
-		b = round(self.blueF()  * other.blueF()  * 255)
-		a = round(self.alphaF() * other.alphaF() * 255)
+		if isinstance(other, Color): other = other.raw
+		r = round(self.raw.redF()   * other.redF()   * 255)
+		g = round(self.raw.greenF() * other.greenF() * 255)
+		b = round(self.raw.blueF()  * other.blueF()  * 255)
+		a = round(self.raw.alphaF() * other.alphaF() * 255)
 		return Color(r, g, b, a)
 
 	def __eq__(self, other):
-		print()
-		return self.r == other.r and self.g == other.g and self.b == other.b and self.a == other.a
+		if isinstance(other, Color): other = other.raw
+		return self.raw.red() == other.red() and self.raw.green() == other.green() and self.raw.blue() == other.blue() and self.raw.alpha() == other.alpha()
 	def __ne__(self, other):
-		return self.r != other.r or self.g != other.g or self.b != other.b or self.a != other.a
+		return self.raw.red() != other.red() or self.raw.green() != other.green() or self.raw.blue() != other.blue() or self.raw.alpha() != other.alpha()
 
 	def __str__(self):
 		return f'Color({self.r}, {self.g}, {self.b}, {self.a})'
