@@ -1,19 +1,16 @@
-QStatusBar
-{
+QStatusBar {
 	background-color: #282828;
 	color: #dcdcdc;
 	border: 0px;
 	min-height: 22px;
 }
 
-QStatusBar::item
-{
+QStatusBar::item {
 	background-color: #282828;
 	border: none;
 }
 
-QStatusBar > QPushButton
-{
+QStatusBar > QPushButton {
 	background-color: #282828;
 	margin: 0px;
 	border: 0px;
@@ -21,21 +18,17 @@ QStatusBar > QPushButton
 	margin-top: -4px;
 }
 
-QStatusBar > QPushButton::hover
-{
+QStatusBar > QPushButton::hover {
 	background-color: #282828;
 	color: #ccc;
 }
 
-
-QStatusBar QLabel
-{
+QStatusBar QLabel {
 	color: #ccc;
 }
 
 
-QStatusBar QProgressBar
-{
+QStatusBar QProgressBar {
 	border: 0 solid #000;
 	border-radius: 0;
 	max-width: 180px;
@@ -44,8 +37,7 @@ QStatusBar QProgressBar
 	margin-right: 10;
 }
 
-QStatusBar QProgressBar::chunk
-{
+QStatusBar QProgressBar::chunk {
 	border-radius: 0;
     background-color: #08c;
     width: 1;

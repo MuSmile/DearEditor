@@ -1,90 +1,62 @@
 /*ADS*/
 ads--CDockContainerWidget,
-ads--CDockContainerWidget > QSplitter
-{
-    background: #333;
+ads--CDockContainerWidget > QSplitter,
+ads--CDockAreaTitleBar > QScrollArea > #qt_scrollarea_viewport > QWidget {
+	background: #333;
 }
 
-ads--CDockAreaTitleBar
-{
-    background: &[Palette/bgDeactive];
-    min-height: 22px;
-    max-height: 22px;
-    padding-right: 6px;
+ads--CDockAreaTitleBar {
+	background: &[Palette/bgDeactive];
+	min-height: 22px;
+	max-height: 22px;
+	padding-right: 6px;
 }
 
-ads--CDockAreaTitleBar QToolButton
-{
-    background: none;
-    border: none;
-    border-radius: 0px;
-    width: 12px;
-    height: 22px;
-    margin: 1px 0 1 0;
+ads--CDockAreaTitleBar QToolButton {
+	background: none;
+	border: none;
+	border-radius: 0px;
+	width: 12px;
+	height: 22px;
+	margin: 1px 0 1 0;
 	padding: 0px;
 	/*padding: 2px 0 2 0;*/
 }
 
-ads--CDockAreaTitleBar QToolButton[popupMode='InstantPopup']
-{
-    padding: 0px;
+ads--CDockAreaTitleBar QToolButton[popupMode='InstantPopup'] {
+	padding: 0px;
 }
 
-#tabsMenuButton
-{
+#tabsMenuButton {
 	border: none;
 	background: none;
-    width: 12px;
-    height: 12px;
+	width: 12px;
+	height: 12px;
 	qproperty-icon: url(img/tabs-menu-button.svg);
 }
-#tabsMenuButton:hover
-{
-	background: #555;
-}
-#tabsMenuButton:pressed
-{
-	background: #777;
-}
-#tabsMenuButton::menu-indicator
-{
-    image: none;
-}
-#detachGroupButton
-{
+#tabsMenuButton:hover { background: #555; }
+#tabsMenuButton:pressed { background: #777; }
+#tabsMenuButton::menu-indicator { image: none; }
+#detachGroupButton {
 	border: none;
 	background: none;
 	width: 12px;
 	height: 12px;
 	qproperty-icon: url(img/detach-button.svg);
 }
-#detachGroupButton:hover
-{
-	background: #555;
-}
-#detachGroupButton:pressed
-{
-	background: #777;
-}
-#dockAreaCloseButton
-{
+#detachGroupButton:hover { background: #555; }
+#detachGroupButton:pressed { background: #777; }
+#dockAreaCloseButton {
 	border: none;
 	background: none;
 	width: 12px;
 	height: 12px;
 	qproperty-icon: url(img/close-button.svg);
 }
-#dockAreaCloseButton:hover
-{
-	background: #555;
-}
-#dockAreaCloseButton:pressed
-{
-	background: #777;
-}
+#dockAreaCloseButton:hover { background: #555; }
+#dockAreaCloseButton:pressed { background: #777; }
 
-#tabCloseButton
-{
+#tabCloseButton {
 	border: none;
 	padding: 0px;
 	/*width: 16px;*/
@@ -92,51 +64,43 @@ ads--CDockAreaTitleBar QToolButton[popupMode='InstantPopup']
 	width: 0px;
 }
 
-QScrollArea#dockWidgetScrollArea
-{
+QScrollArea#dockWidgetScrollArea {
 	padding: 0px;
 	border: none;
 }
 
-ads--CDockWidgetTab
-{
-    background: &[Palette/bgDeactive];
-    padding: 0px 2px 1px 2px;
+ads--CDockWidgetTab {
+	background: &[Palette/bgDeactive];
+	padding: 0px 2px 1px 2px;
 	qproperty-iconSize: 16px;
 }
 
-ads--CDockWidgetTab[hasIcon="true"]
-{
-    margin-left: -2px;
+ads--CDockWidgetTab[hasIcon="true"] {
+	margin-left: -2px;
 }
 
-ads--CDockWidgetTab[activeTab="true"]
-{
-    background: &[Palette/bgActive];
-    border-top-left-radius: 0px;
-    border-top-right-radius: 0px;
+ads--CDockWidgetTab[activeTab="true"] {
+	background: &[Palette/bgActive];
+	border-top-left-radius: 0px;
+	border-top-right-radius: 0px;
 }
 
-/*ads--CDockWidgetTab[activeTab="true"] QLabel
-{
-    color: &[Palette/labelColor];
-    border: 1px solid rgb(255, 145, 0);
+/*ads--CDockWidgetTab[activeTab="true"] QLabel {
+	color: &[Palette/labelColor];
+	border: 1px solid rgb(255, 145, 0);
 }*/
 
-ads--CDockWidgetTab[focused="true"]
-{
+ads--CDockWidgetTab[focused="true"] {
 	border-radius: 0;
 	background: qlineargradient(x1:0,y1:0,x2:0,y2:0.1,stop:0#4999FD,stop:0.99#4999FD,stop:1&[Palette/bgActive]);
 }
 
-ads--CDockWidget
-{
-    background: &[Palette/bgActive];
-    border: none;
+ads--CDockWidget {
+	background: &[Palette/bgActive];
+	border: none;
 }
 
-/*ads--CDockOverlayCross
-{
+/*ads--CDockOverlayCross {
 	qproperty-iconFrameColor: palette(highlight);
 	qproperty-iconBackgroundColor: palette(base);
 	qproperty-iconOverlayColor: palette(highlight);
@@ -144,9 +108,12 @@ ads--CDockWidget
 	qproperty-iconShadowColor: rgb(0, 0, 0);
 }*/
 
-ads--CDockOverlayCross
-{
-    qproperty-iconColors: "Frame=#ff3d3d3d Background=#ff929292 Overlay=#3f3d3d3d Arrow=#ffb4b4b4 Shadow=#50000000";
+ads--CDockOverlayCross {
+	qproperty-iconFrameColor: #ff3d3d3d;
+	qproperty-iconBackgroundColor: #ff929292;
+	qproperty-iconOverlayColor: #3f3d3d3d;
+	qproperty-iconArrowColor: #ffb4b4b4;
+	qproperty-iconShadowColor: #50000000;
 }
 
 
@@ -169,11 +136,7 @@ ads--CAutoHideTab {
 	padding: 0px 6px 0px 6px;
 	height: 22px;
 }
-ads--CAutoHideTab:hover
-{
-	color: #fff;
-}
-
+ads--CAutoHideTab:hover { color: #fff; }
 
 ads--CAutoHideTab[iconOnly="false"][sideBarLocation="0"],
 ads--CAutoHideTab[iconOnly="false"][sideBarLocation="2"]  {
@@ -247,34 +210,19 @@ ads--CAutoHideSideBar{
 ads--CAutoHideSideBar > #qt_scrollarea_viewport > QWidget { background: #222; }
 
 
-#sideTabsContainerWidget {
-	background: transparent;
-}
+#sideTabsContainerWidget { background: transparent; }
 
 
-ads--CAutoHideSideBar[sideBarLocation="0"] {
-	border-bottom: 1px solid #222;
-}
-ads--CAutoHideSideBar[sideBarLocation="1"] {
-	border-right: 1px solid #222;
-}
-ads--CAutoHideSideBar[sideBarLocation="2"] {
-	border-left: 1px solid #222;
-}
-ads--CAutoHideSideBar[sideBarLocation="3"] {
-	border-top: 1px solid #222;
-}
-ads--CPushButton:hover, ads--CPushButton:pressed{
-	background-color: #555;
-}
+ads--CAutoHideSideBar[sideBarLocation="0"] { border-bottom: 1px solid #222; }
+ads--CAutoHideSideBar[sideBarLocation="1"] { border-right: 1px solid #222; }
+ads--CAutoHideSideBar[sideBarLocation="2"] { border-left: 1px solid #222; }
+ads--CAutoHideSideBar[sideBarLocation="3"] { border-top: 1px solid #222; }
+ads--CPushButton:hover, ads--CPushButton:pressed { background-color: #555; }
 
 /*****************************************************************************
  * CAutoHideDockContainer
  *****************************************************************************/
-ads--CAutoHideDockContainer {
-	background: #222;
-}
-
+ads--CAutoHideDockContainer { background: #222; }
 ads--CAutoHideDockContainer ads--CDockAreaTitleBar {
 	background: #0078d7;
 	padding: 0px;
@@ -314,35 +262,23 @@ ads--CAutoHideDockContainer #dockAreaAutoHideButton {
 	width: 14px;
 	background: none;
 }
-ads--CAutoHideDockContainer #dockAreaAutoHideButton:hover {
-	background: #1088e7;
-}
-ads--CAutoHideDockContainer #dockAreaAutoHideButton:pressed {
-	background: #2098f7;
-}
+ads--CAutoHideDockContainer #dockAreaAutoHideButton:hover { background: #1088e7; }
+ads--CAutoHideDockContainer #dockAreaAutoHideButton:pressed { background: #2098f7; }
 
 ads--CAutoHideDockContainer #dockAreaCloseButton{
 	qproperty-icon: url(img/close-button.svg);
 	qproperty-iconSize: 16px;
 	width: 14px;
 }
-ads--CAutoHideDockContainer #dockAreaCloseButton:hover{
-	background: #1088e7;
-}
-ads--CAutoHideDockContainer #dockAreaCloseButton:pressed{
-	background: #2098f7;
-}
+ads--CAutoHideDockContainer #dockAreaCloseButton:hover{ background: #1088e7; }
+ads--CAutoHideDockContainer #dockAreaCloseButton:pressed{ background: #2098f7; }
 
 ads--CAutoHideDockContainer ads--CTitleBarButton {
 	width: 14px;
-    height: 26px;
+	height: 26px;
 }
-ads--CAutoHideDockContainer ads--CTitleBarButton:hover {
-	background: #1088e7;
-}
-ads--CAutoHideDockContainer ads--CTitleBarButton:pressed {
-	background: #2098f7;
-}
+ads--CAutoHideDockContainer ads--CTitleBarButton:hover { background: #1088e7; }
+ads--CAutoHideDockContainer ads--CTitleBarButton:pressed { background: #2098f7; }
 
 /*****************************************************************************
  * CAutoHideDockContainer Titlebar and Buttons
@@ -352,25 +288,9 @@ ads--CAutoHideDockContainer ads--CTitleBarButton:pressed {
 /*****************************************************************************
  * CResizeHandle
  *****************************************************************************/
-ads--CResizeHandle {
-	background: #222;
-}
+ads--CResizeHandle { background: #222; }
 
-
-ads--CAutoHideDockContainer[sideBarLocation="0"] ads--CResizeHandle {
-	border-bottom: 1px solid #222;
-}
-
-ads--CAutoHideDockContainer[sideBarLocation="1"] ads--CResizeHandle {
-	border-right: 1px solid #222;
-}
-
-ads--CAutoHideDockContainer[sideBarLocation="2"] ads--CResizeHandle {
-	border-left: 1px solid #222;
-}
-
-ads--CAutoHideDockContainer[sideBarLocation="3"] ads--CResizeHandle {
-	border-top: 1px solid #222;
-}
-
-
+ads--CAutoHideDockContainer[sideBarLocation="0"] ads--CResizeHandle { border-bottom: 1px solid #222; }
+ads--CAutoHideDockContainer[sideBarLocation="1"] ads--CResizeHandle { border-right: 1px solid #222; }
+ads--CAutoHideDockContainer[sideBarLocation="2"] ads--CResizeHandle { border-left: 1px solid #222; }
+ads--CAutoHideDockContainer[sideBarLocation="3"] ads--CResizeHandle { border-top: 1px solid #222; }

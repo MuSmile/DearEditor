@@ -1,24 +1,20 @@
-InspectorView
-{
+InspectorView {
 	background: #4d4d4d;
 }
 
 InspectorDrawer,
-InspectorView > QFrame
-{
+InspectorView > QFrame {
 	background: #4d4d4d;
 }
 
-#InspectorDrawerHeader
-{
+#InspectorDrawerHeader {
     background: &[Palette/bgActive];
     border: 0px;
     border-radius: 0px;
     margin: 0px;
     padding: 0px;
 }
-#InspectorDrawerBody
-{
+#InspectorDrawerBody {
     background: #4d4d4d;
     border: 0px;
     /*border-top: 1px solid #222;*/
@@ -27,8 +23,7 @@ InspectorView > QFrame
     margin: 0px;
     padding: 0px;
 }
-#InspectorDrawerFooter
-{
+#InspectorDrawerFooter {
     background: &[Palette/bgActive];
     border: 0px;
     border-radius: 0px;
@@ -36,14 +31,12 @@ InspectorView > QFrame
     padding: 0px;
 }
 
-#property-label
-{
+#property-label {
 	background: none;
 	min-width: 100px;
 }
 
-#property-field
-{
+#property-field {
 	min-width: 100px;
 	max-width: 400px;
 }

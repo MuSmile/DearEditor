@@ -1,5 +1,4 @@
-TreeView
-{
+TreeView {
 	background: #444;
 	alternate-background-color: #444;
 	color: #eee;
@@ -40,22 +39,19 @@ TreeView
 	min-width: 200px;
 }
 
-TreeView > #qt_scrollarea_viewport > QLineEdit
-{
+TreeView > #qt_scrollarea_viewport > QLineEdit {
 	background: #555;
 	border: 1px solid #555;
 	border-radius: 0px;
 	padding-left: 0px;
 	color: #fff;
 }
-TreeView > #qt_scrollarea_viewport > QLineEdit:focus
-{
+TreeView > #qt_scrollarea_viewport > QLineEdit:focus {
 	border: 1px solid #5af;
 }
 
 
-TreeItemPingOverlay
-{
+TreeItemPingOverlay {
 	color: #eee;
 	font-size: 12px;
 
@@ -75,8 +71,7 @@ TreeItemPingOverlay
 
 
 /****************************************************/
-TreeStackedWidget > TreeView
-{
+TreeStackedWidget > TreeView {
 	qproperty-itemHeight: 22;
 	qproperty-indentation: 13;
 	qproperty-treePaddingLeft: 22;
@@ -95,36 +90,26 @@ TreeStackedWidget > TreeView
 	min-width: 140px;
 }
 
-TreeStackedWidget > QStackedWidget
-{
-	min-width: 300px;
-}
-TreeStackedWidget > QStackedWidget > QWidget#empty
-{
-	background: #444;
-}
+TreeStackedWidget > QStackedWidget { min-width: 300px; }
+TreeStackedWidget > QStackedWidget > QWidget#empty { background: #444; }
 
-TreeStackedWidget::handle:horizontal
-{
+TreeStackedWidget::handle:horizontal {
 	background-color: #333;
 	width: 2px;
 }
-TreeStackedWidget::handle:vertical
-{
+TreeStackedWidget::handle:vertical {
 	background-color: #333;
 	height: 2px;
 }
 
-GalleryView > #searchbar
-{
+GalleryView > #searchbar {
 	background-color: none;
 	border-bottom: 1px solid #222;
 }
 
 
 
-ProjectView TreeView
-{
+ProjectView TreeView {
 	qproperty-indentation: 18;
 	qproperty-drawBranchLine: false;
 	qproperty-useBackgroundSeparator: false;
@@ -133,52 +118,43 @@ ProjectView TreeView
 	qproperty-backgroundAlternate: #444;
 	min-width: 140px;
 }
-ProjectView > QSplitter::handle:horizontal
-{
+ProjectView > QSplitter::handle:horizontal {
 	background-color: #333;
 	width: 2px;
 }
-ProjectView > QSplitter::handle:vertical
-{
+ProjectView > QSplitter::handle:vertical {
 	background-color: #333;
 	height: 2px;
 }
-ProjectView > #searchbar
-{
+ProjectView > #searchbar {
 	background-color: none;
 	border-bottom: 1px solid #222;
 }
 
-/*TreeItemEditor:focus
-{
+/*TreeItemEditor:focus {
 	background: transparent;
     border: 2px solid #3ac;
 	
 	color: white;
 }
 
-ProjectView QSplitter::handle:horizontal
-{
+ProjectView QSplitter::handle:horizontal {
 	background-color: #333;
 }
-ProjectView QSplitter::handle:vertical
-{
+ProjectView QSplitter::handle:vertical {
 	height: 2px;
 }
 HierarchyView > SearchField,
-ProjectView > SearchField
-{
+ProjectView > SearchField {
 	margin-right: -2px;
 }
 
-HierarchyTreeView
-{
+HierarchyTreeView {
 	qproperty-viewHandler: url(img/tool_view_orbit.png);
 	qproperty-lockHandler: url(img/tool_viewmove.png);
 }
 
 HierarchyView > QPushButton,
-ProjectView > QPushButton
-{
+ProjectView > QPushButton {
 	margin: 1px;
 }*/
