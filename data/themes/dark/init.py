@@ -20,6 +20,7 @@ menuConfLight = {
 	
 	'text'                  :    QColor('#222'),
 	'textHovered'           :    QColor('#fff'),
+	'textDisabled'          :    QColor('#aaa'),
 	'shortcut'              :    QColor('#aaa'),
 	'separator'             :    QColor('#bbb'),
 
@@ -58,8 +59,9 @@ menuConfDark = {
 	'background'            :    QColor('#383736'),
 	'backgroundHovered'     :    QColor('#47f'),
 	
-	'text'                  :    QColor('#eee'),
-	'textHovered'           :    QColor('#eee'),
+	'text'                  :    QColor('#fff'),
+	'textHovered'           :    QColor('#fff'),
+	'textDisabled'          :    QColor('#aaa'),
 	'shortcut'              :    QColor('#aaa'),
 	'separator'             :    QColor('#6b6b6b'),
 

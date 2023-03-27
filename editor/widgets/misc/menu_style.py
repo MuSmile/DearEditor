@@ -23,6 +23,8 @@ class MenuStyleMacOS(QProxyStyle):
 		return self.conf['text'] if 'text' in self.conf else QColor('#222')
 	def textHovered(self):
 		return self.conf['textHovered'] if 'textHovered' in self.conf else QColor('#fff')
+	def textDisabled(self):
+		return self.conf['textDisabled'] if 'textDisabled' in self.conf else QColor('#aaa')
 	def shortcut(self):
 		return self.conf['shortcut'] if 'shortcut' in self.conf else QColor('#aaa')
 	def separator(self):
@@ -133,13 +135,20 @@ class MenuStyleMacOS(QProxyStyle):
 			menuItem.__class__ = QStyleOptionMenuItem
 			painter.save()
 
-			hovered = menuItem.state & self.State_Selected and menuItem.state & self.State_Enabled
-			if hovered:
+			enabled = bool(menuItem.state & self.State_Enabled)
+			hovered = bool(menuItem.state & self.State_Selected)
+			if enabled and hovered:
 				radius = self.itemBackgroundRadius()
 				padding = self.itemBackgroundPadding()
 				painter.setPen(Qt.transparent)
 				painter.setBrush(self.backgroundHovered())
 				painter.drawRoundedRect(menuItem.rect.adjusted(padding, 0, -padding, 0), radius, radius)
+
+			textColor = None
+			if enabled:
+				textColor = self.textHovered() if hovered else self.text()
+			else:
+				textColor = self.textDisabled()
 
 			contentPadding = self.contentPadding()
 			checkedPadding = self.checkedPadding()
@@ -153,9 +162,6 @@ class MenuStyleMacOS(QProxyStyle):
 				separatorRect = QRect(contentPadding, y + self.separatorVSpacing(), r - contentPadding * 2, self.separatorHeight())
 				painter.fillRect(separatorRect, self.separator())
 
-			if mtype == QStyleOptionMenuItem.TearOff:
-				print(1)
-
 			elif mtype == QStyleOptionMenuItem.SubMenu:
 				textRect = menuItem.rect
 				textRect.moveLeft(textLeftPadding)
@@ -163,7 +169,7 @@ class MenuStyleMacOS(QProxyStyle):
 				font = menuItem.font
 				font.setPixelSize(self.fontSize())
 				painter.setFont(font)
-				painter.setPen(self.textHovered() if hovered else self.text())
+				painter.setPen(textColor)
 				painter.drawText(textRect, textFlags, menuItem.text)
 				
 				y, w, h = rect.center().y(), rect.width(), rect.height()
@@ -203,7 +209,7 @@ class MenuStyleMacOS(QProxyStyle):
 				textRect.moveLeft(textLeftPadding)
 				font.setFamily(themeFontFamily)
 				painter.setFont(font)
-				painter.setPen(self.textHovered() if hovered else self.text())
+				painter.setPen(textColor)
 				painter.drawText(textRect, textFlags, label)
 
 			painter.restore()
