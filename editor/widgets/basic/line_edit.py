@@ -1,5 +1,5 @@
 import os, platform
-from PySide6.QtCore import Qt, QRect, Property, Signal
+from PySide6.QtCore import Qt, QRect, Property, Signal, QEvent
 from PySide6.QtGui import QCursor, QPixmap, QPainter, QPen, QColor, QPainterPath
 from PySide6.QtWidgets import QLineEdit, QFileDialog, QFrame, QStyleOptionFrame, QStyle
 from editor.common.icon_cache import getThemePixmap
@@ -14,6 +14,14 @@ class LineEdit(QLineEdit):
 	def keyPressEvent(self, evt):
 		if evt.key() == Qt.Key_Escape: return self.clearFocus()
 		super().keyPressEvent(evt)
+
+	def eventFilter(self, obj, evt):
+		"""For listening shortcut on MacOS popup...
+		"""
+		if evt.type() == QEvent.ShortcutOverride:
+			self.event(evt)
+			return True
+		return False
 
 
 class IntLineEdit(LineEdit):
@@ -138,7 +146,9 @@ class SearchLineEdit(LineEdit):
 
 	def resizeEvent(self, event):
 		super().resizeEvent(event)
-		w, h = self.width(), self.height()
+		rect = self.contentsRect()
+		x, y = rect.x(), rect.y()
+		r, h = rect.right(), rect.height()
 
 		self.setStyleSheet(f"""
 			SearchLineEdit {{
@@ -146,10 +156,10 @@ class SearchLineEdit(LineEdit):
 				padding-left: {h-2}px;
 			}}
 		""")
-		
-		self._searchRect = QRect(0, 0, h, h)
+
+		self._searchRect = QRect(x, y, h, h)
 		self._searchRect.adjust(2, 2, -2, -2)
-		self._closeRect = QRect(w - h, 0, h, h)
+		self._closeRect = QRect(r - h, y, h, h)
 		self._closeRect.adjust(2, 2, -2, -2)
 
 	def onTextChange(self, text):

@@ -33,7 +33,9 @@ class Dispatcher(QObject):
 	"""
 
 	sig = Signal(str, object, object)
-	"""PySide6.QtCore.Signal(str, any, any): A qt signal attribute, all functions are built on this."""
+	"""`PySide6.QtCore.Signal(str, any, any)`_: A qt signal attribute, all functions are built on this.
+
+	.. _PySide6.QtCore.Signal(str, any, any): https://doc.qt.io/qtforpython/PySide6/QtCore/Signal.html"""
 	
 	def __init__(self):
 		super().__init__()

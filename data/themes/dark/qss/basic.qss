@@ -303,7 +303,7 @@ DropDown {
 	padding-left: 6px;
 
 	qproperty-menuIndicator: url(img/menu_indicator.svg);
-	qproperty-menuIndicatorSize: 12;
+	qproperty-menuIndicatorSize: 13;
 	qproperty-menuIndicatorOffsetX: -4;
 	qproperty-menuIndicatorOffsetY: 1;
 }
@@ -312,4 +312,10 @@ DropDownPopup {
 	border: 1px solid #333;
 	border-radius: 4px;
 	background: #555;
+	color: #eee;
+}
+
+DropDownPopup > SearchLineEdit {
+	border-radius: 4px;
+	height: 22px;
 }

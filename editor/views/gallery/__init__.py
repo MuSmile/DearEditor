@@ -158,14 +158,14 @@ class GalleryView(DockView):
 		dropDownLayout.setAlignment(Qt.AlignLeft)
 
 		dropdown1 = DropDown()
-		dropdown1.addItems(['Zero', 'One', 'Two', 'Three'])
+		dropdown1.setItems(['Zero', 'One', 'Two', 'Three'])
 		dropdown1.setCurrentIndex(2)
 		dropdown1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 		dropdown1.setFocusPolicy(Qt.StrongFocus)
 
 		dropdown2 = DropDown()
-		dropdown1.addItems(['Zero', 'One', 'Two', 'Three'])
-		dropdown1.setCurrentIndex(2)
+		dropdown2.setItems(['Zero', 'One', 'Two', 'Three'])
+		dropdown2.setCurrentItem('Three')
 		dropdown2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
 		dropDownLayout.addWidget(dropdown1)
