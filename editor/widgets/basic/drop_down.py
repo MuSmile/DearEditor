@@ -181,7 +181,7 @@ class DropDownPopup(QWidget):
 			self.searchEdit = SearchLineEdit(self)
 			self.searchEdit.setContentsMargins(4, 3, 4, 3)
 			self.searchEdit.setFocus()
-			self.searchEdit.textEdited.connect(self.setFilter)
+			self.searchEdit.textChanged.connect(self.setFilter)
 
 			parent.window().installEventFilter(self.searchEdit)
 			self.searchEdit.installEventFilter(self)
@@ -197,9 +197,15 @@ class DropDownPopup(QWidget):
 			self.scrollBar.setRange(0, 0)
 			self.scrollBar.hide()
 		self.resize(self.sizeHint())
+		pos = self.mapFromGlobal(QCursor.pos())
+		self.calcCurrentHovered(pos)
 		self.update()
 	def isFiltered(self):
 		return self._filteredItems != None
+	def filteredIdxToRawIdx(self, idx):
+		if idx == None: return idx
+		if self.isFiltered(): return self.rawItems().index(self._filteredItems[ idx ])
+		return idx
 
 	def items(self):
 		return self._filteredItems if self.isFiltered() else self.rawItems()
@@ -267,7 +273,7 @@ class DropDownPopup(QWidget):
 			self.update()
 
 	def closeAndSyncHovered(self):
-		idx = self.rawItems().index(self._filteredItems[ self._hoveredIndex ]) if self.isFiltered() else self._hoveredIndex
+		idx = self.filteredIdxToRawIdx(self._hoveredIndex)
 		self.parent().setCurrentIndex(idx)
 		self.close()
 
@@ -292,6 +298,7 @@ class DropDownPopup(QWidget):
 		sh = self.searchEditHeight()
 
 		items = self.items()
+		rawItems = self.rawItems()
 		count = min(len(items), self._visibleCount)
 		if sp % self._itemHeight != 0: count += 1
 
@@ -302,6 +309,7 @@ class DropDownPopup(QWidget):
 		currIdx = self.parent()._currentIndex
 		textColor = self.palette().color(QPalette.Text)
 		for i in range(startIdx, startIdx + count):
+			idx = self.filteredIdxToRawIdx(i)
 			itemRect = QRect(0, sh + i * self._itemHeight + self._verticalPadding - sp, rect.width(), self._itemHeight)
 			if self.scrollBar and self.scrollBar.isVisible(): itemRect.setRight(itemRect.right() - self.scrollBar.width())
 
@@ -311,7 +319,7 @@ class DropDownPopup(QWidget):
 				painter.setBrush(self._itembackgroundHovered)
 				painter.drawRoundedRect(bgRect, self._itemBackgroundRadius, self._itemBackgroundRadius)
 
-			if currIdx == i:
+			if currIdx == idx:
 				cy = itemRect.center().y()
 				iconRect = QRect(self._iconPadding, cy - self._itemIconSize // 2 + 1, self._itemIconSize, self._itemIconSize)
 				painter.drawPixmap(iconRect, self._itemIcon)
@@ -400,17 +408,18 @@ class FlagDropDownPopup(DropDownPopup):
 		return self._items
 
 	def mousePressEvent(self, evt):
-		if self._hoveredIndex == None: return
+		if self._hoveredIndex == None: return self.close()
 		dropdown = self.parent()
-		if self._hoveredIndex == 0:
+		idx = self.filteredIdxToRawIdx(self._hoveredIndex)
+		if idx == 0:
 			dropdown.setCurrentIndex(0)
-		elif self._hoveredIndex == len(self._items) - 1:
+		elif idx == len(self._items) - 1:
 			if dropdown._currentIndex == dropdown.allIndex():
 				dropdown.setCurrentIndex(0)
 			else:
 				dropdown.setCurrentIndex(-1)
 		else:
-			dropdown.toggleFlagAt(self._hoveredIndex - 1)
+			dropdown.toggleFlagAt(idx - 1)
 		self.update()
 	def mouseReleaseEvent(self, evt):
 		pass
@@ -429,8 +438,9 @@ class FlagDropDownPopup(DropDownPopup):
 		sh = self.searchEditHeight()
 
 		items = self.items()
-		itemCount = len(items)
-		count = min(itemCount, self._visibleCount)
+		count = min(len(items), self._visibleCount)
+		rawItems = self.rawItems()
+		rawCount = len(rawItems)
 		if sp % self._itemHeight != 0: count += 1
 
 		rect = self.rect()
@@ -439,7 +449,9 @@ class FlagDropDownPopup(DropDownPopup):
 		startIdx = sp // self._itemHeight
 		currIdx = self.parent()._currentIndex
 		textColor = self.palette().color(QPalette.Text)
+		hovered = self.filteredIdxToRawIdx(self._hoveredIndex)
 		for i in range(startIdx, startIdx + count):
+			idx = self.filteredIdxToRawIdx(i)
 			itemRect = QRect(0, sh + i * self._itemHeight + self._verticalPadding - sp, rect.width(), self._itemHeight)
 			if self.scrollBar and self.scrollBar.isVisible(): itemRect.setRight(itemRect.right() - self.scrollBar.width())
 
@@ -449,17 +461,17 @@ class FlagDropDownPopup(DropDownPopup):
 				painter.setBrush(self._itembackgroundHovered)
 				painter.drawRoundedRect(bgRect, self._itemBackgroundRadius, self._itemBackgroundRadius)
 			
-			elif i > 0 and self._hoveredIndex == itemCount - 1:
+			if hovered == rawCount - 1 and 0 < idx and idx < rawCount - 1:
 				padding = self._itemIndicatorPadding
 				x, y, h = itemRect.x(), itemRect.y(), itemRect.height()
 				indicatorRect = QRect(x + padding, y + padding, 2, h - padding * 2)
 				painter.fillRect(indicatorRect, self._itemIndicatorColor)
 
-			if i < itemCount - 1:
+			if idx < rawCount - 1:
 				cy = itemRect.center().y()
 				size = self._itemIconSize
 				iconRect = QRect(self._iconPadding, cy - size // 2 + 1, size, size)
-				checked = (i == 0 and currIdx == 0) or (i > 0 and currIdx & 1 << (i - 1))
+				checked = (idx == 0 and currIdx == 0) or (idx > 0 and currIdx & 1 << (idx - 1))
 				if checked:
 					painter.drawPixmap(iconRect, self._itemIcon)
 				else:
