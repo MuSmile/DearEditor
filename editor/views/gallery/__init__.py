@@ -6,7 +6,7 @@ from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
-from editor.widgets.basic.drop_down import DropDown
+from editor.widgets.basic.drop_down import DropDown, FlagDropDown
 from editor.widgets.basic.text_area import TextArea
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
@@ -164,13 +164,40 @@ class GalleryView(DockView):
 		dropdown1.setFocusPolicy(Qt.StrongFocus)
 
 		dropdown2 = DropDown()
-		dropdown2.setItems(['Zero', 'One', 'Two', 'Three'])
-		dropdown2.setCurrentItem('Three')
+		dropdown2.setItems([f'Item {x}' for x in range(40)])
+		dropdown2.setCurrentIndex(3)
 		dropdown2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 
 		dropDownLayout.addWidget(dropdown1)
 		dropDownLayout.addWidget(dropdown2)
 		layout.addLayout(dropDownLayout)
+
+
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('FlagDropDown'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		flagLayout = QHBoxLayout()
+		flagLayout.setSpacing(20)
+		flagLayout.setAlignment(Qt.AlignLeft)
+
+		flag1 = FlagDropDown()
+		flag1.setItems(['Zero', 'One', 'Two', 'Three'])
+		flag1.setCurrentIndex(2)
+		flag1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		flag1.setFocusPolicy(Qt.StrongFocus)
+
+		flag2 = FlagDropDown()
+		flag2.setItems([f'Item {x}' for x in range(40)])
+		flag2.setCurrentIndex(127)
+		flag2.setFlag('Item 0', False)
+		flag2.setCurrentIndex(0)
+		QTimer.singleShot(111, lambda:flag2.setCurrentIndex(0))
+		flag2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+
+		flagLayout.addWidget(flag1)
+		flagLayout.addWidget(flag2)
+		layout.addLayout(flagLayout)
 
 
 		#############  CHECKBOX  #############

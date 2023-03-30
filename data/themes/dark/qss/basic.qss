@@ -301,21 +301,54 @@ Toast {
 DropDown {
 	text-align: left;
 	padding-left: 6px;
+	/*color: &[Palette/labelColor];*/
 
 	qproperty-menuIndicator: url(img/menu_indicator.svg);
-	qproperty-menuIndicatorSize: 13;
+	qproperty-menuIndicatorSize: 12;
 	qproperty-menuIndicatorOffsetX: -4;
 	qproperty-menuIndicatorOffsetY: 1;
 }
-
 DropDownPopup {
-	border: 1px solid #333;
+	border: 1px solid #292929;
 	border-radius: 4px;
 	background: #555;
-	color: #eee;
-}
+	color: #fff;
 
+	qproperty-itemHeight: 22;
+	qproperty-itembackgroundHovered: #47f;
+	qproperty-itemBackgroundPadding: 5;
+	qproperty-itemBackgroundRadius: 4;
+	qproperty-itemIcon: url(img/check2.png);
+	qproperty-itemIconSize: 12;
+	qproperty-textPadding: 32;
+	qproperty-iconPadding: 12;
+	qproperty-verticalPadding: 4;
+	qproperty-visibleCount: 16;
+}
 DropDownPopup > SearchLineEdit {
 	border-radius: 4px;
 	height: 22px;
+}
+DropDownPopup > QScrollBar {
+	min-width: 10px;
+	background: #4d4d4d;
+	border-right: 1px solid #292929;
+	border-left: 1px solid #474747;
+}
+DropDownPopup > QScrollBar::add-line:vertical {
+	background-color: #4d4d4d;
+	border-bottom: 1px solid #292929;
+	border-right: 1px solid #292929;
+	border-left: 1px solid #474747;
+	border-bottom-right-radius: 4px;
+}
+DropDownPopup > QScrollBar::sub-line:vertical {
+	background-color: #4d4d4d;
+	border-right: 1px solid #222;
+	border-left: 1px solid #474747;
+}
+
+FlagDropDownPopup {
+	qproperty-itemIndicatorColor: #00c700;
+	qproperty-itemIndicatorPadding: 2;
 }

@@ -152,7 +152,7 @@ def getFileIcon(path):
 	info = QFileInfo(path)
 	return _provider.icon(info)
 
-def adjustedPopupPosition(widget, width, height):
+def adjustedPopupPosition(widget, width, height, forceAbove = False):
 	"""Calculate adjusted position for diaplaying popups(e.g. QMenu or other dropdown widget).
 	
 	Args:
@@ -173,7 +173,7 @@ def adjustedPopupPosition(widget, width, height):
 	x, y = pos.x(), pos.y()
 	if x + width > r: x = r - width + 1
 	elif x < l: x = l
-	if y + height > b: y = max(y - rect.height() - height, t)
+	if y + height > b or forceAbove: y = max(y - rect.height() - height, t)
 	return QPoint(x, y + 1)
 
 def createTestMenu(parent):
@@ -245,12 +245,13 @@ def fuzzyContains(text, subtext):
 	Returns:
 		bool: Weather text fuzzy contains subtext or not.
 	"""
-	len1, len2 = len(str), len(substr)
+	text, subtext = text.lower(), subtext.lower()
+	len1, len2 = len(text), len(subtext)
 	if len1 < len2: return False
-	if len1 == len2 and str == substr: return True
+	if len1 == len2 and text == subtext: return True
 	pos = 0
-	for c in substr:
-		idx = str.find(c, pos)
+	for c in subtext:
+		idx = text.find(c, pos)
 		if idx < 0: return False
 		pos = idx + 1
 	return True
