@@ -222,8 +222,8 @@ class DropDownPopup(QWidget):
 		if self.scrollBar:
 			sh = self.searchEditHeight()
 			w = self.scrollBar.width()
-			h = self.height() - sh
-			self.scrollBar.move(self.width() - w, sh)
+			h = self.height() - sh - 2
+			self.scrollBar.move(self.width() - w, sh + 1)
 			self.scrollBar.setFixedHeight(h)
 		if self.searchEdit:
 			self.searchEdit.setFixedWidth(self.width())

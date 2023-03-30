@@ -337,7 +337,6 @@ DropDownPopup > QScrollBar {
 }
 DropDownPopup > QScrollBar::add-line:vertical {
 	background-color: #4d4d4d;
-	border-bottom: 1px solid #292929;
 	border-right: 1px solid #292929;
 	border-left: 1px solid #474747;
 	border-bottom-right-radius: 4px;
