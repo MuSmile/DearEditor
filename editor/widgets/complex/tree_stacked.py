@@ -30,6 +30,7 @@ class TreeStackedWidget(QSplitter):
 		tree.setModel(QStandardItemModel())
 		tree.selectionModel().currentChanged.connect(self.onCurrentChanged)
 		tree.installEventFilter(self)
+		tree.setContextMenuPolicy(Qt.NoContextMenu)
 		return tree
 
 	def createStackedView(self):

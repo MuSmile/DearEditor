@@ -164,8 +164,6 @@ def adjustedPopupPosition(widget, width, height, forceAbove = False):
 		QPoint: Adjusted popup postion.
 	"""
 	rect = widget.rect()
-	# size = menu.sizeHint()
-	# w, h = size.width(), size.height()
 	pos = widget.mapToGlobal(rect.bottomLeft())
 	screen = QApplication.screenAt(QCursor.pos())
 	scrRect = screen.availableGeometry()
@@ -174,6 +172,26 @@ def adjustedPopupPosition(widget, width, height, forceAbove = False):
 	if x + width > r: x = r - width + 1
 	elif x < l: x = l
 	if y + height > b or forceAbove: y = max(y - rect.height() - height, t)
+	return QPoint(x, y + 1)
+
+def adjustedContextMenuPosition(point, menu):
+	"""Calculate adjusted position for diaplaying context menu from certain point.
+	
+	Args:
+		QPoint point: Global point to display menu.
+		QMenu menu: Context menu to display.
+
+	Returns:
+		QPoint: Adjusted menu postion.
+	"""
+	size = menu.sizeHint()
+	w, h = size.width(), size.height()
+	screen = QApplication.screenAt(point)
+	scrRect = screen.availableGeometry()
+	l, r, t, b = scrRect.left(), scrRect.right(), scrRect.top(), scrRect.bottom()
+	x, y = point.x(), point.y()
+	if x + w > r: x = max(x - w, l)
+	if y + h > b: y = max(b - h, t)
 	return QPoint(x, y + 1)
 
 def createTestMenu(parent):

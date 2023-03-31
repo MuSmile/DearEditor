@@ -11,8 +11,8 @@ from editor.widgets.basic.text_area import TextArea
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
-from editor.widgets.container.collapsible import CollapsibleWidget
 from editor.widgets.container.sliding_stacked import SlidingStackedWidget
+from editor.widgets.misc.collapsible import CollapsibleWidget
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
 from editor.common.util import createTestMenu
@@ -45,8 +45,11 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/TextArea', self.createTextAreaPreview())
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
 		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
-		treeStacked.addStackedWidget('Container/Collapsible', self.createCollapsiblePreview())
 		treeStacked.addStackedWidget('Container/SlidingStacked', self.createSlidingStackedPreview())
+		treeStacked.addStackedWidget('Complex/ListDrawer', self.createListDrawerPreview())
+		treeStacked.addStackedWidget('Complex/DictDrawer', self.createDictDrawerPreview())
+		treeStacked.addStackedWidget('Complex/DataGrid', self.createDataGridPreview())
+		treeStacked.addStackedWidget('Misc/Collapsible', self.createCollapsiblePreview())
 		treeStacked.tree.setCurrentByPath('Basic/Button')
 		treeStacked.tree.expandAll()
 		layout.addWidget(treeStacked)
@@ -465,15 +468,36 @@ class GalleryView(DockView):
 		layout.addWidget(QLabel('Collapsible'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
-		tmpLayout = QHBoxLayout()
-		tmpLayout.setSpacing(20)
-		tmpLayout.setAlignment(Qt.AlignLeft)
 
-		wgt = CollapsibleWidget()
+		btnGroup = QWidget()
+		btnGroup.setObjectName('test')
+		btnGroup.setStyleSheet('#test { background:#333; border-radius: 5px; }')
+		btnLayout = QVBoxLayout()
+		btnLayout.setSpacing(10)
+		subLayout = QHBoxLayout()
+		btnLayout.addLayout(subLayout)
+		btnGroup.setLayout(btnLayout)
+		for i in range(10): btnLayout.addWidget(QPushButton(f'Item {i}'))
+		for i in range(4): subLayout.addWidget(QPushButton(f'Item {i}'))
 
-		tmpLayout.addWidget(wgt)
-		layout.addLayout(tmpLayout)
+		collapsible = CollapsibleWidget()
+		collapsible.setWidget(btnGroup)
+		collapsible.updateFixedHeight()
+		
+		btnLayout = QHBoxLayout()
+		btn0 = QPushButton('Toggle')
+		btn1 = QPushButton('Expand')
+		btn2 = QPushButton('Collapse')
+		btn0.clicked.connect(collapsible.toggle)
+		btn1.clicked.connect(collapsible.expand)
+		btn2.clicked.connect(collapsible.collapse)
+		btnLayout.addWidget(btn1)
+		btnLayout.addWidget(btn2)
 
+		layout.addWidget(btn0)
+		layout.addWidget(collapsible)
+		layout.addLayout(btnLayout)
+		layout.addStretch()
 
 		return preview
 	def createSlidingStackedPreview(self):
@@ -558,6 +582,111 @@ class GalleryView(DockView):
 		spinnerLayout.addWidget(ws3)
 		
 		layout.addLayout(spinnerLayout)
+
+
+		return preview
+	def createListDrawerPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('ListDrawer'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		drawerLayout = QHBoxLayout()
+		drawerLayout.setSpacing(50)
+		drawerLayout.setAlignment(Qt.AlignLeft)
+
+		ws1 = WaitingSpinner()
+		ws2 = WaitingSpinner(clockwise = False)
+		ws3 = WaitingSpinner(color = QColor(50, 120, 200), clockwise = False)
+
+		ws1.setFixedSize(50, 50)
+		ws2.setFixedSize(50, 50)
+		ws3.setFixedSize(50, 50)
+
+		drawerLayout.addWidget(ws1)
+		drawerLayout.addWidget(ws2)
+		drawerLayout.addWidget(ws3)
+		
+		layout.addLayout(drawerLayout)
+
+
+		return preview
+	def createDictDrawerPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('DictDrawer'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		drawerLayout = QHBoxLayout()
+		drawerLayout.setSpacing(50)
+		drawerLayout.setAlignment(Qt.AlignLeft)
+
+		ws1 = WaitingSpinner()
+		ws2 = WaitingSpinner(clockwise = False)
+		ws3 = WaitingSpinner(color = QColor(50, 120, 200), clockwise = False)
+
+		ws1.setFixedSize(50, 50)
+		ws2.setFixedSize(50, 50)
+		ws3.setFixedSize(50, 50)
+
+		drawerLayout.addWidget(ws1)
+		drawerLayout.addWidget(ws2)
+		drawerLayout.addWidget(ws3)
+		
+		layout.addLayout(drawerLayout)
+
+
+		return preview
+	def createDataGridPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('DataGrid'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		datagridLayout = QHBoxLayout()
+		datagridLayout.setSpacing(50)
+		datagridLayout.setAlignment(Qt.AlignLeft)
+
+		ws1 = WaitingSpinner()
+		ws2 = WaitingSpinner(clockwise = False)
+		ws3 = WaitingSpinner(color = QColor(50, 120, 200), clockwise = False)
+
+		ws1.setFixedSize(50, 50)
+		ws2.setFixedSize(50, 50)
+		ws3.setFixedSize(50, 50)
+
+		datagridLayout.addWidget(ws1)
+		datagridLayout.addWidget(ws2)
+		datagridLayout.addWidget(ws3)
+		
+		layout.addLayout(datagridLayout)
 
 
 		return preview

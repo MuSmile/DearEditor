@@ -320,8 +320,8 @@ DropDownPopup {
 	qproperty-itemBackgroundRadius: 4;
 	qproperty-itemIcon: url(img/check2.png);
 	qproperty-itemIconSize: 12;
-	qproperty-textPadding: 32;
-	qproperty-iconPadding: 12;
+	qproperty-textPadding: 30;
+	qproperty-iconPadding: 10;
 	qproperty-verticalPadding: 4;
 	qproperty-visibleCount: 16;
 }
@@ -351,3 +351,5 @@ FlagDropDownPopup {
 	qproperty-itemIndicatorColor: #00c700;
 	qproperty-itemIndicatorPadding: 2;
 }
+
+CollapsibleWidget { qproperty-duration: 120; }

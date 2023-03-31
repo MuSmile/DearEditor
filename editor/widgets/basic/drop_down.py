@@ -1,4 +1,4 @@
-from PySide6.QtCore import Qt, Property, QSize, QRect, QEvent, QTimer
+from PySide6.QtCore import Qt, Property, QPoint, QSize, QRect, QEvent, QTimer
 from PySide6.QtGui import QPixmap, QPainter, QCursor, QColor, QPen, QPainterPath, QPalette, QCursor
 from PySide6.QtWidgets import QPushButton, QWidget, QFrame, QScrollBar, QStyleOptionFrame, QStyle, QVBoxLayout, QSizePolicy
 from editor.widgets.basic.line_edit import SearchLineEdit
@@ -230,7 +230,12 @@ class DropDownPopup(QWidget):
 
 		parent = self.parent()
 		self.move(adjustedPopupPosition(parent, self.width(), self.height(), self._showAtAbove))
-		if self._showAtAbove == None: self._showAtAbove = self.y() < parent.y()
+		if self._showAtAbove == None:
+			self._showAtAbove = self.y() < parent.mapToGlobal(QPoint(0, 0)).y()
+			if self._showAtAbove:
+				self.setStyleSheet('DropDownPopup{border-bottom-right-radius:2px; border-bottom-left-radius:2px;}')
+			else:
+				self.setStyleSheet('DropDownPopup{border-top-right-radius:2px; border-top-left-radius:2px;}')
 
 	def mouseMoveEvent(self, evt):
 		if self._aboutToClose: return

@@ -51,8 +51,8 @@ class FlowLayout(QLayout):
 		size = QSize()
 		for item in self.itemList: size = size.expandedTo(item.minimumSize())
 	
-		margin, _, _, _ = self.getContentsMargins()
-		size += QSize(2 * margin, 2 * margin)
+		m1, m2, m3, m4 = self.getContentsMargins()
+		size += QSize(m1 + m3, m2 + m4)
 		return size
 
 	def doLayout(self, rect, testOnly):
@@ -89,9 +89,9 @@ if __name__ == '__main__':
 	flowLayout.addWidget(QPushButton("Different text"))
 	flowLayout.addWidget(QPushButton("More text"))
 	flowLayout.addWidget(QPushButton("Even longer button text"))
-	
+
 	win = QWidget()
 	win.setLayout(flowLayout)
 	win.setWindowTitle("Flow Layout")
 	win.show()
-	sys.exit(app.exec_())
+	sys.exit(app.exec())

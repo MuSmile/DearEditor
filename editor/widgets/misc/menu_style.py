@@ -98,19 +98,24 @@ class MenuStyleMacOS(QProxyStyle):
 				size.setHeight(self.separatorHeight() + self.separatorVSpacing() * 2)
 			else:
 				size.setHeight(self.itemHeight())
-				if menuItem.checked: size.setWidth(size.width() + self.checkedPadding())
-				if mtype == QStyleOptionMenuItem.SubMenu: size.setWidth(size.width() + self.contentPadding())
-				tabIdx = menuItem.text.find('\t')
-				if tabIdx >= 0:
-					shortcutText = menuItem.text[tabIdx+1:]
-					
-					font = menuItem.font
-					font.setPixelSize(self.fontSize())
-					font.setFamily('.AppleSystemUIFont')
-					newWidth = QFontMetrics(font).horizontalAdvance(shortcutText)
-					oldWidth = menuItem.fontMetrics.horizontalAdvance(shortcutText)
-
-					size.setWidth(size.width() + self.contentPadding() + newWidth - oldWidth)
+				font = menuItem.font
+				font.setPixelSize(self.fontSize())
+				if mtype == QStyleOptionMenuItem.SubMenu:
+					textWidth = QFontMetrics(font).horizontalAdvance(menuItem.text)
+					size.setWidth(textWidth + self.contentPadding() * 2 + 20)
+				elif mtype == QStyleOptionMenuItem.Normal:
+					tabIdx = menuItem.text.find('\t')
+					if tabIdx >= 0:
+						itemText = menuItem.text[:tabIdx]
+						shortcutText = menuItem.text[tabIdx+1:]
+						textWidth = QFontMetrics(font).horizontalAdvance(itemText)
+						font.setFamily('.AppleSystemUIFont')
+						shortcutWidth = QFontMetrics(font).horizontalAdvance(shortcutText)
+						size.setWidth(textWidth + shortcutWidth + self.contentPadding() * 2)
+					else:
+						textWidth = QFontMetrics(font).horizontalAdvance(menuItem.text)
+						size.setWidth(textWidth + self.contentPadding() * 2)
+					if menuItem.checked: size.setWidth(size.width() + self.checkedPadding())
 		return size
 
 	def drawControl(self, element, option, painter, widget):
