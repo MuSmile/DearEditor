@@ -2,10 +2,6 @@
 
 Python bindings to [Qt Advanced Docking System](https://github.com/githubuser0xFFFF/Qt-Advanced-Docking-System) for PySide6
 
-![screenshot 1](img/p1.png)
-![screenshot 2](img/p2.png)
-
-
 # requirements
 
 If need compile shiboken prjs like QtAds,

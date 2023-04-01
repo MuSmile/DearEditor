@@ -12,8 +12,8 @@ DearEditor aims to create an open and unite editor solution for all engine runti
 
 
 ## Screenshots
-![screenshot](.support/pyside6_qtads/img/p1.png)
-![screenshot](.support/pyside6_qtads/img/p2.png)
+![screenshot](docs/_static/screenshots/p1.png)
+![screenshot](docs/_static/screenshots/p2.png)
 
 
 ## Requirements
@@ -64,3 +64,10 @@ use ↓
 > dear list
 ```
 to check all available commands.
+
+## One more thing...
+If this project help you reduce time to develop or if you just like it, you can buy me a cup of coffee ☕😉.
+
+Donate with Paypal|Donate with Alipay|Donate with WeChat
+:-----------------|:-----------------|:-----------------
+[![donate_paypal](docs/_static/donate/donate_paypal.png)](https://paypal.me/kakikodesu)|[![donate_alipay](docs/_static/donate/donate_alipay.png)](https://raw.githubusercontent.com/MuSmile/DearEditor/master/docs/_static/donate/qrcode_alipay.jpeg)|[![donate_wechatpay](docs/_static/donate/donate_wechatpay.png)](https://raw.githubusercontent.com/MuSmile/DearEditor/master/docs/_static/donate/qrcode_wechatpay.jpeg)
