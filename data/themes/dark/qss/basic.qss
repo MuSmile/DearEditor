@@ -21,7 +21,7 @@ QToolTip {
 	background: #555;
 	border: 1px solid #333;
 	color: #eee;
-	padding: 0px 2 0 2;
+	padding: 2px;
 }
 
 QLineEdit {
@@ -353,3 +353,34 @@ FlagDropDownPopup {
 }
 
 CollapsibleWidget { qproperty-duration: 120; }
+
+#datagrid-label {
+	margin-left: 3px;
+}
+#datagrid-field {
+	margin-left: 3px;
+	margin-right: 3px;
+}
+ColorEdit#datagrid-field {
+	qproperty-marginLeft: 3px;
+	qproperty-marginRight: 3px;
+}
+QSlider#datagrid-field
+{
+	min-height: 22px;
+	margin-bottom: 1px;
+}
+QSlider#datagrid-field::groove:horizontal {
+	margin-left: 1px;
+	margin-right: 1px;
+}
+BoxGroup {
+	font-size: 12px;
+
+	color: #bbb;
+	background: #555;
+
+	border: 1px solid #222;
+	border-radius: 4px;
+	qproperty-borderRadius: 4;
+}

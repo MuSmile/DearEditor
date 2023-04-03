@@ -13,7 +13,15 @@ class WaitingSpinner(QWidget):
 
 		self.timer = QTimer(self)
 		self.timer.timeout.connect(self.updateAngle)
-		self.timer.start(round(1000 / rotateSpeed / self.spinnerCount))
+		self.timerInterval = round(1000 / rotateSpeed / self.spinnerCount)
+
+	def showEvent(self, evt):
+		super().showEvent(evt)
+		self.timer.start(self.timerInterval)
+
+	def hideEvent(self, evt):
+		super().hideEvent(evt)
+		self.timer.stop()
 
 	def paintEvent(self, event):
 		painter = QPainter(self)

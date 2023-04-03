@@ -274,6 +274,34 @@ def fuzzyContains(text, subtext):
 		pos = idx + 1
 	return True
 
+def smartString(text):
+	"""Calculate smart string for given text.
+	
+	Args:
+		str text: Given text to process.
+
+	Returns:
+		str: Smart string.
+	"""
+	if not text: return
+	result = text[0].upper()
+	textLen = len(text)
+	if textLen == 1: return result
+
+	for i in range(1, textLen):
+		currchar = text[ i ]
+		prevchar = text[ i - 1 ]
+		if currchar.isalpha():
+			if prevchar.isalpha():
+				if prevchar.islower() and currchar.isupper(): result += ' '
+				result += currchar
+			else:
+				result += ' ' + currchar.upper()
+		elif currchar.isdigit():
+			if not prevchar.isdigit(): result += ' '
+			result += currchar
+	return result
+
 
 #############################################
 _lastRecordTime = None

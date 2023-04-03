@@ -3,6 +3,9 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
+from editor.models.editor.data_grid import DataGrid
+from editor.widgets.complex.datagrid_view import DataGridView
+from editor.widgets.complex.sliding_stacked import SlidingStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
@@ -11,7 +14,6 @@ from editor.widgets.basic.text_area import TextArea
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
-from editor.widgets.container.sliding_stacked import SlidingStackedWidget
 from editor.widgets.misc.collapsible import CollapsibleWidget
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
@@ -45,11 +47,22 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/TextArea', self.createTextAreaPreview())
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
 		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
-		treeStacked.addStackedWidget('Container/SlidingStacked', self.createSlidingStackedPreview())
-		treeStacked.addStackedWidget('Complex/ListDrawer', self.createListDrawerPreview())
-		treeStacked.addStackedWidget('Complex/DictDrawer', self.createDictDrawerPreview())
+		treeStacked.addStackedWidget('Basic/Vector', None)
+		treeStacked.addStackedWidget('Group/SimpleGroup', None)
+		treeStacked.addStackedWidget('Group/TitleGroup', None)
+		treeStacked.addStackedWidget('Group/BoxGroup', None)
+		treeStacked.addStackedWidget('Group/FoldoutGroup', None)
+		treeStacked.addStackedWidget('Group/ToggleGroup', None)
+		treeStacked.addStackedWidget('Group/TabGroup', None)
+		treeStacked.addStackedWidget('Complex/SlidingStacked', self.createSlidingStackedPreview())
+		treeStacked.addStackedWidget('Complex/CurveEditor', None)
+		treeStacked.addStackedWidget('Complex/ListDrawer', None)
+		treeStacked.addStackedWidget('Complex/DictDrawer', None)
 		treeStacked.addStackedWidget('Complex/DataGrid', self.createDataGridPreview())
 		treeStacked.addStackedWidget('Misc/Collapsible', self.createCollapsiblePreview())
+		treeStacked.addStackedWidget('Misc/InfoBox', None)
+		treeStacked.addStackedWidget('Misc/Palette', None)
+		treeStacked.addStackedWidget('Misc/Toast', None)
 		treeStacked.tree.setCurrentByPath('Basic/Button')
 		treeStacked.tree.expandAll()
 		layout.addWidget(treeStacked)
@@ -585,76 +598,6 @@ class GalleryView(DockView):
 
 
 		return preview
-	def createListDrawerPreview(self):
-		preview = QWidget(self)
-
-		layout = QVBoxLayout()
-		layout.setAlignment(Qt.AlignTop)
-		layout.setSpacing(5)
-		# layout.setContentsMargins(0, 0, 0, 0)
-		preview.setLayout(layout)
-
-
-		#############  RPOGRESSBAR  #############
-		layout.addWidget(QLabel('ListDrawer'))
-		layout.addWidget(HLineWidget())
-		layout.addSpacing(5)
-
-		drawerLayout = QHBoxLayout()
-		drawerLayout.setSpacing(50)
-		drawerLayout.setAlignment(Qt.AlignLeft)
-
-		ws1 = WaitingSpinner()
-		ws2 = WaitingSpinner(clockwise = False)
-		ws3 = WaitingSpinner(color = QColor(50, 120, 200), clockwise = False)
-
-		ws1.setFixedSize(50, 50)
-		ws2.setFixedSize(50, 50)
-		ws3.setFixedSize(50, 50)
-
-		drawerLayout.addWidget(ws1)
-		drawerLayout.addWidget(ws2)
-		drawerLayout.addWidget(ws3)
-		
-		layout.addLayout(drawerLayout)
-
-
-		return preview
-	def createDictDrawerPreview(self):
-		preview = QWidget(self)
-
-		layout = QVBoxLayout()
-		layout.setAlignment(Qt.AlignTop)
-		layout.setSpacing(5)
-		# layout.setContentsMargins(0, 0, 0, 0)
-		preview.setLayout(layout)
-
-
-		#############  RPOGRESSBAR  #############
-		layout.addWidget(QLabel('DictDrawer'))
-		layout.addWidget(HLineWidget())
-		layout.addSpacing(5)
-
-		drawerLayout = QHBoxLayout()
-		drawerLayout.setSpacing(50)
-		drawerLayout.setAlignment(Qt.AlignLeft)
-
-		ws1 = WaitingSpinner()
-		ws2 = WaitingSpinner(clockwise = False)
-		ws3 = WaitingSpinner(color = QColor(50, 120, 200), clockwise = False)
-
-		ws1.setFixedSize(50, 50)
-		ws2.setFixedSize(50, 50)
-		ws3.setFixedSize(50, 50)
-
-		drawerLayout.addWidget(ws1)
-		drawerLayout.addWidget(ws2)
-		drawerLayout.addWidget(ws3)
-		
-		layout.addLayout(drawerLayout)
-
-
-		return preview
 	def createDataGridPreview(self):
 		preview = QWidget(self)
 
@@ -674,17 +617,24 @@ class GalleryView(DockView):
 		datagridLayout.setSpacing(50)
 		datagridLayout.setAlignment(Qt.AlignLeft)
 
-		ws1 = WaitingSpinner()
-		ws2 = WaitingSpinner(clockwise = False)
-		ws3 = WaitingSpinner(color = QColor(50, 120, 200), clockwise = False)
+		model = DataGrid()
+		model.append('int var1', 'int')
+		model.append('int var2', 'int')
+		model.append('group var1', 'color', group = 'test_group', group_type = 'box_group' )
+		model.append('int var3', 'int')
+		model.append('float var1', 'float')
+		model.append('float var2', 'float')
+		model.append('string var1', 'string')
+		model.append('string var2', 'string')
+		model.append('group var2', 'color', group = 'test_group', group_type = 'box_group' )
+		# model.append('var2', 'int', group = 'group1', group_type = 'title_group' )
+		# model.append('var4', 'int', group = 'group2', group_type = 'title_group' )
+		model.buildGroups()
 
-		ws1.setFixedSize(50, 50)
-		ws2.setFixedSize(50, 50)
-		ws3.setFixedSize(50, 50)
+		view = DataGridView()
+		view.setDataGrid(model)
 
-		datagridLayout.addWidget(ws1)
-		datagridLayout.addWidget(ws2)
-		datagridLayout.addWidget(ws3)
+		datagridLayout.addWidget(view)
 		
 		layout.addLayout(datagridLayout)
 
