@@ -362,8 +362,8 @@ CollapsibleWidget { qproperty-duration: 120; }
 	margin-right: 3px;
 }
 ColorEdit#datagrid-field {
-	qproperty-marginLeft: 3px;
-	qproperty-marginRight: 3px;
+	qproperty-marginLeft: 3;
+	qproperty-marginRight: 3;
 }
 QSlider#datagrid-field
 {
