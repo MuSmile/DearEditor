@@ -40,6 +40,19 @@ class ReferenceEdit(QWidget):
 	@padding.setter
 	def padding(self, value):
 		self._padding = value
+		
+	@Property(int)
+	def marginLeft(self):
+		return self._marginLeft
+	@marginLeft.setter
+	def marginLeft(self, value):
+		self._marginLeft = value
+	@Property(int)
+	def marginRight(self):
+		return self._marginRight
+	@marginRight.setter
+	def marginRight(self, value):
+		self._marginRight = value
 
 	def __init__(self, parent = None):
 		super().__init__(parent)
@@ -49,6 +62,8 @@ class ReferenceEdit(QWidget):
 		self._pixmapBtnIcon = getThemePixmap('color_picker.png')
 		self._borderRadius = 2
 		self._padding = 5
+		self._marginLeft = 0
+		self._marginRight = 0
 		
 		self.color = Color(180, 160, 200, 100)
 		self.setMouseTracking(True)
@@ -59,7 +74,7 @@ class ReferenceEdit(QWidget):
 	def resizeEvent(self, event):
 		super().resizeEvent(event)
 		w, h = self.width(), self.height()
-		self._btnRect = QRect(w - h, 0, h, h)
+		self._btnRect = QRect(w - h - self._marginRight, 0, h, h)
 
 	def mouseMoveEvent(self, evt):
 		super().mouseMoveEvent(evt)
@@ -89,17 +104,17 @@ class ReferenceEdit(QWidget):
 		painter.setRenderHint(QPainter.Antialiasing)
 		painter.setRenderHint(QPainter.TextAntialiasing)
 		painter.setRenderHint(QPainter.SmoothPixmapTransform)
-		rect = self.rect()
+		rect = self.rect().adjusted(self._marginLeft, 0, -self._marginRight, 0)
 		path = QPainterPath()
 		path.addRoundedRect(rect, self._borderRadius, self._borderRadius)
 		painter.setClipPath(path)
 		
 		palette = self.palette()
 		w, h = rect.width(), rect.height()
-		painter.fillRect(QRect(0, 0, w - h, h), palette.color(QPalette.Base))
+		painter.fillRect(QRect(self._marginLeft, 0, w - h, h), palette.color(QPalette.Base))
 		
 		painter.setPen(palette.color(QPalette.Text))
-		painter.drawText(QRect(self._padding, 0, w - h - self._padding * 2, h), Qt.AlignVCenter, 'None (TextAsset)')
+		painter.drawText(QRect(self._marginLeft + self._padding, 0, w - h - self._padding * 2, h), Qt.AlignVCenter, 'None (TextAsset)')
 
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
 		painter.drawPixmap(self._btnRect.adjusted(2, 2, -2, -2), self._pixmapBtnIcon)
@@ -107,6 +122,7 @@ class ReferenceEdit(QWidget):
 		option = QStyleOptionFrame()
 		option.initFrom(self)
 		option.frameShape = QFrame.StyledPanel
+		painter.setClipping(False)
 		self.style().drawPrimitive(QStyle.PE_Frame, option, painter, self)
 
 	def minimumSizeHint(self):

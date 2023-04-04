@@ -248,6 +248,19 @@ class PathLineEdit(LineEdit):
 	@borderRadius.setter
 	def borderRadius(self, value):
 		self._borderRadius = value
+		
+	@Property(int)
+	def marginLeft(self):
+		return self._marginLeft
+	@marginLeft.setter
+	def marginLeft(self, value):
+		self._marginLeft = value
+	@Property(int)
+	def marginRight(self):
+		return self._marginRight
+	@marginRight.setter
+	def marginRight(self, value):
+		self._marginRight = value
 
 	def __init__(self, folderPath, parent = None):
 		super().__init__(parent)
@@ -256,6 +269,8 @@ class PathLineEdit(LineEdit):
 		self._btnColorHovered = QColor('#666')
 		self._pixmapBtnIcon = getThemePixmap('folder_close.png')
 		self._borderRadius = 2
+		self._marginLeft = 0
+		self._marginRight = 0
 		
 		self._btnHovered = False
 
@@ -284,7 +299,7 @@ class PathLineEdit(LineEdit):
 	def resizeEvent(self, event):
 		super().resizeEvent(event)
 		w, h = self.width(), self.height()
-		self._btnRect = QRect(w - h, 0, h, h)
+		self._btnRect = QRect(w - h - self._marginRight, 0, h, h)
 		self.setStyleSheet(f'PathLineEdit{{ padding-right: {h}px; }}')
 
 	def mouseMoveEvent(self, evt):
@@ -322,7 +337,7 @@ class PathLineEdit(LineEdit):
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing)
 		# painter.setRenderHint(QPainter.SmoothPixmapTransform)
-		rect = self.rect()
+		rect = self.rect().adjusted(self._marginLeft, 0, -self._marginRight, 0)
 		path = QPainterPath()
 		path.addRoundedRect(rect, self._borderRadius, self._borderRadius)
 		painter.setClipPath(path)
@@ -332,4 +347,5 @@ class PathLineEdit(LineEdit):
 		option = QStyleOptionFrame()
 		option.initFrom(self)
 		option.frameShape = QFrame.StyledPanel
+		painter.setClipping(False)
 		self.style().drawPrimitive(QStyle.PE_Frame, option, painter, self)

@@ -361,7 +361,9 @@ CollapsibleWidget { qproperty-duration: 120; }
 	margin-left: 3px;
 	margin-right: 3px;
 }
-ColorEdit#datagrid-field {
+ColorEdit#datagrid-field,
+ReferenceEdit#datagrid-field,
+PathLineEdit#datagrid-field {
 	qproperty-marginLeft: 3;
 	qproperty-marginRight: 3;
 }
@@ -376,11 +378,23 @@ QSlider#datagrid-field::groove:horizontal {
 }
 BoxGroup {
 	font-size: 12px;
+	/*font-weight: bold;*/
 
-	color: #bbb;
+	color: #ddd;
 	background: #555;
 
 	border: 1px solid #222;
 	border-radius: 4px;
 	qproperty-borderRadius: 4;
+}
+TitleGroup {
+	font-size: 12px;
+	/*font-weight: bold;*/
+
+	color: #ddd;
+	background: #888;
+}
+DataGridView #group_space{
+	min-height: 10px;
+	max-height: 10px;
 }

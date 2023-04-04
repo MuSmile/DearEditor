@@ -51,7 +51,7 @@ class CollapsibleWidget(QScrollArea):
 		anim = self._animation
 		if anim.state() == QAbstractAnimation.Running: anim.stop()
 		anim.setStartValue(self.height())
-		anim.setEndValue(0)
+		anim.setEndValue(self.collapsedHeight())
 		anim.start()
 
 	def expand(self):
@@ -71,6 +71,9 @@ class CollapsibleWidget(QScrollArea):
 		anim = self._animation
 		if anim.state() == QAbstractAnimation.Running: anim.stop()
 		self.setFixedHeight(self.preferredHeight())
+
+	def collapsedHeight(self):
+		return 0
 
 	def preferredHeight(self):
 		wgt = self.widget()

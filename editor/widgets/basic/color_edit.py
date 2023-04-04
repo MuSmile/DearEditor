@@ -112,7 +112,7 @@ class ColorEdit(QWidget):
 		painter.setRenderHint(QPainter.SmoothPixmapTransform)
 		rect = self.rect().adjusted(self._marginLeft, 0, -self._marginRight, 0)
 		path = QPainterPath()
-		path.addRoundedRect(rect, self._borderRadius, self._borderRadius)
+		path.addRoundedRect(rect, self._borderRadius + 1, self._borderRadius + 1)
 		painter.setClipPath(path)
 		
 		x, y, w, h = rect.x(), rect.y(), rect.width(), rect.height()
@@ -123,7 +123,7 @@ class ColorEdit(QWidget):
 		painter.fillRect(QRect(self._marginLeft, 0, colorW, h - alphaH), preview)
 		alphaW = round(self.color.raw.alphaF() * colorW)
 		painter.fillRect(QRect(self._marginLeft, h - alphaH, alphaW, alphaH), Qt.white)
-		painter.fillRect(QRect(alphaW + 1, h - alphaH, colorW - alphaW, alphaH), Qt.black)
+		painter.fillRect(QRect(self._marginLeft + alphaW + 1, h - alphaH, colorW - alphaW, alphaH), Qt.black)
 
 		painter.fillRect(self._btnRect, self._btnColorHovered if self._btnHovered else self._btnColor)
 		painter.drawPixmap(self._btnRect.adjusted(3, 3, -3, -3), self._pixmapBtnIcon)
@@ -131,6 +131,7 @@ class ColorEdit(QWidget):
 		option = QStyleOptionFrame()
 		option.initFrom(self)
 		option.frameShape = QFrame.StyledPanel
+		painter.setClipping(False)
 		self.style().drawPrimitive(QStyle.PE_Frame, option, painter, self)
 
 	def minimumSizeHint(self):
