@@ -398,3 +398,21 @@ DataGridView #group_space{
 	min-height: 10px;
 	max-height: 10px;
 }
+
+
+EnumButtons > QPushButton#enum_left {
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+}
+EnumButtons > QPushButton#enum_middle {
+	border-radius: 0px;
+	border-left: none;
+}
+EnumButtons > QPushButton#enum_right {
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	border-left: none;
+}
+EnumButtons > QPushButton:checked {
+	background-color: #466890;
+}

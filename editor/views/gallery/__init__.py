@@ -9,8 +9,10 @@ from editor.widgets.complex.sliding_stacked import SlidingStackedWidget
 from editor.widgets.basic.range_slider import RangeSlider
 from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
+from editor.widgets.basic.vector_edit import Vector2Edit, Vector3Edit, Vector4Edit, Vector4IntEdit, RectEdit
 from editor.widgets.basic.drop_down import DropDown, FlagDropDown
 from editor.widgets.basic.text_area import TextArea
+from editor.widgets.basic.enum_buttons import EnumButtons
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
@@ -47,7 +49,7 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/TextArea', self.createTextAreaPreview())
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
 		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
-		treeStacked.addStackedWidget('Basic/Vector', None)
+		treeStacked.addStackedWidget('Basic/Vector', self.createVectorPreview())
 		treeStacked.addStackedWidget('Group/SimpleGroup', None)
 		treeStacked.addStackedWidget('Group/TitleGroup', None)
 		treeStacked.addStackedWidget('Group/BoxGroup', None)
@@ -248,6 +250,21 @@ class GalleryView(DockView):
 		checkBoxLayout.addWidget(radioBtn2)
 		layout.addLayout(checkBoxLayout)
 
+
+		#############  CHECKBOX  #############
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('EnumButtons'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		enumBtnsLayout = QHBoxLayout()
+		enumBtnsLayout.setSpacing(20)
+		enumBtnsLayout.setAlignment(Qt.AlignLeft)
+
+		enumBtns = EnumButtons([f'Item {i}' for i in range(4)])
+		enumBtns.setFocusPolicy(Qt.StrongFocus)
+		enumBtns.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		enumBtnsLayout.addWidget(enumBtns)
+		layout.addLayout(enumBtnsLayout)
 
 		return preview
 	def createLineEditPreview(self):
@@ -597,6 +614,39 @@ class GalleryView(DockView):
 		layout.addLayout(spinnerLayout)
 
 
+		return preview
+	def createVectorPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('VectorEdit'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		vec2 = Vector2Edit()
+		vec3 = Vector3Edit()
+		vec4 = Vector4Edit()
+		vec4Int = Vector4IntEdit()
+		rect = RectEdit()
+
+		layout.addWidget(vec2)
+		layout.addWidget(vec3)
+		layout.addWidget(vec4)
+		layout.addWidget(vec4Int)
+
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('RectEdit'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+		layout.addWidget(rect)
+		
 		return preview
 	def createDataGridPreview(self):
 		preview = QWidget(self)
