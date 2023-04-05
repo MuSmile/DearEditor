@@ -18,6 +18,7 @@ from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
 from editor.widgets.group.simple_group import SimpleGroup
 from editor.widgets.group.box_group import BoxGroup
+from editor.widgets.group.foldout_group import FoldoutGroup
 from editor.widgets.group.title_group import TitleGroup
 from editor.widgets.misc.collapsible import CollapsibleWidget
 from editor.widgets.misc.line import HLineWidget
@@ -97,11 +98,11 @@ class GalleryView(DockView):
 		pushBtn5.setCheckable(True)
 		pushBtn5.setChecked(True)
 
-		pushBtn1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		pushBtn2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		pushBtn3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		pushBtn4.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		pushBtn5.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		pushBtn1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		pushBtn2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		pushBtn3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		pushBtn4.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		pushBtn5.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		pushBtnLayout.addWidget(pushBtn1)
 		pushBtnLayout.addWidget(pushBtn2)
@@ -146,13 +147,13 @@ class GalleryView(DockView):
 		toolBtn7.setCheckable(True)
 		toolBtn7.setChecked(True)
 
-		toolBtn1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-		toolBtn2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-		toolBtn3.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-		toolBtn4.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
-		toolBtn5.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		toolBtn6.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		toolBtn7.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		toolBtn1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+		toolBtn2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+		toolBtn3.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+		toolBtn4.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+		toolBtn5.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		toolBtn6.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		toolBtn7.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		toolBtnLayout.addWidget(toolBtn1)
 		toolBtnLayout.addWidget(toolBtn2)
@@ -176,13 +177,13 @@ class GalleryView(DockView):
 		dropdown1 = DropDown()
 		dropdown1.setItems(['Zero', 'One', 'Two', 'Three'])
 		dropdown1.setCurrentIndex(2)
-		dropdown1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		dropdown1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		dropdown1.setFocusPolicy(Qt.StrongFocus)
 
 		dropdown2 = DropDown()
 		dropdown2.setItems([f'Item {x}' for x in range(40)])
 		dropdown2.setCurrentIndex(3)
-		dropdown2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		dropdown2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		dropDownLayout.addWidget(dropdown1)
 		dropDownLayout.addWidget(dropdown2)
@@ -200,7 +201,7 @@ class GalleryView(DockView):
 		flag1 = FlagDropDown()
 		flag1.setItems(['Zero', 'One', 'Two', 'Three'])
 		flag1.setCurrentIndex(2)
-		flag1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		flag1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		flag1.setFocusPolicy(Qt.StrongFocus)
 
 		flag2 = FlagDropDown()
@@ -209,7 +210,7 @@ class GalleryView(DockView):
 		flag2.setFlag('Item 0', False)
 		flag2.setCurrentIndex(0)
 		QTimer.singleShot(111, lambda:flag2.setCurrentIndex(0))
-		flag2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		flag2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		flagLayout.addWidget(flag1)
 		flagLayout.addWidget(flag2)
@@ -260,7 +261,7 @@ class GalleryView(DockView):
 
 		enumBtns = EnumButtons([f'Item {i}' for i in range(4)])
 		enumBtns.setFocusPolicy(Qt.StrongFocus)
-		enumBtns.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		enumBtns.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		enumBtnsLayout.addWidget(enumBtns)
 		layout.addLayout(enumBtnsLayout)
 
@@ -659,7 +660,7 @@ class GalleryView(DockView):
 		titleGroup.layout().addWidget(QPushButton('Foo'))
 		titleGroup.layout().addWidget(QPushButton('Bar'))
 		titleGroup.layout().setSpacing(2)
-		titleGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		titleGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		layout.addWidget(titleGroup)
 
 		simpleGroup = SimpleGroup('SimpleGroupName')
@@ -675,8 +676,17 @@ class GalleryView(DockView):
 		boxGroup.layout().addWidget(QPushButton('Bar'))
 		boxGroup.layout().setSpacing(2)
 		boxGroup.horizontalPadding = 3
-		boxGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		boxGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		layout.addWidget(boxGroup)
+
+		foldoutGroup = FoldoutGroup('FoldoutGroupName')
+		foldoutGroup.container.layout().addWidget(QPushButton('Foo'))
+		foldoutGroup.container.layout().addWidget(QPushButton('Bar'))
+		foldoutGroup.container.layout().setSpacing(2)
+		foldoutGroup.updateFixedHeight()
+		foldoutGroup.horizontalPadding = 3
+		foldoutGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		layout.addWidget(foldoutGroup)
 
 		return preview
 	def createDataGridPreview(self):

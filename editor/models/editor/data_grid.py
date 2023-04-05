@@ -21,7 +21,6 @@
 #	title_group
 #	box_group
 #	foldout_group
-#	toggle_group
 #	tab_group
 
 class Property:

@@ -1,5 +1,5 @@
-from PySide6.QtCore import Qt, Property, QRect
-from PySide6.QtGui import QPainter, QPalette, QColor
+from PySide6.QtCore import Qt, Property, QRect, QSize
+from PySide6.QtGui import QPainter, QPalette, QColor, QPixmap
 from PySide6.QtWidgets import QWidget, QVBoxLayout
 from editor.widgets.misc.collapsible import CollapsibleWidget
 from editor.common.icon_cache import getThemePixmap
@@ -11,6 +11,7 @@ class SimpleGroup(QWidget):
 	@titleHeight.setter
 	def titleHeight(self, value):
 		self._titleHeight = value
+		self.layout().setContentsMargins(self._contentIndention, value, 0, 0)
 
 	@Property(int)
 	def contentIndention(self):
@@ -19,6 +20,19 @@ class SimpleGroup(QWidget):
 	def contentIndention(self, value):
 		self._contentIndention = value
 		self.layout().setContentsMargins(value, self._titleHeight, 0, 0)
+
+	@Property(QPixmap)
+	def pixmapGroupOpened(self):
+		return self._pixmapGroupOpened
+	@pixmapGroupOpened.setter
+	def pixmapGroupOpened(self, value):
+		self._pixmapGroupOpened = value
+	@Property(QPixmap)
+	def pixmapGroupClosed(self):
+		return self._pixmapGroupClosed
+	@pixmapGroupClosed.setter
+	def pixmapGroupClosed(self, value):
+		self._pixmapGroupClosed = value
 
 	@Property(int)
 	def groupIconSize(self):
@@ -73,7 +87,6 @@ class SimpleGroup(QWidget):
 		palette = self.palette()
 		w, h = rect.width(), rect.height()
 		painter.setPen(palette.color(QPalette.Text))
+		painter.drawText(self._groupIconSize + 2, 0, w - self._groupIconSize, self._titleHeight, Qt.AlignVCenter, self._title)
 		pixmap = self._pixmapGroupOpened if self.collapsible._expanded else self._pixmapGroupClosed
 		painter.drawPixmap(0, (self._titleHeight - self._groupIconSize) / 2, self._groupIconSize, self._groupIconSize, pixmap)
-		painter.drawText(self._groupIconSize + 2, 0, w, self._titleHeight, Qt.AlignVCenter, self._title)
-

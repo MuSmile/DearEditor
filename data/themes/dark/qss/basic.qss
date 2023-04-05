@@ -377,16 +377,14 @@ QSlider#datagrid-field::groove:horizontal {
 	margin-right: 1px;
 }
 SimpleGroup {
+	color: #ccc;
 	font-size: 12px;
 	/*font-weight: bold;*/
-
-	color: #ccc;
-	background: #4b4b4b;
 
 	border: 1px solid #222;
 	border-radius: 4px;
 	
-	qproperty-titleHeight: 22;
+	qproperty-titleHeight: 26;
 }
 BoxGroup {
 	font-size: 12px;
@@ -398,10 +396,26 @@ BoxGroup {
 	border: 1px solid #222;
 	border-radius: 4px;
 
-	qproperty-titleHeight: 22;
+	qproperty-titleHeight: 26;
 	qproperty-titlePadding: 6;
 	qproperty-titleColor: #3a3a3a;
 	qproperty-verticalPadding: 3;
+	qproperty-borderRadius: 4;
+}
+FoldoutGroup {
+	font-size: 12px;
+	/*font-weight: bold;*/
+
+	color: #ccc;
+	background: #4b4b4b;
+
+	border: 1px solid #222;
+	border-radius: 4px;
+
+	qproperty-titleHeight: 26;
+	qproperty-titlePadding: 6;
+	qproperty-titleColor: #3a3a3a;
+	qproperty-verticalPadding: 1;
 	qproperty-borderRadius: 4;
 }
 TitleGroup {
@@ -417,8 +431,8 @@ TitleGroup {
 	qproperty-separatorHeight: 1;
 }
 DataGridView #group_space{
-	min-height: 5px;
-	max-height: 5px;
+	min-height: 10px;
+	max-height: 10px;
 }
 
 
