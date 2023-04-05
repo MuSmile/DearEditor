@@ -54,7 +54,7 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
 		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
 		treeStacked.addStackedWidget('Basic/Vector', self.createVectorPreview())
-		treeStacked.addStackedWidget('Basic/Group', self.createGroupPreview())
+		treeStacked.addStackedWidget('Group', self.createGroupPreview())
 		treeStacked.addStackedWidget('Complex/SlidingStacked', self.createSlidingStackedPreview())
 		treeStacked.addStackedWidget('Complex/CurveEditor', None)
 		treeStacked.addStackedWidget('Complex/ListDrawer', None)

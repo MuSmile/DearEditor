@@ -46,7 +46,7 @@ class SimpleGroup(QWidget):
 		self._title = title
 		self._titleHeight = 22
 		self._contentIndention = 24
-		self._groupIconSize = 16
+		self._groupIconSize = 14
 		self._pixmapGroupOpened = getThemePixmap('arrow_down.png')
 		self._pixmapGroupClosed = getThemePixmap('arrow_right.png')
 

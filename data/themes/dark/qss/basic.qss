@@ -384,7 +384,7 @@ SimpleGroup {
 	border: 1px solid #222;
 	border-radius: 4px;
 	
-	qproperty-titleHeight: 26;
+	qproperty-titleHeight: 24;
 }
 BoxGroup {
 	font-size: 12px;
@@ -396,7 +396,7 @@ BoxGroup {
 	border: 1px solid #222;
 	border-radius: 4px;
 
-	qproperty-titleHeight: 26;
+	qproperty-titleHeight: 24;
 	qproperty-titlePadding: 6;
 	qproperty-titleColor: #3a3a3a;
 	qproperty-verticalPadding: 3;
@@ -412,7 +412,7 @@ FoldoutGroup {
 	border: 1px solid #222;
 	border-radius: 4px;
 
-	qproperty-titleHeight: 26;
+	qproperty-titleHeight: 24;
 	qproperty-titlePadding: 6;
 	qproperty-titleColor: #3a3a3a;
 	qproperty-verticalPadding: 1;
