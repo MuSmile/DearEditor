@@ -16,6 +16,13 @@ class BoxGroup(QWidget):
 	def titlePadding(self, value):
 		self._titlePadding = value
 
+	@Property(QColor)
+	def titleColor(self):
+		return self._titleColor
+	@titleColor.setter
+	def titleColor(self, value):
+		self._titleColor = value
+
 	@Property(int)
 	def horizontalPadding(self):
 		return self._horizontalPadding
@@ -43,6 +50,7 @@ class BoxGroup(QWidget):
 		self._title = title
 		self._titleHeight = 22
 		self._titlePadding = 0
+		self._titleColor = QColor('#3a3a3a')
 		self._horizontalPadding = 0
 		self._verticalPadding = 3
 		self._borderRadius = 2
@@ -66,7 +74,7 @@ class BoxGroup(QWidget):
 		palette = self.palette()
 		w, h = rect.width(), rect.height()
 		painter.fillRect(rect, palette.color(QPalette.Base))
-		painter.fillRect(0, 0, w, self._titleHeight, QColor('#3a3a3a'))
+		painter.fillRect(0, 0, w, self._titleHeight, self._titleColor)
 		
 		painter.setPen(palette.color(QPalette.Text))
 		painter.drawText(self._titlePadding, 0, w - self._titlePadding * 2, self._titleHeight, Qt.AlignVCenter, self._title)

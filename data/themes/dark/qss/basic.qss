@@ -376,7 +376,7 @@ QSlider#datagrid-field::groove:horizontal {
 	margin-left: 1px;
 	margin-right: 1px;
 }
-BoxGroup {
+SimpleGroup {
 	font-size: 12px;
 	/*font-weight: bold;*/
 
@@ -387,7 +387,20 @@ BoxGroup {
 	border-radius: 4px;
 	
 	qproperty-titleHeight: 22;
+}
+BoxGroup {
+	font-size: 12px;
+	/*font-weight: bold;*/
+
+	color: #ccc;
+	background: #4b4b4b;
+
+	border: 1px solid #222;
+	border-radius: 4px;
+
+	qproperty-titleHeight: 22;
 	qproperty-titlePadding: 6;
+	qproperty-titleColor: #3a3a3a;
 	qproperty-verticalPadding: 3;
 	qproperty-borderRadius: 4;
 }

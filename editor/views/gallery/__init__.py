@@ -16,6 +16,7 @@ from editor.widgets.basic.enum_buttons import EnumButtons
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
+from editor.widgets.group.simple_group import SimpleGroup
 from editor.widgets.group.box_group import BoxGroup
 from editor.widgets.group.title_group import TitleGroup
 from editor.widgets.misc.collapsible import CollapsibleWidget
@@ -660,6 +661,14 @@ class GalleryView(DockView):
 		titleGroup.layout().setSpacing(2)
 		titleGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
 		layout.addWidget(titleGroup)
+
+		simpleGroup = SimpleGroup('SimpleGroupName')
+		simpleGroup.container.layout().addWidget(QPushButton('Foo'))
+		simpleGroup.container.layout().addWidget(QPushButton('Bar'))
+		simpleGroup.container.layout().setSpacing(2)
+		simpleGroup.updateFixedHeight()
+		simpleGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		layout.addWidget(simpleGroup)
 
 		boxGroup = BoxGroup('BoxGroupName')
 		boxGroup.layout().addWidget(QPushButton('Foo'))
