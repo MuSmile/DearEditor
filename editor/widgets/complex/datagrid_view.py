@@ -3,6 +3,8 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from editor.common.util import smartString
 from editor.models.editor.data_grid import PropertyGroup
+from editor.widgets.group.title_group import TitleGroup
+from editor.widgets.group.box_group import BoxGroup
 
 
 _datagridRegistry = {}
@@ -14,15 +16,6 @@ def propertyCreator(type):
 		registerPropertyCreator(type, func)
 		return func
 	return warpper
-
-def registerPropertyGroup(type, cls):
-	if type in _datagridRegistry: warn(f'Property group class \'{cls}\' has registered!')
-	_datagridRegistry[ type ] = cls
-def propertyGroup(type):
-	def wrapper(cls):
-		registerPropertyGroup(type, cls)
-		return cls
-	return wrapper
 
 def createPropertyWidget(property):
 	return _datagridRegistry[ property.type ](property)
@@ -157,67 +150,16 @@ def _createPropertyWidgetFloat(property):
 	editor.setFocusPolicy(Qt.StrongFocus)
 	return label, editor
 
-@propertyGroup('box_group')
-class BoxGroup(QWidget):
-	@Property(int)
-	def borderRadius(self):
-		return self._borderRadius
-	@borderRadius.setter
-	def borderRadius(self, value):
-		self._borderRadius = value
-
-	def __init__(self, group, parent = None):
-		super().__init__(parent)
-		self.group = group
-		self._borderRadius = 2
-
-		layout = DataGridLayout()
-		layout.initLayout(group.properties)
-		layout.setContentsMargins(0, 25, 0, 3)
-		self.setLayout(layout)
-
-	def paintEvent(self, evt):
-		super().paintEvent(evt)
-		painter = QPainter(self)
-		painter.setRenderHint(QPainter.Antialiasing)
-		painter.setRenderHint(QPainter.TextAntialiasing)
-		painter.setRenderHint(QPainter.SmoothPixmapTransform)
-		rect = self.rect()
-		path = QPainterPath()
-		path.addRoundedRect(rect, self._borderRadius, self._borderRadius)
-		painter.setClipPath(path)
-		
-		palette = self.palette()
-		w, h = rect.width(), rect.height()
-		painter.fillRect(QRect(0, 0, w, h), palette.color(QPalette.Base))
-		painter.fillRect(QRect(0, 0, w, 22), QColor('#3a3a3a'))
-		
-		painter.setPen(palette.color(QPalette.Text))
-		painter.drawText(QRect(6, 0, w, 22), Qt.AlignVCenter, smartString(self.group.name))
-
-		option = QStyleOptionFrame()
-		option.initFrom(self)
-		option.frameShape = QFrame.StyledPanel
-		self.style().drawPrimitive(QStyle.PE_Frame, option, painter, self)
-
-@propertyGroup('title_group')
-class TitleGroup(QWidget):
-	def __init__(self, group, parent = None):
-		super().__init__(parent)
-		self.group = group
-		layout = DataGridLayout()
-		layout.initLayout(group.properties)
-		layout.setContentsMargins(0, 28, 0, 3)
-		self.setLayout(layout)
-
-	def paintEvent(self, evt):
-		super().paintEvent(evt)
-		painter = QPainter(self)
-		painter.setRenderHint(QPainter.Antialiasing)
-		painter.setRenderHint(QPainter.TextAntialiasing)
-
-		palette = self.palette()
-		w, h = self.width(), self.height()
-		painter.setPen(palette.color(QPalette.Text))
-		painter.drawText(QRect(6, 0, w, 22), Qt.AlignVCenter, smartString(self.group.name))
-		painter.fillRect(QRect(6, 23, w - 9, 1), palette.color(QPalette.Base))
+@propertyCreator('title_group')
+def _createPropertyWidgetFloat(group, parent):
+	layout = DataGridLayout()
+	layout.initLayout(group.properties)
+	group = TitleGroup(smartString(group.name), layout)
+	group.setHorizontalMargins(6, 4)
+	return group
+@propertyCreator('box_group')
+def _createPropertyWidgetFloat(group, parent):
+	layout = DataGridLayout()
+	layout.initLayout(group.properties)
+	group = BoxGroup(smartString(group.name), layout)
+	return group

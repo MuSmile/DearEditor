@@ -16,6 +16,8 @@ from editor.widgets.basic.enum_buttons import EnumButtons
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
+from editor.widgets.group.box_group import BoxGroup
+from editor.widgets.group.title_group import TitleGroup
 from editor.widgets.misc.collapsible import CollapsibleWidget
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
@@ -50,12 +52,7 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Basic/Slider', self.createSliderPreview())
 		treeStacked.addStackedWidget('Basic/Spinner', self.createSpinnerPreview())
 		treeStacked.addStackedWidget('Basic/Vector', self.createVectorPreview())
-		treeStacked.addStackedWidget('Group/SimpleGroup', None)
-		treeStacked.addStackedWidget('Group/TitleGroup', None)
-		treeStacked.addStackedWidget('Group/BoxGroup', None)
-		treeStacked.addStackedWidget('Group/FoldoutGroup', None)
-		treeStacked.addStackedWidget('Group/ToggleGroup', None)
-		treeStacked.addStackedWidget('Group/TabGroup', None)
+		treeStacked.addStackedWidget('Basic/Group', self.createGroupPreview())
 		treeStacked.addStackedWidget('Complex/SlidingStacked', self.createSlidingStackedPreview())
 		treeStacked.addStackedWidget('Complex/CurveEditor', None)
 		treeStacked.addStackedWidget('Complex/ListDrawer', None)
@@ -647,6 +644,31 @@ class GalleryView(DockView):
 		layout.addSpacing(5)
 		layout.addWidget(rect)
 		
+		return preview
+	def createGroupPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(20)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+		titleGroup = TitleGroup('TitleGroupName')
+		titleGroup.layout().addWidget(QPushButton('Foo'))
+		titleGroup.layout().addWidget(QPushButton('Bar'))
+		titleGroup.layout().setSpacing(2)
+		titleGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		layout.addWidget(titleGroup)
+
+		boxGroup = BoxGroup('BoxGroupName')
+		boxGroup.layout().addWidget(QPushButton('Foo'))
+		boxGroup.layout().addWidget(QPushButton('Bar'))
+		boxGroup.layout().setSpacing(2)
+		boxGroup.horizontalPadding = 3
+		boxGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+		layout.addWidget(boxGroup)
+
 		return preview
 	def createDataGridPreview(self):
 		preview = QWidget(self)

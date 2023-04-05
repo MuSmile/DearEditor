@@ -380,23 +380,32 @@ BoxGroup {
 	font-size: 12px;
 	/*font-weight: bold;*/
 
-	color: #ddd;
-	background: #555;
+	color: #ccc;
+	background: #4b4b4b;
 
 	border: 1px solid #222;
 	border-radius: 4px;
+	
+	qproperty-titleHeight: 22;
+	qproperty-titlePadding: 6;
+	qproperty-verticalPadding: 3;
 	qproperty-borderRadius: 4;
 }
 TitleGroup {
 	font-size: 12px;
 	/*font-weight: bold;*/
 
-	color: #ddd;
+	color: #ccc;
 	background: #888;
+
+	qproperty-titlePadding: 0;
+	qproperty-titleAlignment: 1; /* 1-left, 2-right, 4-center*/
+	qproperty-titleSpacing: 4;
+	qproperty-separatorHeight: 1;
 }
 DataGridView #group_space{
-	min-height: 10px;
-	max-height: 10px;
+	min-height: 5px;
+	max-height: 5px;
 }
 
 
