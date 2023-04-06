@@ -6,7 +6,7 @@ from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMous
 from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle, QStyleOptionViewItem, QMenu
 from editor.common.math import clamp, lerp
 from editor.common.ease import easeInOutQuad, easeOutQuad
-from editor.common.util import adjustedContextMenuPosition, modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex, Qt_DecorationExpandedRole, Qt_AlternateRole
+from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex, Qt_DecorationExpandedRole, Qt_AlternateRole
 from editor.common.icon_cache import getThemePixmap
 
 
@@ -631,6 +631,12 @@ class TreeView(QTreeView):
 		super().mouseDoubleClickEvent(evt)
 
 	def contextMenuEvent(self, evt):
+		hovered = self.indexAt(evt.pos())
+		menu = self.requestContextMenu(hovered)
+		menu.popup(evt.globalPos())
+
+	def requestContextMenu(self, index):
+		print(index)
 		menu = QMenu(self)
 		# action = menu.addAction("Test Item 0")
 		# action.setCheckable(True)
@@ -638,8 +644,7 @@ class TreeView(QTreeView):
 		menu.addAction("Test Item 1")
 		menu.addAction("Test Item 2")
 		menu.addAction("Test Item 3")
-		menu.move(adjustedContextMenuPosition(evt.globalPos(), menu))
-		menu.show()
+		return menu
 
 	def mouseMoveEvent(self, evt):
 		self.updateHoveredIndex(self.indexAt(evt.pos()))

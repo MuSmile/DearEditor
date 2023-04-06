@@ -18,9 +18,11 @@ from editor.widgets.basic.reference_edit import ReferenceEdit
 from editor.widgets.basic.spinner import WaitingSpinner
 from editor.widgets.group.simple_group import SimpleGroup
 from editor.widgets.group.box_group import BoxGroup
+from editor.widgets.group.tab_group import TabGroup
 from editor.widgets.group.foldout_group import FoldoutGroup
 from editor.widgets.group.title_group import TitleGroup
 from editor.widgets.misc.collapsible import CollapsibleWidget
+from editor.widgets.misc.info_box import InfoBox
 from editor.widgets.misc.line import HLineWidget
 from editor.common.icon_cache import getThemeIcon, getThemePixmap
 from editor.common.util import createTestMenu
@@ -61,7 +63,7 @@ class GalleryView(DockView):
 		treeStacked.addStackedWidget('Complex/DictDrawer', None)
 		treeStacked.addStackedWidget('Complex/DataGrid', self.createDataGridPreview())
 		treeStacked.addStackedWidget('Misc/Collapsible', self.createCollapsiblePreview())
-		treeStacked.addStackedWidget('Misc/InfoBox', None)
+		treeStacked.addStackedWidget('Misc/InfoBox', self.createInfoBoxPreview())
 		treeStacked.addStackedWidget('Misc/Palette', None)
 		treeStacked.addStackedWidget('Misc/Toast', None)
 		treeStacked.tree.setCurrentByPath('Basic/Button')
@@ -259,7 +261,9 @@ class GalleryView(DockView):
 		enumBtnsLayout.setSpacing(20)
 		enumBtnsLayout.setAlignment(Qt.AlignLeft)
 
-		enumBtns = EnumButtons([f'Item {i}' for i in range(4)])
+		enumBtns = EnumButtons()
+		enumBtns.setEnums([f'Item {i}' for i in range(4)])
+		enumBtns.selectEnum('Item 0')
 		enumBtns.setFocusPolicy(Qt.StrongFocus)
 		enumBtns.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		enumBtnsLayout.addWidget(enumBtns)
@@ -548,6 +552,7 @@ class GalleryView(DockView):
 		tmpLayout.setAlignment(Qt.AlignLeft)
 
 		ssw = SlidingStackedWidget()
+		ssw.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		w1 = QPushButton('Page 1')
 		w2 = QPushButton('Page 2')
@@ -558,9 +563,10 @@ class GalleryView(DockView):
 		ssw.addWidget(w1)
 		ssw.addWidget(w2)
 		ssw.addWidget(w3)
-		w2.setFixedHeight(100)
-		# ssw.vertical = True
-		ssw.wrap = True
+		w1.setFixedHeight(200)
+		w2.setFixedHeight(400)
+		w3.setFixedHeight(300)
+		ssw.initWidget()
 
 		btn1 = QPushButton('Prev')
 		btn1.clicked.connect(ssw.slideInPrev)
@@ -576,6 +582,7 @@ class GalleryView(DockView):
 		
 		layout.addLayout(btnLayout)
 		layout.addLayout(tmpLayout)
+		layout.addWidget(QPushButton('Placeholder'))
 
 
 		return preview
@@ -647,6 +654,29 @@ class GalleryView(DockView):
 		layout.addWidget(rect)
 		
 		return preview
+	def createInfoBoxPreview(self):
+		preview = QWidget(self)
+
+		layout = QVBoxLayout()
+		layout.setAlignment(Qt.AlignTop)
+		layout.setSpacing(5)
+		# layout.setContentsMargins(0, 0, 0, 0)
+		preview.setLayout(layout)
+
+
+		#############  RPOGRESSBAR  #############
+		layout.addWidget(QLabel('InfoBox'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		infoBox = InfoBox('This is a info box.')
+		warnBox = InfoBox('This is a warning box.\nAnd support multiline message.', 'warn')
+		errorBox = InfoBox('This is a error box.\nSingle line text which too long will be wrapped by word automatically.', 'error')
+		layout.addWidget(infoBox)
+		layout.addWidget(warnBox)
+		layout.addWidget(errorBox)
+		
+		return preview
 	def createGroupPreview(self):
 		preview = QWidget(self)
 
@@ -657,36 +687,83 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 		titleGroup = TitleGroup('TitleGroupName')
-		titleGroup.layout().addWidget(QPushButton('Foo'))
-		titleGroup.layout().addWidget(QPushButton('Bar'))
+		titleGroup.layout().addWidget(QPushButton('Hello'))
+		titleGroup.layout().addWidget(QPushButton('World'))
 		titleGroup.layout().setSpacing(2)
 		titleGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		layout.addWidget(titleGroup)
 
 		simpleGroup = SimpleGroup('SimpleGroupName')
-		simpleGroup.container.layout().addWidget(QPushButton('Foo'))
-		simpleGroup.container.layout().addWidget(QPushButton('Bar'))
+		simpleGroup.container.layout().addWidget(QPushButton('Hello'))
+		simpleGroup.container.layout().addWidget(QPushButton('World'))
 		simpleGroup.container.layout().setSpacing(2)
 		simpleGroup.updateFixedHeight()
 		simpleGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		layout.addWidget(simpleGroup)
 
 		boxGroup = BoxGroup('BoxGroupName')
-		boxGroup.layout().addWidget(QPushButton('Foo'))
-		boxGroup.layout().addWidget(QPushButton('Bar'))
+		boxGroup.layout().addWidget(QPushButton('Hello'))
+		boxGroup.layout().addWidget(QPushButton('World'))
 		boxGroup.layout().setSpacing(2)
 		boxGroup.horizontalPadding = 3
 		boxGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		layout.addWidget(boxGroup)
 
 		foldoutGroup = FoldoutGroup('FoldoutGroupName')
-		foldoutGroup.container.layout().addWidget(QPushButton('Foo'))
-		foldoutGroup.container.layout().addWidget(QPushButton('Bar'))
+		foldoutGroup.container.layout().addWidget(QPushButton('Hello'))
+		foldoutGroup.container.layout().addWidget(QPushButton('World'))
 		foldoutGroup.container.layout().setSpacing(2)
 		foldoutGroup.updateFixedHeight()
 		foldoutGroup.horizontalPadding = 3
 		foldoutGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		layout.addWidget(foldoutGroup)
+
+		tabGroup = TabGroup()
+
+		tabContent1 = QWidget()
+		contentLayout1 = QVBoxLayout()
+		contentLayout1.setContentsMargins(3, 3, 3, 3)
+		contentLayout1.setSpacing(2)
+		contentLayout1.addWidget(QPushButton('Hello'))
+		contentLayout1.addWidget(QPushButton('World'))
+		tabContent1.setLayout(contentLayout1)
+
+		tabContent2 = QWidget()
+		contentLayout2 = QVBoxLayout()
+		contentLayout2.setContentsMargins(3, 3, 3, 3)
+		contentLayout2.setSpacing(2)
+		contentLayout2.addWidget(QPushButton('Hello'))
+		contentLayout2.addWidget(QPushButton('World'))
+		contentLayout2.addWidget(QPushButton('Emmmm'))
+		tabContent2.setLayout(contentLayout2)
+
+		tabContent3 = QWidget()
+		contentLayout3 = QVBoxLayout()
+		contentLayout3.setContentsMargins(3, 3, 3, 3)
+		contentLayout3.setSpacing(2)
+		contentLayout3.addWidget(QPushButton('Hello'))
+		contentLayout3.addWidget(QPushButton('World3'))
+		tabContent3.setLayout(contentLayout3)
+
+		tabContent4 = QWidget()
+		contentLayout4 = QVBoxLayout()
+		contentLayout4.setContentsMargins(3, 3, 3, 3)
+		contentLayout4.setSpacing(2)
+		contentLayout4.addWidget(QPushButton('Hello'))
+		contentLayout4.addWidget(QPushButton('World'))
+		tabContent4.setLayout(contentLayout4)
+
+		tabContent1.setFixedHeight(tabContent1.sizeHint().height())
+		tabContent2.setFixedHeight(tabContent2.sizeHint().height())
+		tabContent3.setFixedHeight(tabContent3.sizeHint().height())
+		tabContent4.setFixedHeight(tabContent4.sizeHint().height())
+
+		tabGroup.container.addWidget(tabContent1)
+		tabGroup.container.addWidget(tabContent2)
+		tabGroup.container.addWidget(tabContent3)
+		tabGroup.container.addWidget(tabContent4)
+		tabGroup.container.initWidget()
+		layout.addWidget(tabGroup)
 
 		return preview
 	def createDataGridPreview(self):

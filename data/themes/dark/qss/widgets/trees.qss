@@ -14,7 +14,7 @@ TreeView {
 	qproperty-dropIndicatorWidth: 2;
 
 	qproperty-customAnimated: true;
-	qproperty-customAnimDuration: 80;
+	qproperty-customAnimDuration: 60;
 
 	qproperty-drawBranchLine: true;
 	qproperty-branchLineFilterDepth: 1;

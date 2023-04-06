@@ -352,7 +352,7 @@ FlagDropDownPopup {
 	qproperty-itemIndicatorPadding: 2;
 }
 
-CollapsibleWidget { qproperty-duration: 120; }
+CollapsibleWidget { qproperty-duration: 60; }
 
 #datagrid-label {
 	margin-left: 3px;
@@ -391,7 +391,7 @@ BoxGroup {
 	/*font-weight: bold;*/
 
 	color: #ccc;
-	background: #4b4b4b;
+	background: #4e4e4e;
 
 	border: 1px solid #222;
 	border-radius: 4px;
@@ -399,6 +399,7 @@ BoxGroup {
 	qproperty-titleHeight: 24;
 	qproperty-titlePadding: 6;
 	qproperty-titleColor: #3a3a3a;
+	qproperty-separatorColor: #222;
 	qproperty-verticalPadding: 3;
 	qproperty-borderRadius: 4;
 }
@@ -407,7 +408,7 @@ FoldoutGroup {
 	/*font-weight: bold;*/
 
 	color: #ccc;
-	background: #4b4b4b;
+	background: #4e4e4e;
 
 	border: 1px solid #222;
 	border-radius: 4px;
@@ -415,8 +416,14 @@ FoldoutGroup {
 	qproperty-titleHeight: 24;
 	qproperty-titlePadding: 6;
 	qproperty-titleColor: #3a3a3a;
+	qproperty-separatorColor: #222;
 	qproperty-verticalPadding: 1;
 	qproperty-borderRadius: 4;
+}
+TabGroup {
+	background: #4e4e4e;
+	border: 1px solid #222;
+	border-radius: 4px;
 }
 TitleGroup {
 	font-size: 12px;
@@ -451,4 +458,41 @@ EnumButtons > QPushButton#enum_right {
 }
 EnumButtons > QPushButton:checked {
 	background-color: #466890;
+}
+
+
+
+TabGroup > EnumButtons > QPushButton {
+	background-color: #3a3a3a;
+	border-color: #222;
+	height: 12px;
+}
+TabGroup > EnumButtons > QPushButton:hover {
+	background-color: #4a4a4a;
+}
+TabGroup > EnumButtons > QPushButton:pressed,
+TabGroup > EnumButtons > QPushButton:checked {
+	background-color: #666;
+}
+TabGroup > EnumButtons > QPushButton#enum_left {
+	border-bottom-left-radius: 0px;
+}
+TabGroup > EnumButtons > QPushButton#enum_right {
+	border-bottom-right-radius: 0px;
+}
+
+InfoBox {
+	color: #ccc;
+	background: #4a4a4a;
+	border: 1px solid #222;
+	border-radius: 4px;
+
+	qproperty-iconSize: 24;
+	qproperty-contentPadding: 5;
+	qproperty-borderRadius: 4;
+}
+
+SlidingStackedWidget {
+	background: none;
+	qproperty-duration: 100;
 }

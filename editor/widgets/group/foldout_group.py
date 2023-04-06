@@ -25,6 +25,13 @@ class FoldoutGroup(QWidget):
 	def titleColor(self, value):
 		self._titleColor = value
 
+	@Property(QColor)
+	def separatorColor(self):
+		return self._separatorColor
+	@separatorColor.setter
+	def separatorColor(self, value):
+		self._separatorColor = value
+
 	@Property(int)
 	def horizontalPadding(self):
 		return self._horizontalPadding
@@ -73,6 +80,7 @@ class FoldoutGroup(QWidget):
 		self._titleHeight = 22
 		self._titlePadding = 0
 		self._titleColor = QColor('#3a3a3a')
+		self._separatorColor = QColor('#222')
 		self._horizontalPadding = 0
 		self._verticalPadding = 3
 		self._borderRadius = 2
@@ -124,12 +132,14 @@ class FoldoutGroup(QWidget):
 		w, h = rect.width(), rect.height()
 		painter.fillRect(rect, palette.color(QPalette.Base))
 		painter.fillRect(0, 0, w, self._titleHeight, self._titleColor)
+		painter.fillRect(0, self._titleHeight - 1, w, 1, self._separatorColor)
 		
 		painter.setPen(palette.color(QPalette.Text))
 		painter.drawText(self._titlePadding + self._groupIconSize + 1, 0, w - self._titlePadding * 2 -  + self._groupIconSize, self._titleHeight, Qt.AlignVCenter, self._title)
 		pixmap = self._pixmapGroupOpened if self.collapsible._expanded else self._pixmapGroupClosed
 		painter.drawPixmap(4, (self._titleHeight - self._groupIconSize) / 2, self._groupIconSize, self._groupIconSize, pixmap)
 
+		painter.setClipping(False)
 		option = QStyleOptionFrame()
 		option.initFrom(self)
 		option.frameShape = QFrame.StyledPanel
