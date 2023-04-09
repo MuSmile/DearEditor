@@ -1,6 +1,6 @@
 pyside6==6.2.2.1
 shiboken6==6.2.2.1
-watchdog==2.1.6
+watchdog==2.3.1
 jsonpickle==2.0.0
 psd_tools==1.9.18
-xlrd==1.2.0
+xlrd==2.0.1

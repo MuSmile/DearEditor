@@ -562,13 +562,13 @@ class TreeView(QTreeView):
 		self.dropAccepted = None
 		self.setDragEnabled(True)
 		self.setAcceptDrops(True)
-		self.setDragDropMode(self.InternalMove)
-		self.setSelectionMode(self.ExtendedSelection)
+		self.setDragDropMode(QTreeView.InternalMove)
+		self.setSelectionMode(QTreeView.ExtendedSelection)
 
-		self.setEditTriggers(self.SelectedClicked)
+		self.setEditTriggers(QTreeView.SelectedClicked)
 		self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		self.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-		self.setVerticalScrollMode(self.ScrollPerPixel)
+		self.setVerticalScrollMode(QTreeView.ScrollPerPixel)
 		# self.verticalScrollBar().setSingleStep(5)
 
 		self.verticalScrollBar().valueChanged.connect(self.onScrollerValueChange)

@@ -1,19 +1,16 @@
-curdir=$(pwd)
 idedir=/Users/kakiko/projects/DearEditor
- pybin=python
-   pip=pip
- # pybin=/Library/Frameworks/Python.framework/Versions/3.9/bin/python
+ pybin=python3.10
 
-if [[ $1 == "install" ]]; then
-	arch -arm64 $pip install -r ${idedir}/requirements.txt
-	exit
+if [[ $1 == "init" ]]; then
+  	echo "Setting up python venv..."
+	pushd $idedir >/dev/null 2>&1
+  	$pybin -m venv py
+    echo "Installing dependencies..."
+	arch -arm64 py/bin/pip3 install -r py/requirements.txt
+	popd >/dev/null 2>&1
+    echo "Init done successfully."
 
-# elif [[ $1 == "report" ]]; then
-# 	cd $idedir
-# 	$pybin -u report.py
-# 	cd $curdir
-# 	exit
+else
+	py=${idedir}/py/bin/python3
+	arch -arm64 $py -u ${idedir}/main.py $1 $2 $3 $4 $5 $6 $7 $8
 fi
-
-# raise ide window
-arch -arm64 $pybin -u ${idedir}/main.py $1 $2 $3 $4 $5 $6 $7 $8

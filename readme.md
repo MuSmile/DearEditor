@@ -16,32 +16,28 @@ DearEditor aims to create an open and unite editor solution for all engine runti
 ![screenshot](docs/_static/screenshots/p2.png)
 
 
-## Requirements
-### 1. Install python >= 3.9.9
-This project has only been developed and tested in python version 3.9.9.
-
-Other compatible versions may be fine theoretically though...
-
-Stick on this version could help to keep away from annoy issues.
-
-### 2. Install required python packages
-```bat
-> pip install -r requirements.txt
-```
-or simply (need config project first)
-```bat
-> dear install
-```
-
-### 3. Additional requirements on MacOS
-```bat
-> pip install pyobjc-framework-Cocoa
-```
-
 ## Config project
+### 1. Install python
+This project has only been developed and tested in python version 3.9 and 3.10.
+
+Other compatible versions(>= 3.6, < 3.11) may be fine theoretically...
+
+### 2. Setup dear bins
 1. Add `<your-path>/DearEditor/bin` into environment variable `path`.
 2. Find `<your-path>/DearEditor/bin/dear` file (`dear` for MacOS, and `dear.bat` for Windows).
 3. Modify `idedir` and `pybin` path in dear file with your actual path.
+
+### 3. Init python venv and packages
+```bat
+> dear init
+```
+
+### 4. Additional requirements on MacOS
+```bat
+> pip install pyobjc-framework-Cocoa
+```
+Note: need activating python venv before.
+
 
 ## Enjoy and run
 use ↓
@@ -64,6 +60,7 @@ use ↓
 > dear list
 ```
 to check all available commands.
+
 
 ## One more thing...
 If this project help you reduce time to develop or if you just like it, you can buy me a cup of coffee ☕😉.

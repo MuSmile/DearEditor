@@ -11,12 +11,13 @@ use ↓
 pip install \
     --index-url=http://download.qt.io/official_releases/QtForPython/ \
     --trusted-host download.qt.io \
-    shiboken6 pyside6 shiboken6_generator
+    shiboken6_generator==6.2.2.1
 ```
 to install shiboken6_generator module.
 
-For details goto [qt doc](https://doc.qt.io/qtforpython/shiboken6/gettingstarted.html).
+Note: shiboken6_generator's version need to be compatible with pyside6.
 
+For details goto [qt doc](https://doc.qt.io/qtforpython/shiboken6/gettingstarted.html).
 
 # build package
 

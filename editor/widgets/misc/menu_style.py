@@ -79,7 +79,7 @@ class MenuStyleMacOS(QProxyStyle):
 	
 	
 	def pixelMetric(self, metric, option, widget):
-		if metric == self.PM_SubMenuOverlap: return -self.subMenuOverlap();
+		if metric == QProxyStyle.PM_SubMenuOverlap: return -self.subMenuOverlap();
 		return super().pixelMetric(metric, option, widget)
 
 	def hasCheckedAction(self, widget):
@@ -90,7 +90,7 @@ class MenuStyleMacOS(QProxyStyle):
 
 	def sizeFromContents(self, contentsType, option, size, widget):
 		size = super().sizeFromContents(contentsType, option, size, widget)
-		if contentsType == self.CT_MenuItem:
+		if contentsType == QProxyStyle.CT_MenuItem:
 			menuItem = option
 			menuItem.__class__ = QStyleOptionMenuItem
 			mtype = menuItem.menuItemType
@@ -119,7 +119,7 @@ class MenuStyleMacOS(QProxyStyle):
 		return size
 
 	def drawControl(self, element, option, painter, widget):
-		if element == self.CE_MenuScroller or element == self.CE_MenuTearoff:
+		if element == QProxyStyle.CE_MenuScroller or element == QProxyStyle.CE_MenuTearoff:
 			rect = option.rect
 			center = rect.center()
 			cx, cy = center.x(), center.y()
@@ -135,13 +135,13 @@ class MenuStyleMacOS(QProxyStyle):
 			painter.drawPixmap(iconRect, getThemePixmap(self.menuScrollerIcon()))
 			painter.restore()
 
-		elif element == self.CE_MenuItem:
+		elif element == QProxyStyle.CE_MenuItem:
 			menuItem = option
 			menuItem.__class__ = QStyleOptionMenuItem
 			painter.save()
 
-			enabled = bool(menuItem.state & self.State_Enabled)
-			hovered = bool(menuItem.state & self.State_Selected)
+			enabled = bool(menuItem.state & QProxyStyle.State_Enabled)
+			hovered = bool(menuItem.state & QProxyStyle.State_Selected)
 			if enabled and hovered:
 				radius = self.itemBackgroundRadius()
 				padding = self.itemBackgroundPadding()
@@ -223,10 +223,10 @@ class MenuStyleMacOS(QProxyStyle):
 			super().drawControl(element, option, painter, widget)
 
 	def drawPrimitive(self, element, option, painter, widget):
-		# if element == self.PE_FrameMenu: #menu frame, when frame width > 0
+		# if element == QProxyStyle.PE_FrameMenu: #menu frame, when frame width > 0
 		# 	qDrawShadeRect(painter, option.rect, option.palette, option.state & self.State_Sunken, 1, 0, self.border())
 
-		if element == self.PE_PanelMenu: # menu background
+		if element == QProxyStyle.PE_PanelMenu: # menu background
 			painter.setRenderHint(QPainter.Antialiasing, True)
 			painter.setRenderHint(QPainter.TextAntialiasing, True)
 			painter.setRenderHint(QPainter.SmoothPixmapTransform, True)
@@ -273,7 +273,7 @@ class MenuStyleWindows(QProxyStyle):
 		return self.conf['submenuIconOffsetY'] if 'submenuIconOffsetY' in self.conf else 1
 
 	def drawControl(self, element, option, painter, widget):
-		if element != self.CE_MenuItem: return super().drawControl(element, option, painter, widget)
+		if element != QProxyStyle.CE_MenuItem: return super().drawControl(element, option, painter, widget)
 
 		menuItem = option
 		menuItem.__class__ = QStyleOptionMenuItem

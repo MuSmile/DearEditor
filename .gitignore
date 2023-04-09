@@ -4,17 +4,12 @@
 /.test
 
 /data/layouts
+/data/prefs.db
 
 __qsscache__
 __pycache__
 
-# /engine/.build/
-# /engine/.vs/
+/ide.sublime-project
+/ide.sublime-workspace
 
-*.sublime-project
-*.sublime-workspace
-
-!/.support/sublime_addon/*.sublime-project
-
-prefs.db
 BUILD_RESULT

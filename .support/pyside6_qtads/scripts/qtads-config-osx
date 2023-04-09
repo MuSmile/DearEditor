@@ -1,0 +1,5 @@
+dir=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
+source $dir/../../../py/bin/activate
+pushd $dir/../build >/dev/null 2>&1
+arch -arm64 cmake -DCMAKE_BUILD_TYPE=Release .. -DADS_VERSION=4.0.2
+popd >/dev/null 2>&1

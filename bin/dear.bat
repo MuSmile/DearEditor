@@ -1,32 +1,19 @@
-@echo off
-set curdir=%cd%
+rem @echo off
 set idedir=C:/DearEditor/
-set  pybin=python
-rem set  pybin=C:/Python39/python
-
-rem show hello and help info
-IF "%1" == "" (
-	%pybin% -u %idedir%main.py
-	EXIT /b
-)
+set  pybin=python3
 
 rem install all required py pkgs
-IF "%1" == "install" (
-	pip install -r %idedir%requirements.txt
-	EXIT /b
-)
+IF "%1" == "init" (
+  	echo "setting up python venv..."
+	pushd %idedir%
+  	%pybin% -m venv py
+    echo "installing dependencies..."
+	py/bin/pip3 install -r py/requirements.txt
+	popd
 
-rem report prj summary
-IF "%1" == "report" (
-	cd %idedir%
-	%pybin% -u report.py
-	cd %curdir%
-	EXIT /b
-)
-
-rem raise ide window
-cd %idedir%
-%pybin% -u main.py %1 %2 %3 %4 %5 %6 %7 %8
-cd %curdir%
+) else (
+	set py=%idedir%/py/bin/python3
+	%py% -u %idedir%/main.py %1 %2 %3 %4 %5 %6 %7 %8
+）
 
 IF /I %0 EQU "%~dpnx0" PAUSE
