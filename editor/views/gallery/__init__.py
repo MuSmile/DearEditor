@@ -6,7 +6,7 @@ from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.models.editor.data_grid import DataGrid
 from editor.widgets.complex.datagrid_view import DataGridView
 from editor.widgets.complex.sliding_stacked import SlidingStackedWidget
-from editor.widgets.basic.range_slider import RangeSlider
+from editor.widgets.basic.slider import RangeSlider, Slider
 from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
 from editor.widgets.basic.vector_edit import Vector2Edit, Vector3Edit, Vector4Edit, Vector4IntEdit, RectEdit
@@ -15,7 +15,7 @@ from editor.widgets.basic.text_area import TextArea
 from editor.widgets.basic.enum_buttons import EnumButtons
 from editor.widgets.basic.color_edit import ColorEdit
 from editor.widgets.basic.reference_edit import ReferenceEdit
-from editor.widgets.basic.spinner import WaitingSpinner
+from editor.widgets.basic.spinner import WaitingSpinner, CircleSpinner
 from editor.widgets.group.simple_group import SimpleGroup
 from editor.widgets.group.box_group import BoxGroup
 from editor.widgets.group.tab_group import TabGroup
@@ -47,8 +47,8 @@ class GalleryView(DockView):
 
 		searchEdit = SearchLineEdit(self)
 		searchEdit.setFixedWidth(300)
-		searchbarLayout.addWidget(searchEdit)
-
+		searchbarLayout.addWidget(searchEdit
+)
 		treeStacked = TreeStackedWidget(self)
 		treeStacked.addStackedWidget('Basic/Button', self.createButtonPreview())
 		treeStacked.addStackedWidget('Basic/LineEdit', self.createLineEditPreview())
@@ -400,7 +400,7 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 
-		#############  RPOGRESSBAR  #############
+		#############  TEXTAREA  #############
 		layout.addWidget(QLabel('TextArea'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -455,35 +455,21 @@ class GalleryView(DockView):
 		sliderLayout.setSpacing(20)
 		sliderLayout.setAlignment(Qt.AlignLeft)
 
-		slider1 = QSlider(Qt.Horizontal)
-		slider1.setMinimum(0)
-		slider1.setMaximum(100)
-		slider1.setSingleStep(1)
-		slider1.setFixedWidth(200)
-		slider1.setValue(20)
-		slider1.valueChanged.connect(lambda v: progressBar.setValue(v))
-		slider1.setFocusPolicy(Qt.StrongFocus)
-		# slider2 = RangeSlider(Qt.Horizontal)
-		# slider2.setMinimumHeight(30)
-		# slider2.setMinimum(0)
-		# slider2.setMaximum(255)
-		# slider2.setLow(15)
-		# slider2.setHigh(35)
-		# slider2.setTickPosition(QSlider.TicksBelow)
-		# slider2.setFixedWidth(200)
-		# slider2.setFocusPolicy(Qt.StrongFocus)
+		slider = Slider(Qt.Horizontal)
+		slider.setMinimum(0)
+		slider.setMaximum(100)
+		slider.setSingleStep(1)
+		slider.setFixedWidth(200)
+		slider.setValue(20)
+		slider.valueChanged.connect(lambda v: progressBar.setValue(v))
+		slider.setFocusPolicy(Qt.StrongFocus)
 
-		slider3 = RangeSlider()
-		# slider1.setMinimum(0)
-		# slider1.setMaximum(100)
-		# slider1.setSingleStep(1)
-		# slider1.setValue(20)
-		slider3.setFixedWidth(200)
-		slider3.setFocusPolicy(Qt.StrongFocus)
+		rangeSlider = RangeSlider()
+		rangeSlider.setFixedWidth(200)
+		rangeSlider.setFocusPolicy(Qt.StrongFocus)
 
-		sliderLayout.addWidget(slider1)
-		# sliderLayout.addWidget(slider2)
-		sliderLayout.addWidget(slider3)
+		sliderLayout.addWidget(slider)
+		sliderLayout.addWidget(rangeSlider)
 		layout.addLayout(sliderLayout)
 
 		return preview
@@ -497,7 +483,7 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 
-		#############  RPOGRESSBAR  #############
+		#############  COLLAPSIBLE  #############
 		layout.addWidget(QLabel('Collapsible'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -543,7 +529,7 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 
-		#############  RPOGRESSBAR  #############
+		#############  SLIDINGSTACKED  #############
 		layout.addWidget(QLabel('SlidingStacked'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -553,6 +539,7 @@ class GalleryView(DockView):
 
 		ssw = SlidingStackedWidget()
 		ssw.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		ssw.setObjectName('preview')
 
 		w1 = QPushButton('Page 1')
 		w2 = QPushButton('Page 2')
@@ -596,7 +583,7 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 
-		#############  RPOGRESSBAR  #############
+		#############  WAITINGSPINNER  #############
 		layout.addWidget(QLabel('WaitingSpinner'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -620,6 +607,31 @@ class GalleryView(DockView):
 		layout.addLayout(spinnerLayout)
 
 
+		#############  CIRCLESPINNER  #############
+		layout.addSpacing(20)
+		layout.addWidget(QLabel('CircleSpinner'))
+		layout.addWidget(HLineWidget())
+		layout.addSpacing(5)
+
+		spinnerLayout = QHBoxLayout()
+		spinnerLayout.setSpacing(50)
+		spinnerLayout.setAlignment(Qt.AlignLeft)
+
+		ws1 = CircleSpinner()
+		ws2 = CircleSpinner(clockwise = False)
+		ws3 = CircleSpinner(arcColor = QColor(50, 200, 120), clockwise = False)
+
+		ws1.setFixedSize(50, 50)
+		ws2.setFixedSize(50, 50)
+		ws3.setFixedSize(50, 50)
+
+		spinnerLayout.addWidget(ws1)
+		spinnerLayout.addWidget(ws2)
+		spinnerLayout.addWidget(ws3)
+		
+		layout.addLayout(spinnerLayout)
+
+
 		return preview
 	def createVectorPreview(self):
 		preview = QWidget(self)
@@ -631,7 +643,7 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 
-		#############  RPOGRESSBAR  #############
+		#############  VECTOR  #############
 		layout.addWidget(QLabel('VectorEdit'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -664,7 +676,7 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 
-		#############  RPOGRESSBAR  #############
+		#############  INFOBOX  #############
 		layout.addWidget(QLabel('InfoBox'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
@@ -776,7 +788,7 @@ class GalleryView(DockView):
 		preview.setLayout(layout)
 
 
-		#############  RPOGRESSBAR  #############
+		#############  DATAGRID  #############
 		layout.addWidget(QLabel('DataGrid'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)

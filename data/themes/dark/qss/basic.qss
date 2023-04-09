@@ -114,6 +114,7 @@ QTextEdit {
 QTextEdit:hover { border: 1px solid #777; }
 QTextEdit:focus { border: 1px solid #5ae; }
 
+Slider { qproperty-grooveMargin: 4; }
 QSlider::groove:horizontal {
 	background: #777;
 	border: none;
@@ -495,4 +496,7 @@ InfoBox {
 SlidingStackedWidget {
 	background: none;
 	qproperty-duration: 100;
+}
+SlidingStackedWidget#preview {
+	qproperty-duration: 300;
 }

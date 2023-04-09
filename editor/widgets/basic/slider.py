@@ -1,7 +1,35 @@
-from PySide6.QtCore import Qt, Property, Signal, QRectF
-from PySide6.QtWidgets import QWidget
-from PySide6.QtGui import QPainter, QColor
+import sys
+from PySide6.QtCore import Qt, Property, Signal, QRectF, QPointF
+from PySide6.QtGui import QPainter, QColor, QMouseEvent
+from PySide6.QtWidgets import QWidget, QSlider, QStyle, QStyleOptionSlider
 from editor.common.math import rangeMap
+
+class Slider(QSlider):
+	@Property(int)
+	def grooveMargin(self):
+		return self._grooveMargin
+	@grooveMargin.setter
+	def grooveMargin(self, value):
+		self._grooveMargin = value
+
+	def __init__(self, parent = None):
+		super().__init__(parent)
+		self.setOrientation(Qt.Horizontal)
+		if sys.platform != 'Darwin': self.mousePressEvent = self.newMousePressEvent
+		self._grooveMargin = 0
+
+	def newMousePressEvent(self, evt):
+		evt.ignore()
+		rect = self.rect()
+		l, r = rect.left(), rect.right()
+		m = self._grooveMargin
+		self.setValue(rangeMap(evt.pos().x(), l + m, r - m, self.minimum(), self.maximum()))
+
+		newPos = QPointF(evt.pos().x(), self.rect().center().y())
+		newPosGlobal = self.mapToGlobal(newPos)
+		newEvt = QMouseEvent(evt.type(), newPos, newPosGlobal, evt.button(), evt.buttons(), evt.modifiers())
+		super().mousePressEvent(newEvt)
+
 
 class RangeSlider(QWidget):
 	minRangeChanged = Signal(int)

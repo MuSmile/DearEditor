@@ -42,8 +42,8 @@ def setupBundleInfo():
 class Ide(QApplication):
 	def __init__(self, *args):
 		super().__init__(*args)
-		self.setAttribute(Qt.AA_EnableHighDpiScaling)
-		self.setWindowIcon(QIcon('data/icons/logo.png'))
+		icon = os.environ[ 'DEAR_BASE_PATH' ] + '/data/icons/logo.png'
+		self.setWindowIcon(QIcon(icon))
 		self.setApplicationName('Dear Editor')
 		self.aboutToQuit.connect(self.onAboutToQuit)
 		EditorPrefs.connect(os.environ[ 'DEAR_PREFS_PATH' ])

@@ -115,7 +115,7 @@ from editor.widgets.basic.reference_edit import ReferenceEdit
 @propertyCreator('int')
 def _createPropertyWidgetInt(property):
 	label = QLabel(smartString(property.label()))
-	label.setToolTip(property.label())
+	# label.setToolTip(property.label())
 	editor = IntLineEdit()
 	editor.setFocusPolicy(Qt.StrongFocus)
 	return label, editor

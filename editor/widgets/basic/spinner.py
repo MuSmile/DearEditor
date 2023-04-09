@@ -1,5 +1,5 @@
 from PySide6.QtCore import QSize, QTimer, Qt, QRectF
-from PySide6.QtGui import QColor, QPainter
+from PySide6.QtGui import QColor, QPainter, QPen
 from PySide6.QtWidgets import QWidget
 
 class WaitingSpinner(QWidget):
@@ -27,21 +27,17 @@ class WaitingSpinner(QWidget):
 		painter = QPainter(self)
 		painter.setRenderHint(QPainter.Antialiasing)
 		painter.translate(self.width() / 2, self.height() / 2)
-		side = min(self.width(), self.height())
-		painter.scale(side / 100.0, side / 100.0)
+		scale = min(self.width(), self.height()) / 100
+		painter.scale(scale, scale)
 		painter.rotate(self.angle)
-		painter.save()
 		painter.setPen(Qt.NoPen)
-		color = self.color.toRgb()
+		offset = 22
 		for i in range(self.spinnerCount):
-			color.setAlphaF(1.0 * i / (self.spinnerCount - 1))
-			painter.setBrush(color)
-			# painter.drawEllipse(30, -10, 20, 20)
-			offset = 22
+			self.color.setAlphaF(i / (self.spinnerCount - 1))
+			painter.setBrush(self.color)
 			rect = QRectF(offset, -50/self.spinnerCount, 50 - offset, 1.2 * 100/self.spinnerCount)
 			painter.drawRoundedRect(rect, 6, 6)
 			painter.rotate(360 / self.spinnerCount)
-		painter.restore()
 
 	def updateAngle(self):
 		delta = 360 / self.spinnerCount
@@ -49,9 +45,51 @@ class WaitingSpinner(QWidget):
 		self.angle %= 360
 		self.update()
 
-	def sizeHint(self) -> QSize:
+	def sizeHint(self):
 		return QSize(100, 100)
 
+class CircleSpinner(QWidget):
+	def __init__(self, parent = None, circleColor = None, arcColor = None, rotateInterval = 33, rotateStep = 10, spanAngle = 80, clockwise = True):
+		super().__init__(parent)
+		self.angle = 0
+		self.circleWidth = 4
+
+		self.circleColor = circleColor or QColor(120, 120, 120)
+		self.arcColor = arcColor or QColor(200, 200, 200)
+		self.clockwise = clockwise
+
+		self.timer = QTimer(self)
+		self.timer.timeout.connect(self.updateAngle)
+		self.rotateStep = rotateStep
+		self.rotateInterval = rotateInterval
+		self.spanAngle = spanAngle
+
+	def showEvent(self, evt):
+		super().showEvent(evt)
+		self.timer.start(self.rotateInterval)
+
+	def hideEvent(self, evt):
+		super().hideEvent(evt)
+		self.timer.stop()
+
+	def paintEvent(self, event):
+		painter = QPainter(self)
+		painter.setRenderHint(QPainter.Antialiasing)
+		w = self.circleWidth
+		rect = self.rect().adjusted(w, w, -w, -w)
+		painter.setPen(QPen(self.circleColor, w))
+		painter.drawEllipse(rect)
+		painter.setPen(QPen(self.arcColor, w))
+		painter.drawArc(rect, self.angle * 16, self.spanAngle * 16)
+
+	def updateAngle(self):
+		delta = self.rotateStep
+		self.angle += self.clockwise and delta or -delta
+		self.angle %= 360
+		self.update()
+
+	def sizeHint(self):
+		return QSize(100, 100)
 
 if __name__ == '__main__':
 	import sys
