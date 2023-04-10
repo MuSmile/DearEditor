@@ -29,6 +29,7 @@
 			"name": "Doc",
 			"shell": true,
 			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
@@ -38,6 +39,7 @@
 			"name": "Doc Gen",
 			"shell": true,
 			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
@@ -47,11 +49,12 @@
 			"name": "Doc Clean",
 			"shell": true,
 			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
 			[
-				"arch -arm64 python $file"
+				"arch -arm64 $project_path/py/bin/python3 $file"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "Python",
@@ -93,29 +96,29 @@
 		{
 			"cmd":
 			[
-				"arch -arm64 cmake -DCMAKE_BUILD_TYPE=Release .. -DADS_VERSION=4.0.2"
+				"source qtads-config-osx"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "QtAds Config",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads/build",
+			"working_dir": "$project_path/.support/pyside6_qtads/scripts",
 		},
 		{
 			"cmd":
 			[
-				"arch -arm64 cmake --build . --target install --config Release -j12"
+				"source qtads-build-osx"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "QtAds Compile",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads/build",
+			"working_dir": "$project_path/.support/pyside6_qtads/scripts",
 		},
 		{
 			"cmd":
 			[
-				"arch -arm64 python testpkg.py"
+				"arch -arm64 $project_path/py/bin/python3 testpkg.py"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "QtAds Testcase",
@@ -126,7 +129,7 @@
 		{
 			"cmd":
 			[
-				"rm -rf build; mkdir build",
+				"source qtads-clean-osx"
 			],
 			"name": "QtAds Clean",
 			"shell": true,
@@ -168,10 +171,11 @@
 			"folder_exclude_patterns":
 			[
 				".*",
+				"py",
 				"bin",
 				"build",
 				"__pycache__",
-				"__qsscache__"
+				"__qsscache__",
 			],
 			"path": "."
 		},

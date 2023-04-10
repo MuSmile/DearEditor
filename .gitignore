@@ -11,5 +11,6 @@ __pycache__
 
 /ide.sublime-project
 /ide.sublime-workspace
+/py
 
 BUILD_RESULT

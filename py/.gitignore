@@ -1,6 +1,0 @@
-/bin
-/include
-/lib
-/share
-/pyvenv.cfg
-!requirements.txt

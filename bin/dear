@@ -2,13 +2,16 @@ idedir=/Users/kakiko/projects/DearEditor
  pybin=python3.10
 
 if [[ $1 == "init" ]]; then
-  	echo "Setting up python venv..."
 	pushd $idedir >/dev/null 2>&1
-  	$pybin -m venv py
-    echo "Installing dependencies..."
-	arch -arm64 py/bin/pip3 install -r py/requirements.txt
+
+	echo "Setting up python venv..."
+	$pybin -m venv py
+
+	echo "Installing dependencies..."
+	arch -arm64 py/bin/pip3 install -r requirements.txt
+
+	echo "Init done successfully."
 	popd >/dev/null 2>&1
-    echo "Init done successfully."
 
 else
 	py=${idedir}/py/bin/python3

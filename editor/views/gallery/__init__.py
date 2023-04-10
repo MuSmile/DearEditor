@@ -47,8 +47,7 @@ class GalleryView(DockView):
 
 		searchEdit = SearchLineEdit(self)
 		searchEdit.setFixedWidth(300)
-		searchbarLayout.addWidget(searchEdit
-)
+		searchbarLayout.addWidget(searchEdit)
 		treeStacked = TreeStackedWidget(self)
 		treeStacked.addStackedWidget('Basic/Button', self.createButtonPreview())
 		treeStacked.addStackedWidget('Basic/LineEdit', self.createLineEditPreview())

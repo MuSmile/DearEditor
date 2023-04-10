@@ -81,7 +81,7 @@ class InfoBox(QWidget):
 		painter.drawPixmap(self._contentPadding, (h - self._iconSize) / 2, self._iconSize, self._iconSize, self._iconPixmap)
 		x = self._iconSize + self._contentPadding * 2
 		painter.setPen(palette.color(QPalette.Text))
-		painter.drawText(x, 0, w - x - self._contentPadding, h, self._textFlags, self._text)
+		painter.drawText(x, 0, w - x - self._contentPadding, h - 1, self._textFlags, self._text)
 
 		painter.setClipping(False)
 		option = QStyleOptionFrame()
