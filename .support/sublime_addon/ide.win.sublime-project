@@ -21,6 +21,7 @@
 			"name": "Browse IDE",
 			"shell": true,
 			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
@@ -31,6 +32,7 @@
 			"name": "Doc",
 			"shell": true,
 			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
@@ -42,6 +44,7 @@
 			"name": "Doc Gen",
 			"shell": true,
 			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
@@ -53,11 +56,12 @@
 			"name": "Doc Clean",
 			"shell": true,
 			"target": "exec_in_window",
+			"working_dir": "$project_path",
 		},
 		{
 			"cmd":
 			[
-				"python",
+				"$project_path/py/Scripts/python",
 				"-u",
 				"$file"
 			],
@@ -106,39 +110,29 @@
 		{
 			"cmd":
 			[
-				"cmake",
-				"-DCMAKE_BUILD_TYPE=Release",
-				"..",
-				"-DADS_VERSION=4.0.2"
+				"qtads-config-win.bat"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "QtAds Config",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads/build"
+			"working_dir": "$project_path/.support/pyside6_qtads/scripts"
 		},
 		{
 			"cmd":
 			[
-				"cmake",
-				"--build",
-				".",
-				"--target",
-				"install",
-				"--config",
-				"Release",
-				"-j6"
+				"qtads-build-win.bat"
 			],
 			"file_regex": "^[ ]*File \"(...*?)\", line ([0-9]*)",
 			"name": "QtAds Compile",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads/build"
+			"working_dir": "$project_path/.support/pyside6_qtads/scripts"
 		},
 		{
 			"cmd":
 			[
-				"python",
+				"$project_path/py/Scripts/python",
 				"-u",
 				"testpkg.py"
 			],
@@ -152,14 +146,12 @@
 		{
 			"cmd":
 			[
-				"del",
-				"/s/q",
-				"*"
+				"qtads-clean-win.bat"
 			],
-			"name": "QtAds Clear",
+			"name": "QtAds Clean",
 			"shell": true,
 			"target": "exec_in_window",
-			"working_dir": "$project_path/.support/pyside6_qtads/build"
+			"working_dir": "$project_path/.support/pyside6_qtads/scripts"
 		},
 	],
 	"folders":
@@ -223,7 +215,7 @@
 			"QtAds Config",
 			"QtAds Compile",
 			"QtAds Testcase",
-			"QtAds Clear",
+			"QtAds Clean",
 		],
 		"show_panel_on_build": false,
 		"tab_size": 4

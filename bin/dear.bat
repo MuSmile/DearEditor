@@ -1,19 +1,21 @@
-rem @echo off
-set idedir=C:/DearEditor/
-set  pybin=python3
+@echo off
+set idedir=C:/DearEditor
+set  pybin=python
 
-rem install all required py pkgs
+rem show hello and help info
 IF "%1" == "init" (
-  	echo "setting up python venv..."
-	pushd %idedir%
-  	%pybin% -m venv py
-    echo "installing dependencies..."
-	py/bin/pip3 install -r py/requirements.txt
-	popd
+	rem echo "setting up python venv..."
+	rem %pybin% -m venv py
 
-) else (
-	set py=%idedir%/py/bin/python3
-	%py% -u %idedir%/main.py %1 %2 %3 %4 %5 %6 %7 %8
-）
+	echo "installing dependencies..."
+	set pip=%idedir%/py/Scripts/pip3
+	set req=%idedir%/py/requirements.txt
+	%pip% install -r %req%
+
+	EXIT /b
+)
+
+set py=%idedir%/py/Scripts/python
+%py% -u %idedir%/main.py %1 %2 %3 %4 %5 %6 %7 %8
 
 IF /I %0 EQU "%~dpnx0" PAUSE

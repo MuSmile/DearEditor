@@ -83,7 +83,7 @@ class StatusBar(QStatusBar):
 
 def createStatusBar(parent = None):
 	statusbar = StatusBar(parent)
-	# statusbar.setSizeGripEnabled(False)
+	statusbar.setSizeGripEnabled(False)
 
 	# text = 'This is a test output log.'
 	# icon = getThemeIcon('console.infoicon.sml.png')
