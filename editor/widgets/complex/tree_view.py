@@ -965,7 +965,7 @@ class TreeView(QTreeView):
 				dropInsertRow = model.rowCount(idx)
 				dropParent = idx
 
-			delayRemoves = [selection for selection in selections if selection.parent() == dropParent and selection.row() < dropInsertRow]
+			delayRemoves = [selection for selection in selections if selection.parent() == dropParent.parent() and selection.row() < dropInsertRow]
 			for selection in selections:
 				mimeData = model.mimeData([selection])
 				# model.blockSignals(True)
@@ -977,8 +977,8 @@ class TreeView(QTreeView):
 			self.setCurrentIndex(model.index(dropInsertRow + dropCount - 1, 0, dropParent))
 			for i in range(dropInsertRow, dropInsertRow + dropCount): selectionModel.select(model.index(i, 0, dropParent), QItemSelectionModel.Select)
 			
-			for index in delayRemoves: model.removeRow(index.row(), index.parent())
 			if valid and self.dropPosition == 0: self.expandInstant(idx, False)
+			for index in delayRemoves: model.removeRow(index.row(), index.parent())
 
 			evt.acceptProposedAction()
 		else:
@@ -1058,7 +1058,11 @@ class TreeView(QTreeView):
 			self.collapsingIndexList.append(index)
 			initHeight = self.itemHeight
 			animIdxList.reverse()
-		for idx in animIdxList: model.setData(idx, initHeight, Qt.SizeHintRole)
+
+		if hasattr(model, 'setDatas'):
+			model.setDatas(animIdxList, initHeight, Qt.SizeHintRole)
+		else:
+			for idx in animIdxList: model.setData(idx, initHeight, Qt.SizeHintRole)
 
 		anim = QVariantAnimation(self)
 		self.expandAnimTable[ index ] = {
@@ -1095,7 +1099,11 @@ class TreeView(QTreeView):
 		else:
 			resetHeight, currHeight = self.itemHeight, round((idxProgress - idxStop) * self.itemHeight)
 
-		for i in range(prevIdxStop, idxStop): model.setData(animIdxList[i], resetHeight, Qt.SizeHintRole)
+		if idxStop > prevIdxStop:
+			if hasattr(model, 'setDatas'):
+				model.setDatas(animIdxList[prevIdxStop:idxStop], resetHeight, Qt.SizeHintRole)
+			else:
+				for i in range(prevIdxStop, idxStop): model.setData(animIdxList[i], resetHeight, Qt.SizeHintRole)
 		model.setData(animIdxList[idxStop], currHeight, Qt.SizeHintRole)
 		data[ 'prevIdxStop' ] = idxStop
 
@@ -1105,8 +1113,12 @@ class TreeView(QTreeView):
 		reverse = data[ 'reverse' ]
 		prevIdxStop = data[ 'prevIdxStop' ]
 		animIdxList = data[ 'animIdxList' ]
-		for i in range(prevIdxStop, len(animIdxList)): model.setData(animIdxList[i], self.itemHeight, Qt.SizeHintRole)
-		# model.setData(animIdxList[-1], self.itemHeight, Qt.SizeHintRole)
+
+		if hasattr(model, 'setDatas'):
+			model.setDatas(animIdxList[prevIdxStop:], self.itemHeight, Qt.SizeHintRole)
+		else:
+			for idx in animIdxList[prevIdxStop:]: model.setData(idx, self.itemHeight, Qt.SizeHintRole)
+		# for i in range(prevIdxStop, len(animIdxList)): model.setData(animIdxList[i], self.itemHeight, Qt.SizeHintRole)
 		data[ 'anim' ].deleteLater()
 		self.expandAnimTable.pop(index)
 		if reverse: self.collapsingIndexList.remove(index)

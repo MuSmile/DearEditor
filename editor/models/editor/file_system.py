@@ -162,6 +162,10 @@ class FileSystemModel(QAbstractItemModel):
 		index.internalPointer().setData(data, role)
 		self.dataChanged.emit(index, index, [role])
 
+	def setDatas(self, indexes, data, role = Qt.DisplayRole):
+		for idx in indexes: idx.internalPointer().setData(data, role)
+		self.dataChanged.emit(indexes[0], indexes[-1], [ role ] * len(indexes))
+
 	def flags(self, index):
 		if not index or not index.isValid(): return Qt.NoItemFlags
 		depth = index.internalPointer().depth()

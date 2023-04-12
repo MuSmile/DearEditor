@@ -62,5 +62,11 @@ class SceneView(DockView):
 		t.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 		layout.addWidget(t)
 
+		self.testBtn = QPushButton('Test', self)
+		effect = QGraphicsOpacityEffect(self.testBtn)
+		effect.setOpacity(0.8)
+		self.testBtn.setGraphicsEffect(effect)
+		self.testBtn.setGeometry(30, 160, 80, 20)
+
 		# self.setWidget(OpenGLWidget(self))
 

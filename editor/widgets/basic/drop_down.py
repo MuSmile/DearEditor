@@ -185,6 +185,7 @@ class DropDownPopup(QWidget):
 
 			parent.window().installEventFilter(self.searchEdit)
 			self.searchEdit.installEventFilter(self)
+			self.scrollBar.installEventFilter(self)
 
 	def setFilter(self, text):
 		if not text: self._filteredItems = None
@@ -254,9 +255,12 @@ class DropDownPopup(QWidget):
 		self.calcCurrentHovered(pos)
 
 	def eventFilter(self, obj, evt):
-		if evt.type() == QEvent.KeyPress:
+		evtType = evt.type()
+		if obj == self.searchEdit and evtType == QEvent.KeyPress:
 			if evt.key() == Qt.Key_Escape:
 				self.close()
+		elif obj == self.scrollBar and evtType == QEvent.Enter:
+			self.updateHovered(None)
 		return False
 
 	def calcCurrentHovered(self, pos):
