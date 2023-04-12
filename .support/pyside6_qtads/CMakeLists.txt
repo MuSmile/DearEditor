@@ -318,10 +318,10 @@ install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/__init__.py
 
 # ================================= deploy ================================
 if(APPLE)
-    set(deploy_dest_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../editor/common/pyqtads/osx)
+    set(deploy_dest_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../editor/widgets/dock/osx)
 endif()
 if (WIN32)
-    set(deploy_dest_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../editor/common/pyqtads/win)
+    set(deploy_dest_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../editor/widgets/dock/win)
 endif()
 
 install(TARGETS ${bindings_library}

@@ -2,10 +2,10 @@ import os, json, uuid
 import xml.etree.ElementTree as ET
 from PySide6.QtCore import Qt, QSize
 from PySide6.QtGui import QAction
-from editor.common.pyqtads import CDockManager, CDockWidget, DockWidgetArea
 from editor.common.logger import warn, error
 from editor.common.icon_cache import getThemeIcon
 from editor.common.util import getIde, isParentOfWidget
+from editor.widgets.dock import CDockManager, CDockWidget, DockWidgetArea
 from editor.widgets.misc.toast import Toast
 import shiboken6
 
