@@ -1,4 +1,4 @@
-import os, sys, argparse
+import os, platform, argparse
 
 def testRequirements(path):
 	import pkg_resources
@@ -72,7 +72,7 @@ def main( argv ):
 		if not testRequirements(reqPath): return
 
 		binFolder = os.environ[ 'DEAR_BASE_PATH' ]
-		if sys.platform == 'Windows':
+		if platform.system() == 'Windows':
 			binFolder += '/py/Scripts'
 		else:
 			binFolder += '/py/bin'
