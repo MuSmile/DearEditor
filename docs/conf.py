@@ -42,7 +42,7 @@ autoapi_options = [
 	'show-inheritance',
 ]
 autoapi_ignore = [
-	'*pyqtads*',
+	'editor.widgets.dock',
 ]
 autoapi_python_class_content = 'both'
 

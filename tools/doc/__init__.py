@@ -1,4 +1,4 @@
-import os, argparse
+import os, sys, argparse
 
 def testRequirements(path):
 	import pkg_resources
@@ -71,8 +71,14 @@ def main( argv ):
 		reqPath = docFolder + '/requirements.txt'
 		if not testRequirements(reqPath): return
 
+		binFolder = os.environ[ 'DEAR_BASE_PATH' ]
+		if sys.platform == 'Windows':
+			binFolder += '/py/Scripts'
+		else:
+			binFolder += '/py/bin'
+
 		cwd = os.getcwd()
 		os.chdir(docFolder)
-		os.system(f'sphinx-build -b html . _build -j {args.job}')
+		os.system(f'{binFolder}/sphinx-build -b html . _build -j {args.job}')
 		os.chdir(cwd)
 		return
