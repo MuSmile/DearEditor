@@ -1,7 +1,7 @@
 import os
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QSplitter, QVBoxLayout, QHBoxLayout
-from editor.models.editor.file_system import FileSystemModel
+from editor.models.editor.file_system import FileSystemModel, FolderContentModel
 from editor.widgets.basic.line_edit import SearchLineEdit
 from editor.widgets.complex.tree_view import TreeView
 from editor.view_manager import DockView, dockView
@@ -37,31 +37,30 @@ class ProjectView(DockView):
 
 		splitter.setOrientation(Qt.Horizontal)
 		splitter.setChildrenCollapsible(False)
-		splitter.setSizes([100, 300])
+		splitter.setSizes([100, 200])
 
 		layout.addWidget(splitter)
 
 
 	def createTreeView(self, parent):
 		view = TreeView(parent)
-		model = FileSystemModel(False, True, False)
+		model = FileSystemModel(True)
 		view.setModel(model)
 
 		base = os.environ[ 'DEAR_BASE_PATH' ]
-		model.addRootItem(base)
-		model.addRootItem(base + '/..')
+		model.addPath(base)
 		# view.expandAll()
 		view.expand(model.index(0, 0))
+		view.expand(model.index(2, 0))
 		return view
 
 	def createRightTreeView(self, parent):
 		view = TreeView(parent)
-		model = FileSystemModel(True, False, True)
+		model = FolderContentModel(True)
 		view.setModel(model)
 
 		base = os.environ[ 'DEAR_BASE_PATH' ]
-		model.addRootItemsFrom(base)
+		model.setFolder(base)
 		# view.expandAll()
-		view.expand(model.index(0, 0))
 		# view.setRootIndex(model.index(0, 0))
 		return view

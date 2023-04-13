@@ -1,6 +1,7 @@
 from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QStandardItem
 from PySide6.QtWidgets import QStackedWidget, QSplitter, QScrollArea, QWidget
-from PySide6.QtGui import QStandardItem, QStandardItemModel
+from editor.models.basic_model import BasicModel
 from editor.widgets.complex.tree_view import TreeView
 
 class TreeStackedWidget(QSplitter):
@@ -27,7 +28,7 @@ class TreeStackedWidget(QSplitter):
 
 	def createTreeView(self):
 		tree = TreeView(self)
-		tree.setModel(QStandardItemModel())
+		tree.setModel(BasicModel())
 		tree.selectionModel().currentChanged.connect(self.onCurrentChanged)
 		tree.installEventFilter(self)
 		tree.setContextMenuPolicy(Qt.NoContextMenu)

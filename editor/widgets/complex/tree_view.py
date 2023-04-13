@@ -6,8 +6,8 @@ from PySide6.QtGui import QPen, QPainter, QColor, QDrag, QCursor, QPixmap, QMous
 from PySide6.QtWidgets import QTreeView, QWidget, QApplication, QItemDelegate, QStyle, QStyleOptionViewItem, QMenu
 from editor.common.math import clamp, lerp
 from editor.common.ease import easeInOutQuad, easeOutQuad
-from editor.common.util import modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex, Qt_DecorationExpandedRole, Qt_AlternateRole
 from editor.common.icon_cache import getThemePixmap
+from editor.models.basic_model import Qt_DecorationExpandedRole, Qt_AlternateRole, modelIndexDepth, isChildOfModelIndex, isAboveOfModelIndex
 
 
 class TreeItemDelegate(QItemDelegate):
@@ -56,12 +56,13 @@ class TreeItemDelegate(QItemDelegate):
 
 	def drawBackground(self, painter, rect, option, index):
 		view = self.view
+		enabled  = option.state & QStyle.State_Enabled
 		selected = option.state & QStyle.State_Selected
 		hovered  = index == view.hoveredIndex # option.state & QStyle.State_MouseOver
 		bgColor  = None
-		if selected:
+		if enabled and selected:
 			bgColor = view.backgroundSelected if view.viewFocused else view.backgroundSelectedUnfocused
-		elif hovered and view.dropIndicatorRect == None:
+		elif enabled and hovered and view.dropIndicatorRect == None:
 			bgColor = view.backgroundHovered
 		else:
 			alternate = view.useAlternatingBackground and bool(option.features & QStyleOptionViewItem.Alternate)
@@ -79,7 +80,8 @@ class TreeItemDelegate(QItemDelegate):
 		textOffset = view.treePaddingLeft
 
 		decoration = None
-		if view.isExpanded(index): decoration = index.data(Qt_DecorationExpandedRole)
+		expanded = view.isExpanded(index) and view.model().rowCount(index) > 0
+		if expanded: decoration = index.data(Qt_DecorationExpandedRole)
 		if not decoration: decoration = index.data(Qt.DecorationRole)
 
 		if decoration:
@@ -138,9 +140,9 @@ class TreeItemDelegate(QItemDelegate):
 
 class PingAnimPhase(Enum):
 	ZoomIn  = 0
-	ZoomOut = 2
-	Idle    = 3
-	Fade    = 4
+	ZoomOut = 1
+	Idle    = 2
+	Fade    = 3
 
 class TreeItemPingOverlay(QWidget):
 	InstanceTable = {}
@@ -636,7 +638,7 @@ class TreeView(QTreeView):
 		menu.popup(evt.globalPos())
 
 	def requestContextMenu(self, index):
-		print(index)
+		print(index.data(), self.model().itemFromIndex(index).itemData())
 		menu = QMenu(self)
 		# action = menu.addAction("Test Item 0")
 		# action.setCheckable(True)
@@ -739,79 +741,6 @@ class TreeView(QTreeView):
 		else:
 			super().keyPressEvent(evt)
 
-	def copySelection(self):
-		model = self.model()
-		selectionModel = self.selectionModel()
-		selections = selectionModel.selectedIndexes()
-		selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and -1 or 1))
-
-		# detect children and remove
-		for i in range(len(selections) - 1, 0, -1):
-			curr = selections[i]
-			for j in range(i - 1, -1, -1):
-				test = selections[j]
-				if isChildOfModelIndex(curr, test):
-					del selections[i]
-					break
-
-		clipboard = QApplication.clipboard()
-		clipboard.setMimeData(model.mimeData(selections))
-
-	def pasteSelection(self):
-		model = self.model()
-		selectionModel = self.selectionModel()
-		toSelections = []
-		parent = self.currentIndex().parent()
-		clipboard = QApplication.clipboard()
-		oldRowCount = model.rowCount(parent)
-		model.dropMimeData(clipboard.mimeData(), Qt.CopyAction, -1, -1, parent)
-		newRowCount = model.rowCount(parent)
-		dropedCount = newRowCount - oldRowCount
-		if dropedCount > 0:
-			selectionModel.clear()
-			
-			self.setCurrentIndex(model.index(newRowCount - 1, 0, parent))
-			for i in range(newRowCount - dropedCount, newRowCount):
-				selection = model.index(i, 0, parent)
-				selectionModel.select(selection, QItemSelectionModel.Select)
-
-			while parent.isValid():
-				self.expandInstant(parent, False)
-				parent = parent.parent()
-
-		
-	def duplicateSelection(self):
-		model = self.model()
-		selectionModel = self.selectionModel()
-		selections = selectionModel.selectedIndexes()
-		selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and -1 or 1))
-		
-		# detect children and remove
-		for i in range(len(selections) - 1, 0, -1):
-			curr = selections[i]
-			for j in range(i - 1, -1, -1):
-				test = selections[j]
-				if isChildOfModelIndex(curr, test):
-					del selections[i]
-					break
-
-		selectionModel.clear()
-		toSelections = []
-		for selection in selections:
-			parent = selection.parent()
-			mimeData = model.mimeData([selection])
-			model.dropMimeData(mimeData, Qt.CopyAction, -1, -1, parent)
-
-			row = model.rowCount(parent) - 1
-			toSelections.append(model.index(row, 0, parent))
-
-			while parent.isValid():
-				self.expandInstant(parent, False)
-				parent = parent.parent()
-
-		self.setCurrentIndex(toSelections[-1])
-		for selection in toSelections:
-			selectionModel.select(selection, QItemSelectionModel.Select)
 
 	def event(self, evt):
 		super().event(evt)
@@ -824,11 +753,11 @@ class TreeView(QTreeView):
 				self.keyPressEvent(evt)
 
 			elif key == Qt.Key_C and mods & Qt.ControlModifier:
-				self.copySelection()
+				self.model().copySelections(self)
 			elif key == Qt.Key_V and mods & Qt.ControlModifier:
-				self.pasteSelection()
+				self.model().pasteSelections(self)
 			elif key == Qt.Key_D and mods & Qt.ControlModifier:
-				self.duplicateSelection()
+				self.model().duplicateSelections(self)
 
 
 	##################  DRAW  ##################
@@ -899,11 +828,13 @@ class TreeView(QTreeView):
 	def checkDropable(self, hovered, source):
 		# if source != self: return False
 		if not hovered.isValid(): return True
+		if self.dropPosition == 0 and not hovered.flags() & Qt.ItemIsDropEnabled: return False
+		
 		selectionModel = self.selectionModel()
 		if selectionModel.isSelected(hovered): return False
 		for select in selectionModel.selectedIndexes():
-			# todo: check root index
-			if isChildOfModelIndex(hovered, select): return False
+			if isChildOfModelIndex(hovered, select):
+				return False
 		return True
 
 	def dragMoveEvent(self, evt):
@@ -929,10 +860,7 @@ class TreeView(QTreeView):
 
 		src = evt.source()
 		dropable = self.checkDropable(hovered, src)
-		if self.dropAccepted != dropable:
-			self.dropAccepted = dropable
-			if dropable: evt.accept()
-			else: evt.ignore()
+		if self.dropAccepted != dropable: self.dropAccepted = dropable
 
 		if not dropable: newDropIndicatorRect = None
 		self.updateDropIndicatorRect(newDropIndicatorRect)
@@ -946,13 +874,9 @@ class TreeView(QTreeView):
 
 		idx = self.indexAt(evt.pos())
 		src = evt.source()
-		if src == self:
+		if self.dropAccepted and src == self:
 			model = self.model()
 			selectionModel = self.selectionModel()
-			selections = selectionModel.selectedIndexes()
-			selections.sort(key = functools.cmp_to_key(lambda e1, e2: isAboveOfModelIndex(e1, e2) and 1 or -1))
-			selectionModel.clear()
-
 			dropInsertRow, dropParent = None, None
 			valid = idx.isValid()
 			if valid and self.dropPosition == -1:
@@ -965,21 +889,7 @@ class TreeView(QTreeView):
 				dropInsertRow = model.rowCount(idx)
 				dropParent = idx
 
-			delayRemoves = [selection for selection in selections if selection.parent() == dropParent.parent() and selection.row() < dropInsertRow]
-			for selection in selections:
-				mimeData = model.mimeData([selection])
-				# model.blockSignals(True)
-				if selection not in delayRemoves: model.removeRow(selection.row(), selection.parent())
-				# model.blockSignals(False)
-				model.dropMimeData(mimeData, Qt.CopyAction, dropInsertRow, -1, dropParent)
-
-			dropCount = len(selections)
-			self.setCurrentIndex(model.index(dropInsertRow + dropCount - 1, 0, dropParent))
-			for i in range(dropInsertRow, dropInsertRow + dropCount): selectionModel.select(model.index(i, 0, dropParent), QItemSelectionModel.Select)
-			
-			if valid and self.dropPosition == 0: self.expandInstant(idx, False)
-			for index in delayRemoves: model.removeRow(index.row(), index.parent())
-
+			model.moveSelections(self, dropParent, dropInsertRow)
 			evt.acceptProposedAction()
 		else:
 			# mimeData = evt.mimeData()
@@ -1035,7 +945,6 @@ class TreeView(QTreeView):
 	def _expandRecursively(self, index):
 		self.expand(index)
 		model = self.model()
-		if model.canFetchMore(index): model.fetchMore(index)
 		count = model.rowCount(index)
 		for r in range(count): self._expandRecursively(model.index(r, 0, index))
 	def _animChildrenList(self, index, includeHidden):
@@ -1059,10 +968,7 @@ class TreeView(QTreeView):
 			initHeight = self.itemHeight
 			animIdxList.reverse()
 
-		if hasattr(model, 'setDatas'):
-			model.setDatas(animIdxList, initHeight, Qt.SizeHintRole)
-		else:
-			for idx in animIdxList: model.setData(idx, initHeight, Qt.SizeHintRole)
+		model.setDatas(animIdxList, initHeight, Qt.SizeHintRole)
 
 		anim = QVariantAnimation(self)
 		self.expandAnimTable[ index ] = {
@@ -1099,11 +1005,7 @@ class TreeView(QTreeView):
 		else:
 			resetHeight, currHeight = self.itemHeight, round((idxProgress - idxStop) * self.itemHeight)
 
-		if idxStop > prevIdxStop:
-			if hasattr(model, 'setDatas'):
-				model.setDatas(animIdxList[prevIdxStop:idxStop], resetHeight, Qt.SizeHintRole)
-			else:
-				for i in range(prevIdxStop, idxStop): model.setData(animIdxList[i], resetHeight, Qt.SizeHintRole)
+		if idxStop > prevIdxStop: model.setDatas(animIdxList[prevIdxStop:idxStop], resetHeight, Qt.SizeHintRole)
 		model.setData(animIdxList[idxStop], currHeight, Qt.SizeHintRole)
 		data[ 'prevIdxStop' ] = idxStop
 
@@ -1114,10 +1016,7 @@ class TreeView(QTreeView):
 		prevIdxStop = data[ 'prevIdxStop' ]
 		animIdxList = data[ 'animIdxList' ]
 
-		if hasattr(model, 'setDatas'):
-			model.setDatas(animIdxList[prevIdxStop:], self.itemHeight, Qt.SizeHintRole)
-		else:
-			for idx in animIdxList[prevIdxStop:]: model.setData(idx, self.itemHeight, Qt.SizeHintRole)
+		model.setDatas(animIdxList[prevIdxStop:], self.itemHeight, Qt.SizeHintRole)
 		# for i in range(prevIdxStop, len(animIdxList)): model.setData(animIdxList[i], self.itemHeight, Qt.SizeHintRole)
 		data[ 'anim' ].deleteLater()
 		self.expandAnimTable.pop(index)
