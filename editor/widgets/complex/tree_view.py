@@ -638,7 +638,7 @@ class TreeView(QTreeView):
 		menu.popup(evt.globalPos())
 
 	def requestContextMenu(self, index):
-		print(index.data(), self.model().itemFromIndex(index).itemData())
+		print(index.data())
 		menu = QMenu(self)
 		# action = menu.addAction("Test Item 0")
 		# action.setCheckable(True)

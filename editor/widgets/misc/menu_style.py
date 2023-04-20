@@ -102,7 +102,7 @@ class MenuStyleMacOS(QProxyStyle):
 				font.setPixelSize(self.fontSize())
 				if mtype == QStyleOptionMenuItem.SubMenu:
 					textWidth = QFontMetrics(font).horizontalAdvance(menuItem.text)
-					size.setWidth(textWidth + self.contentPadding() * 2 + 20)
+					size.setWidth(textWidth + self.contentPadding() * 2 + 40)
 				elif mtype == QStyleOptionMenuItem.Normal:
 					tabIdx = menuItem.text.find('\t')
 					if tabIdx >= 0:
@@ -115,7 +115,8 @@ class MenuStyleMacOS(QProxyStyle):
 					else:
 						textWidth = QFontMetrics(font).horizontalAdvance(menuItem.text)
 						size.setWidth(textWidth + self.contentPadding() * 2)
-					if menuItem.checked: size.setWidth(size.width() + self.checkedPadding())
+					checked = self.hasCheckedAction(widget) # menuItem.checked
+					if checked: size.setWidth(size.width() + self.checkedPadding())
 		return size
 
 	def drawControl(self, element, option, painter, widget):

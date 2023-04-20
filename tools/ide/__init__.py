@@ -1,7 +1,7 @@
 import os, sys, platform, argparse
-from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QIcon, QPalette
+from PySide6.QtCore import Qt, QEvent
+from PySide6.QtGui import QIcon, QPalette, QCursor
+from PySide6.QtWidgets import QApplication, QToolTip
 from editor.common.logger import log, error
 from editor.models.editor.editor_prefs import EditorPrefs
 from editor.theme_manager import loadTheme, setupThemeWatcher
@@ -47,6 +47,7 @@ class Ide(QApplication):
 		self.setApplicationName('Dear Editor')
 		self.aboutToQuit.connect(self.onAboutToQuit)
 		EditorPrefs.connect(os.environ[ 'DEAR_PREFS_PATH' ])
+		self.installEventFilter(self)
 
 	def setupPalette(self):
 		self.palette = self.style().standardPalette()
@@ -58,11 +59,28 @@ class Ide(QApplication):
 		loadTheme(theme)
 		setupThemeWatcher()
 
+		prjname = 'prj_xmile'
+		backend = 'OpenGL'
+		title = ' - '.join([prjname, backend, self.applicationName()])
 		win = MainWindow()
-		win.setWindowTitle(f'prj_xmile - OpenGL - {self.applicationName()}')
+		win.setWindowTitle(title)
 		win.show()
 
 		sys.exit(self.exec())
+
+	def raiseToolTip(self, pos, text, src):
+		QToolTip.showText(pos, text, src, src.rect(), src.toolTipDuration());
+
+	def hideToolTip(self):
+		QToolTip.hideText();
+
+	def eventFilter(self, obj, evt):
+		if evt.type() == QEvent.ToolTip:
+			pos = QCursor.pos()
+			text = obj.toolTip()
+			if text: self.raiseToolTip(pos, text, obj)
+			else: self.hideToolTip()
+			return True
 
 	def onAboutToQuit(self):
 		EditorPrefs.close()

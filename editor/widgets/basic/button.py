@@ -1,24 +1,8 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QToolButton, QPushButton, QMenu
+from PySide6.QtWidgets import QWidget, QToolButton, QPushButton, QButtonGroup, QMenu, QStyleOptionToolButton, QStyle, QHBoxLayout
 from editor.common.icon_cache import getThemeIcon
 
-class CheckableToolButton(QToolButton):
-	def __init__(self, icon):
-		super().__init__()
-		self.setCheckable(True)
-		self.setFocusPolicy(Qt.NoFocus)
-		self.setIcon(getThemeIcon(icon))
-
-class IconTextToolButton(QPushButton):
-	def __init__(self, text, icon):
-		super().__init__()
-
-		# self.setCheckable(True)
-		self.setFocusPolicy(Qt.NoFocus)
-		self.setIcon(getThemeIcon(icon))
-		self.setText(text)
-
-class ToggleableToolButton(QToolButton):
+class ToggleToolButton(QToolButton):
 	def __init__(self, icon1, icon2):
 		super().__init__()
 		self.icon1 = getThemeIcon(icon1)
@@ -37,51 +21,24 @@ class ToggleableToolButton(QToolButton):
 		else:
 			self.setIcon(self.icon1)
 
-class PopupPushButton(QPushButton):
-	def __init__(self, text):
-		super().__init__()
+class MenuPopupToolButton(QToolButton):
+	def __init__(self, parent = None):
+		super().__init__(parent)
 
-		self.setObjectName('popup')
-		self.setFocusPolicy(Qt.NoFocus)
-		self.setText(text)
-		# self.pressed.connect(self.showMenu)
-		# self.setPopupMode(QToolButton.MenuButtonPopup)
-
-	def addTestMenu(self):
-		menu = QMenu(self)
-		act1 = menu.addAction("New")
-		act1.setShortcut('Meta+Ctrl+Alt+Shift+Tab')
-		act1.setShortcutVisibleInContextMenu(True)
-		menu.addSeparator()
-		act2 = menu.addAction("Open")
-		act2.setCheckable(True)
-		act2.setChecked(True)
-		act3 = menu.addAction("Quit")
-		act4 = menu.addAction("Long item")
-		if (self.text() == 'Layout'):
-			act4.setShortcut('Ctrl+N')
-			act4.triggered.connect(lambda: print('shit'))
-			act4.setShortcutContext(Qt.ApplicationShortcut)
-			act4.setShortcutVisibleInContextMenu(True)
-
-
-		submenu = QMenu('test', menu)
-		subact1 = submenu.addAction("New")
-		submenu.addSeparator()
-		menu.addMenu(submenu)
-		submenu.addAction("test")
-
-		self.setMenu(menu)
-
-class PopupToolButton(QToolButton):
-	def __init__(self, text):
-		super().__init__()
-
-		self.setObjectName('popup')
 		self.setFocusPolicy(Qt.NoFocus)
 		self.setCheckable(True)
-		self.setText(text)
-		self.setPopupMode(QToolButton.MenuButtonPopup)
+
+		self.menuBtn = QToolButton(self)
+		self.menuBtn.clicked.connect(self.showMenu)
+		
+		self.addTestMenu()
+
+	def resizeEvent(self, evt):
+		option = QStyleOptionToolButton()
+		self.initStyleOption(option)
+		proxy = self.style().proxy()
+		cc, sc = QStyle.CC_ToolButton, QStyle.SC_ToolButtonMenu
+		self.menuBtn.setGeometry(proxy.subControlRect(cc, option, sc, self))
 
 	def addTestMenu(self):
 		menu = QMenu(self)
@@ -91,18 +48,50 @@ class PopupToolButton(QToolButton):
 		act2.setCheckable(True)
 		act2.setChecked(True)
 		act3 = menu.addAction("Quit")
-		act4 = menu.addAction("Long item")
-		if (self.text() == 'build'):
-			act4.setShortcut('Meta+Ctrl+Alt+Shift+T')
-			act4.triggered.connect(lambda: print('shit'))
-			act4.setShortcutContext(Qt.ApplicationShortcut)
-			act4.setShortcutVisibleInContextMenu(True)
-
 
 		submenu = QMenu('test', menu)
 		subact1 = submenu.addAction("New")
 		submenu.addSeparator()
 		menu.addMenu(submenu)
 		submenu.addAction("test")
-
 		self.setMenu(menu)
+
+class ButtonGroup(QWidget):
+	def __init__(self, parent = None):
+		super().__init__(parent)
+		self.group = QButtonGroup(self)
+		self.group.setExclusive(True)
+		layout = QHBoxLayout(self)
+		layout.setContentsMargins(0, 0, 0, 0)
+		layout.setSpacing(0)
+
+	def button(self, idx):
+		return self.group.button(idx)
+
+	def select(self, idx):
+		btn = self.group.button(idx)
+		btn.setChecked(True)
+
+	def initFromItems(self, items):
+		count = len(items)
+		layout = self.layout()
+		for i in range(count):
+			btn = QPushButton(items[i])
+			btn.setCheckable(True)
+			layout.addWidget(btn)
+			self.group.addButton(btn, i)
+			if i == 0: btn.setObjectName('left')
+			elif i == count - 1: btn.setObjectName('right')
+			else: btn.setObjectName('middle')
+
+	def initFromButtons(self, buttons):
+		count = len(buttons)
+		layout = self.layout()
+		for i in range(count):
+			btn = buttons[i]
+			btn.setCheckable(True)
+			layout.addWidget(btn)
+			self.group.addButton(btn, i)
+			if i == 0: btn.setObjectName('left')
+			elif i == count - 1: btn.setObjectName('right')
+			else: btn.setObjectName('middle')

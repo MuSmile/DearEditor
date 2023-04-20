@@ -33,6 +33,7 @@ QLineEdit {
 	height: 18px;
 	font-size: 12px;
 	color: #eee;
+	selection-color: #fff;
 	selection-background-color: #36a;
 }
 QLineEdit[clearButtonEnabled=true] { padding-right: -10px; }
@@ -182,7 +183,7 @@ QToolButton:hover {
 	color: &[toolbar/colorLabel];
 }
 QToolButton:checked, QToolButton:pressed {
-	background-color: #777;
+	background-color: #777; /*46607c*/
 	color: &[toolbar/colorLabel];
 }
 QToolButton:disabled {
@@ -190,15 +191,19 @@ QToolButton:disabled {
 	color: &[toolbar/colorLabel];
 }
 QToolButton[popupMode='MenuButtonPopup'] { /* only for MenuButtonPopup */
-	padding-right: 16px;
+	padding-right: 18px;
 }
 
 QToolButton::menu-button {
 	image: url(img/menu_indicator.svg);
 	border-left: 1px solid #333;
+	subcontrol-position: right center;
 	width: 12px;
 	margin: 4px 0 4 0;
 	padding: 2px 3 0 2;
+}
+QToolButton::menu-button:pressed {
+	border-left: 1px solid #444;
 }
 
 QToolButton[popupMode='InstantPopup'] { /* only for MenuButtonPopup */
@@ -208,7 +213,7 @@ QToolButton[popupMode='InstantPopup'] { /* only for MenuButtonPopup */
 QToolButton::menu-indicator {
 	image: url(img/menu_indicator.svg);
 	subcontrol-position: right center;
-	subcontrol-origin: padding;
+	subcontrol-origin: content;
 	width: 12px;
 	height: 12px;
 	right: -10px;
@@ -234,10 +239,10 @@ QPushButton:pressed, QPushButton:checked {
 QPushButton::menu-indicator {
 	image: url(img/menu_indicator.svg);
 	subcontrol-position: right center;
-	subcontrol-origin: padding;
+	subcontrol-origin: content;
 	width: 12px;
 	height: 12px;
-	right: 2px;
+	right: -2px;
 	bottom: -1px;
 }
 
@@ -444,41 +449,44 @@ DataGridView #group_space{
 }
 
 
-EnumButtons > QPushButton#enum_left {
+ButtonGroup > QAbstractButton#left {
 	border-top-right-radius: 0px;
 	border-bottom-right-radius: 0px;
 }
-EnumButtons > QPushButton#enum_middle {
+ButtonGroup > QAbstractButton#middle {
 	border-radius: 0px;
 	border-left: none;
 }
-EnumButtons > QPushButton#enum_right {
+ButtonGroup > QAbstractButton#right {
 	border-top-left-radius: 0px;
 	border-bottom-left-radius: 0px;
 	border-left: none;
 }
-EnumButtons > QPushButton:checked {
+ButtonGroup > QAbstractButton:checked {
 	background-color: #466890;
 }
 
+QToolBar ButtonGroup > QAbstractButton:checked {
+	background-color: #777;
+}
 
 
-TabGroup > EnumButtons > QPushButton {
+TabGroup > ButtonGroup > QAbstractButton {
 	background-color: #3a3a3a;
 	border-color: #222;
 	height: 12px;
 }
-TabGroup > EnumButtons > QPushButton:hover {
+TabGroup > ButtonGroup > QAbstractButton:hover {
 	background-color: #4a4a4a;
 }
-TabGroup > EnumButtons > QPushButton:pressed,
-TabGroup > EnumButtons > QPushButton:checked {
+TabGroup > ButtonGroup > QAbstractButton:pressed,
+TabGroup > ButtonGroup > QAbstractButton:checked {
 	background-color: #666;
 }
-TabGroup > EnumButtons > QPushButton#enum_left {
+TabGroup > ButtonGroup > QAbstractButton#left {
 	border-bottom-left-radius: 0px;
 }
-TabGroup > EnumButtons > QPushButton#enum_right {
+TabGroup > ButtonGroup > QAbstractButton#right {
 	border-bottom-right-radius: 0px;
 }
 
@@ -499,4 +507,83 @@ SlidingStackedWidget {
 }
 SlidingStackedWidget#preview {
 	qproperty-duration: 300;
+}
+
+ProjectView QScrollArea#navbar {
+	min-height: 20px;
+	max-height: 20px;
+	border-bottom: 1 solid #222;
+	background: #4e4e4e;
+}
+ProjectView QFrame#statusbar {
+	min-height: 20px;
+	max-height: 20px;
+	border-top: 1 solid #222;
+	background: #4e4e4e;
+}
+ProjectView QFrame#statusbar > Slider {
+	width: 72px;
+}
+
+Breadcrumb {
+	min-height: 20px;
+	max-height: 20px;
+}
+
+Breadcrumb > QPushButton {
+	background: none;
+	border: none;
+	border-radius: 0px;
+	color: #ccc;
+	padding: 2px;
+}
+Breadcrumb > QPushButton:focus {
+	color: #eee;
+}
+
+Breadcrumb > QPushButton#separator {
+	width: 12px;
+	font-size: 13px;
+	padding-bottom: 3px;
+}
+Breadcrumb > QPushButton#path:hover {
+	background: none;
+	color: #ccc;
+}
+Breadcrumb > QPushButton#path:pressed {
+	background: none;
+	color: #fff;
+}
+
+Breadcrumb > QPushButton#current,
+Breadcrumb > QPushButton#current:pressed {
+	font-weight: bold;
+	background: none;
+	color: #ccc;
+}
+
+
+MenuPopupToolButton {
+	padding-right: 18px;
+}
+
+MenuPopupToolButton::menu-indicator {
+	image: none;
+}
+MenuPopupToolButton > QToolButton {
+	width: 18px;
+	padding-bottom: 0px;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	image: url(img/menu_indicator.svg);
+	background-color: none;
+}
+MenuPopupToolButton > QToolButton:hover {
+	background-color: #666;
+}
+MenuPopupToolButton > QToolButton:pressed {
+	background-color: #46607c;
+}
+MenuPopupToolButton > QToolButton:checked {
+	background-color: #777;
 }

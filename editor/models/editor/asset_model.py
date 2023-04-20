@@ -18,7 +18,7 @@ class ItemType(Enum):
 _ItemTypeRole = Qt.UserRole + 98
 _ItemDataRole = Qt.UserRole + 99
 
-class FileSystemItem(QStandardItem):
+class AssetItem(QStandardItem):
 	def __init__(self, type, data = None):
 		super().__init__()
 		self.setItemType(type)
@@ -49,7 +49,7 @@ class FileSystemItem(QStandardItem):
 		if data: super().setData(data, _ItemDataRole)
 
 	def clone(self):
-		return FileSystemItem(self)
+		return AssetItem(self)
 
 	def data(self, role):
 		if role == Qt.EditRole: return self.itemName()
@@ -65,6 +65,7 @@ class FileSystemItem(QStandardItem):
 		itemType = self.itemType()
 		if itemType == ItemType.Normal:
 			data = self.itemData()
+			assert(data)
 			dirname = os.path.dirname(data)
 			self.setItemData(os.path.join(dirname, name))
 		elif itemType == ItemType.FavoriteSearch:
@@ -80,7 +81,7 @@ class FileSystemItem(QStandardItem):
 		else:
 			return data
 
-class FileSystemModel(BasicModel):
+class AssetModel(BasicModel):
 	def __init__(self, folderOnly = True):
 		super().__init__()
 		self.folderOnly = folderOnly
@@ -111,10 +112,10 @@ class FileSystemModel(BasicModel):
 		return True
 
 	def addFavoriteItem(self):
-		self.favoriteItem = FileSystemItem(ItemType.FavoriteRoot, 'Favorite')
-		materials = FileSystemItem(ItemType.FavoriteSearch, 'All Materials')
-		prefabs = FileSystemItem(ItemType.FavoriteSearch, 'All Prefabs')
-		scenes = FileSystemItem(ItemType.FavoriteSearch, 'All Scenes')
+		self.favoriteItem = AssetItem(ItemType.FavoriteRoot, 'Favorites')
+		materials = AssetItem(ItemType.FavoriteSearch, 'All Materials')
+		prefabs = AssetItem(ItemType.FavoriteSearch, 'All Prefabs')
+		scenes = AssetItem(ItemType.FavoriteSearch, 'All Scenes')
 
 		self.favoriteItem.appendRow(materials)
 		self.favoriteItem.appendRow(prefabs)
@@ -122,7 +123,7 @@ class FileSystemModel(BasicModel):
 		self.appendRow(self.favoriteItem)
 
 	def addSeparatorItem(self):
-		self.blankItem = FileSystemItem(ItemType.Separator)
+		self.blankItem = AssetItem(ItemType.Separator)
 		self.blankItem.setData(12, Qt.SizeHintRole)
 		self.appendRow(self.blankItem)
 
@@ -131,7 +132,7 @@ class FileSystemModel(BasicModel):
 		self.appendRow(self.affirmItem(path))
 
 	def affirmItem(self, path):
-		item = FileSystemItem(ItemType.Normal, path)
+		item = AssetItem(ItemType.Normal, path)
 		entries = [entry for entry in os.scandir(path) if self.acceptEntry(entry)]
 		if self.folderOnly:
 			entries.sort(key = lambda entry: entry.path)
@@ -144,10 +145,10 @@ class FileSystemModel(BasicModel):
 			dirs.sort(key = lambda entry: entry.path)
 			for d in dirs: item.appendRow(self.affirmItem(d.path))
 			files.sort(key = lambda entry: entry.path)
-			for f in files: item.appendRow(FileSystemItem(ItemType.Normal, f.path))
+			for f in files: item.appendRow(AssetItem(ItemType.Normal, f.path))
 		return item
 
-class FolderContentModel(BasicModel):
+class FolderModel(BasicModel):
 	def __init__(self, keepFoldersOnTop = True):
 		super().__init__()
 		self.keepFoldersOnTop = keepFoldersOnTop
@@ -171,10 +172,10 @@ class FolderContentModel(BasicModel):
 				list = files if entry.is_file() else dirs
 				list.append(entry)
 			dirs.sort(key = lambda entry: entry.path)
-			for d in dirs: self.appendRow(FileSystemItem(ItemType.Normal, d.path))
+			for d in dirs: self.appendRow(AssetItem(ItemType.Normal, d.path))
 			files.sort(key = lambda entry: entry.path)
-			for f in files: self.appendRow(FileSystemItem(ItemType.Normal, f.path))
+			for f in files: self.appendRow(AssetItem(ItemType.Normal, f.path))
 
 		else:
 			entries.sort(key = lambda entry: entry.path)
-			for p in entries: self.appendRow(FileSystemItem(ItemType.Normal, p.path))
+			for p in entries: self.appendRow(AssetItem(ItemType.Normal, p.path))

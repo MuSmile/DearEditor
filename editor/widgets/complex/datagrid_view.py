@@ -110,7 +110,7 @@ class DataGridView(QWidget):
 ##################################################
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, PathLineEdit
 from editor.widgets.basic.color_edit import ColorEdit
-from editor.widgets.basic.reference_edit import ReferenceEdit
+from editor.widgets.basic.object_edit import ObjectEdit
 
 @propertyCreator('int')
 def _createPropertyWidgetInt(property):
@@ -140,7 +140,7 @@ def _createPropertyWidgetFloat(property):
 @propertyCreator('reference')
 def _createPropertyWidgetFloat(property):
 	label = QLabel(smartString(property.label()))
-	editor = ReferenceEdit()
+	editor = ObjectEdit()
 	editor.setFocusPolicy(Qt.StrongFocus)
 	return label, editor
 @propertyCreator('path')

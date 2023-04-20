@@ -1,7 +1,8 @@
 import os, json, uuid
 import xml.etree.ElementTree as ET
 from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QCursor
+from PySide6.QtWidgets import QMenu
 from editor.common.logger import warn, error
 from editor.common.icon_cache import getThemeIcon
 from editor.common.util import getIde, isParentOfWidget
@@ -41,26 +42,27 @@ class DockView(CDockWidget):
 		self.setTabToolTip(tooltip)
 
 		self.setupTitleActions()
+		self.setTitleBarActions(self.actions())
 		self.notification = None
 
-	def createTitleAction(self, icon, func = None, shortcut = False, checkable = False):
-		action = QAction()
+	def createTitleAction(self, icon, callback, tooltip = None):
+		action = QAction(self)
+		action.setIcon(getThemeIcon(icon))
 		action.setAutoRepeat(False)
-		action.setToolTip('foo')
-		if func: action.triggered.connect(func)
-		if icon: action.setIcon(getThemeIcon(icon))
-		if shortcut:
-			action.setShortcut(shortcut)
-			action.setShortcutContext(Qt.WidgetWithChildrenShortcut)
-		if checkable:
-			action.setCheckable(True)
-			action.setChecked(True)
-		self.titleActions.append(action)
+		if callback: action.triggered.connect(callback)
+		if tooltip: action.setToolTip(tooltip)
+		self.addAction(action)
+		return action
 
 	def setupTitleActions(self):
-		self.titleActions = []
-		self.createTitleAction('menu_d.png')
-		self.setTitleBarActions( self.titleActions )
+		self.createTitleAction('menu_d.png', self.popupDockMenu)
+
+	def popupDockMenu(self):
+		menu = QMenu(self)
+		menu.addAction("Item 1")
+		menu.addAction("Item 2")
+		menu.addAction("Item 3")
+		menu.popup(QCursor.pos())
 
 	def showNotification(self, msg):
 		if self.notification and shiboken6.isValid(self.notification): self.notification.close()

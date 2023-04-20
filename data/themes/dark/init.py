@@ -39,7 +39,7 @@ menuConfLight = {
 	'submenuIcon'           :    'submenu.png',
 	'submenuIconHovered'    :    'submenu2.png',
 	'submenuIconSize'       :    12,
-	'submenuIconOffsetX'    :    1,
+	'submenuIconOffsetX'    :    2,
 	'submenuIconOffsetY'    :    1,
 
 	'checkedIcon'           :    'check.png',
@@ -80,7 +80,7 @@ menuConfDark = {
 	'submenuIcon'           :    'submenu2.png',
 	'submenuIconHovered'    :    'submenu2.png',
 	'submenuIconSize'       :    12,
-	'submenuIconOffsetX'    :    1,
+	'submenuIconOffsetX'    :    2,
 	'submenuIconOffsetY'    :    1,
 
 	'checkedIcon'           :    'check2.png',

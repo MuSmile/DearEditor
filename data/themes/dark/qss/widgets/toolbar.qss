@@ -13,7 +13,7 @@ QToolBar QToolButton {
 	/*margin-right: 1;*/
 }
 
-QToolBar #Center QToolButton {
+QToolBar #center {
 	width: 26px;
 }
 

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QPainter, QPalette
 from PySide6.QtWidgets import QWidget, QFrame, QVBoxLayout, QStyle, QStyleOptionFrame, QSizePolicy
-from editor.widgets.basic.enum_buttons import EnumButtons
+from editor.widgets.basic.button import ButtonGroup
 from editor.widgets.complex.sliding_stacked import SlidingStackedWidget
 
 class TabGroup(QWidget):
@@ -12,9 +12,9 @@ class TabGroup(QWidget):
 		layout.setAlignment(Qt.AlignTop)
 		layout.setSpacing(0)
 		
-		tabs = EnumButtons()
-		tabs.setEnums([f'Tab {i}' for i in range(4)])
-		tabs.selectEnum('Tab 0')
+		tabs = ButtonGroup()
+		tabs.initFromItems([f'Tab {i}' for i in range(4)])
+		tabs.select(0)
 
 		stacked = SlidingStackedWidget()
 		stacked.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)

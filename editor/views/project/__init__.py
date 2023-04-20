@@ -1,10 +1,13 @@
 import os
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QWidget, QSplitter, QVBoxLayout, QHBoxLayout
-from editor.models.editor.file_system import FileSystemModel, FolderContentModel
+from PySide6.QtWidgets import QWidget, QFrame, QSplitter, QVBoxLayout, QHBoxLayout, QScrollArea, QLabel, QSizePolicy
+from editor.models.editor.asset_model import AssetModel, FolderModel
+from editor.widgets.basic.slider import Slider
 from editor.widgets.basic.line_edit import SearchLineEdit
 from editor.widgets.complex.tree_view import TreeView
+from editor.widgets.misc.breadcrumb import Breadcrumb
 from editor.view_manager import DockView, dockView
+from editor.common.icon_cache import getThemePixmap
 
 
 @dockView('Project', icon = 'project.png')
@@ -27,13 +30,46 @@ class ProjectView(DockView):
 		searchEdit.setFixedWidth(320)
 		searchbarLayout.addWidget(searchEdit)
 
-		
 		splitter = QSplitter(self)
-		tree = self.createTreeView(self)
-		treeR = self.createRightTreeView(self)
+		assetView = self.createAssetView(self)
+		folderView = self.createFolderView(self)
 
-		splitter.addWidget(tree)
-		splitter.addWidget(treeR)
+		navBar = QScrollArea(self)
+		navBar.setObjectName('navbar')
+		navBar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		navBar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+		breadcrumb = Breadcrumb(['Hello', 'World', 'Foo', 'BAR'], self)
+		navBar.setWidget(breadcrumb)
+
+		statusBar = QFrame(self)
+		statusBar.setObjectName('statusbar')
+		statusLayout = QHBoxLayout(statusBar)
+		statusLayout.setContentsMargins(4, 0, 4, 0)
+		statusLayout.setSpacing(2)
+
+		icon = QLabel()
+		icon.setPixmap(getThemePixmap('folder_close.png').scaled(16, 16))
+		icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+		label = QLabel('test/test/test.txt')
+		label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+		slider = Slider()
+		slider.setFocusPolicy(Qt.ClickFocus)
+		slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+		statusLayout.addWidget(icon)
+		statusLayout.addWidget(label)
+		statusLayout.addStretch()
+		statusLayout.addWidget(slider)
+
+		contentContainer = QWidget(self)
+		contentLayout = QVBoxLayout(contentContainer)
+		contentLayout.setContentsMargins(0, 0, 0, 0)
+		contentLayout.setSpacing(0)
+		contentLayout.addWidget(navBar)
+		contentLayout.addWidget(folderView)
+		contentLayout.addWidget(statusBar)
+
+		splitter.addWidget(assetView)
+		splitter.addWidget(contentContainer)
 
 		splitter.setOrientation(Qt.Horizontal)
 		splitter.setChildrenCollapsible(False)
@@ -41,10 +77,9 @@ class ProjectView(DockView):
 
 		layout.addWidget(splitter)
 
-
-	def createTreeView(self, parent):
+	def createAssetView(self, parent):
 		view = TreeView(parent)
-		model = FileSystemModel(True)
+		model = AssetModel(True)
 		view.setModel(model)
 
 		base = os.environ[ 'DEAR_BASE_PATH' ]
@@ -54,9 +89,9 @@ class ProjectView(DockView):
 		view.expand(model.index(2, 0))
 		return view
 
-	def createRightTreeView(self, parent):
+	def createFolderView(self, parent):
 		view = TreeView(parent)
-		model = FolderContentModel(True)
+		model = FolderModel(True)
 		view.setModel(model)
 
 		base = os.environ[ 'DEAR_BASE_PATH' ]

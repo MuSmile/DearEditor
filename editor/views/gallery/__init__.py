@@ -6,15 +6,15 @@ from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.models.editor.data_grid import DataGrid
 from editor.widgets.complex.datagrid_view import DataGridView
 from editor.widgets.complex.sliding_stacked import SlidingStackedWidget
+from editor.widgets.basic.button import MenuPopupToolButton, ButtonGroup
 from editor.widgets.basic.slider import RangeSlider, Slider
 from editor.widgets.basic.progress_bar import ProgressBar
 from editor.widgets.basic.line_edit import LineEdit, IntLineEdit, FloatLineEdit, SearchLineEdit, PlaceholderLineEdit, PathLineEdit
 from editor.widgets.basic.vector_edit import Vector2Edit, Vector3Edit, Vector4Edit, Vector4IntEdit, RectEdit
 from editor.widgets.basic.drop_down import DropDown, FlagDropDown
 from editor.widgets.basic.text_area import TextArea
-from editor.widgets.basic.enum_buttons import EnumButtons
 from editor.widgets.basic.color_edit import ColorEdit
-from editor.widgets.basic.reference_edit import ReferenceEdit
+from editor.widgets.basic.object_edit import ObjectEdit
 from editor.widgets.basic.spinner import WaitingSpinner, CircleSpinner
 from editor.widgets.group.simple_group import SimpleGroup
 from editor.widgets.group.box_group import BoxGroup
@@ -89,27 +89,23 @@ class GalleryView(DockView):
 
 		pushBtn1 = QPushButton('normal')
 		pushBtn2 = QPushButton(getThemeIcon('project.png'), 'icon')
+		pushBtn2.setCheckable(True)
+		pushBtn2.setChecked(True)
 		pushBtn3 = QPushButton('popup')
 		pushBtn3.setMenu(createTestMenu(pushBtn3))
 
 		pushBtn4 = QPushButton(getThemeIcon('project.png'), 'all')
 		pushBtn4.setMenu(createTestMenu(pushBtn4))
-		pushBtn4.setFixedWidth(100)
-		pushBtn5 = QPushButton('checkable')
-		pushBtn5.setCheckable(True)
-		pushBtn5.setChecked(True)
 
 		pushBtn1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		pushBtn2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		pushBtn3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		pushBtn4.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-		pushBtn5.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		pushBtnLayout.addWidget(pushBtn1)
 		pushBtnLayout.addWidget(pushBtn2)
 		pushBtnLayout.addWidget(pushBtn3)
 		pushBtnLayout.addWidget(pushBtn4)
-		pushBtnLayout.addWidget(pushBtn5)
 		layout.addLayout(pushBtnLayout)
 
 
@@ -123,46 +119,30 @@ class GalleryView(DockView):
 
 		toolBtn1 = QToolButton()
 		toolBtn1.setIcon(getThemeIcon('project.png'))
-		toolBtn2 = QToolButton()
+		toolBtn2 = MenuPopupToolButton()
 		toolBtn2.setIcon(getThemeIcon('project.png'))
-		toolBtn2.setCheckable(True)
-		toolBtn2.setChecked(True)
 		toolBtn3 = QToolButton()
 		toolBtn3.setIcon(getThemeIcon('project.png'))
-		toolBtn3.setPopupMode(QToolButton.MenuButtonPopup)
+		toolBtn3.setPopupMode(QToolButton.InstantPopup)
 		toolBtn3.setMenu(createTestMenu(toolBtn3))
 		toolBtn4 = QToolButton()
-		toolBtn4.setIcon(getThemeIcon('project.png'))
+		toolBtn4.setText('popup')
 		toolBtn4.setPopupMode(QToolButton.InstantPopup)
 		toolBtn4.setMenu(createTestMenu(toolBtn4))
-		toolBtn5 = QToolButton()
+		toolBtn5 = MenuPopupToolButton()
 		toolBtn5.setText('popup')
-		toolBtn5.setPopupMode(QToolButton.InstantPopup)
-		toolBtn5.setMenu(createTestMenu(toolBtn5))
-		toolBtn6 = QToolButton()
-		toolBtn6.setText('popup')
-		toolBtn6.setPopupMode(QToolButton.MenuButtonPopup)
-		toolBtn6.setMenu(createTestMenu(toolBtn6))
-		toolBtn7 = QToolButton()
-		toolBtn7.setText('checkable')
-		toolBtn7.setCheckable(True)
-		toolBtn7.setChecked(True)
 
 		toolBtn1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 		toolBtn2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 		toolBtn3.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-		toolBtn4.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+		toolBtn4.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		toolBtn5.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-		toolBtn6.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-		toolBtn7.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		toolBtnLayout.addWidget(toolBtn1)
 		toolBtnLayout.addWidget(toolBtn2)
 		toolBtnLayout.addWidget(toolBtn3)
 		toolBtnLayout.addWidget(toolBtn4)
 		toolBtnLayout.addWidget(toolBtn5)
-		toolBtnLayout.addWidget(toolBtn6)
-		toolBtnLayout.addWidget(toolBtn7)
 		layout.addLayout(toolBtnLayout)
 
 
@@ -229,44 +209,40 @@ class GalleryView(DockView):
 
 		checkBox1 = QCheckBox('normal')
 		checkBox1.setFocusPolicy(Qt.StrongFocus)
-		checkBox2 = QCheckBox('icon')
+		checkBox2 = QCheckBox('tristate')
 		checkBox2.setTristate(True)
-		checkBox2.setIcon(getThemeIcon('project.png'))
+		# checkBox2.setIcon(getThemeIcon('project.png'))
 		checkBox2.setFocusPolicy(Qt.StrongFocus)
-		checkBox3 = QCheckBox()
-		checkBox3.setFocusPolicy(Qt.StrongFocus)
 
-		radioBtn1 = QRadioButton('normal')
+		radioBtn1 = QRadioButton('radio 1')
 		radioBtn1.setFocusPolicy(Qt.StrongFocus)
-		radioBtn2 = QRadioButton('icon')
-		radioBtn2.setIcon(getThemeIcon('project.png'))
+		radioBtn2 = QRadioButton('radio 2')
 		radioBtn2.setFocusPolicy(Qt.StrongFocus)
 
 		checkBoxLayout.addWidget(checkBox1)
 		checkBoxLayout.addWidget(checkBox2)
-		checkBoxLayout.addWidget(checkBox3)
 
+		checkBoxLayout.addSpacing(20)
 		checkBoxLayout.addWidget(radioBtn1)
 		checkBoxLayout.addWidget(radioBtn2)
 		layout.addLayout(checkBoxLayout)
 
 
-		#############  CHECKBOX  #############
+		#############  BUTTONGROUP  #############
 		layout.addSpacing(20)
-		layout.addWidget(QLabel('EnumButtons'))
+		layout.addWidget(QLabel('ButtonGroup'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
-		enumBtnsLayout = QHBoxLayout()
-		enumBtnsLayout.setSpacing(20)
-		enumBtnsLayout.setAlignment(Qt.AlignLeft)
+		btnGroupLayout = QHBoxLayout()
+		btnGroupLayout.setSpacing(20)
+		btnGroupLayout.setAlignment(Qt.AlignLeft)
 
-		enumBtns = EnumButtons()
-		enumBtns.setEnums([f'Item {i}' for i in range(4)])
-		enumBtns.selectEnum('Item 0')
-		enumBtns.setFocusPolicy(Qt.StrongFocus)
-		enumBtns.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-		enumBtnsLayout.addWidget(enumBtns)
-		layout.addLayout(enumBtnsLayout)
+		btnGroup = ButtonGroup()
+		btnGroup.initFromItems([f'Item {i}' for i in range(4)])
+		btnGroup.select(0)
+		btnGroup.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+		btnGroupLayout.addWidget(btnGroup)
+		layout.addLayout(btnGroupLayout)
 
 		return preview
 	def createLineEditPreview(self):
@@ -359,16 +335,16 @@ class GalleryView(DockView):
 		layout.addLayout(colorEditLayout)
 
 
-		#############  REFERENCE  #############
+		#############  OBJECT  #############
 		layout.addSpacing(20)
-		layout.addWidget(QLabel('ReferenceEdit'))
+		layout.addWidget(QLabel('ObjectEdit'))
 		layout.addWidget(HLineWidget())
 		layout.addSpacing(5)
 		referanceEditLayout = QHBoxLayout()
 		referanceEditLayout.setSpacing(20)
 		referanceEditLayout.setAlignment(Qt.AlignLeft)
 
-		referanceEdit = ReferenceEdit()
+		referanceEdit = ObjectEdit()
 
 		referanceEditLayout.addWidget(referanceEdit)
 		layout.addLayout(referanceEditLayout)

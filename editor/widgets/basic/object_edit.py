@@ -4,8 +4,8 @@ from PySide6.QtWidgets import QWidget, QFrame, QStyleOptionFrame, QStyle
 from editor.common.icon_cache import getThemePixmap
 from editor.common.types import Color
 
-class ReferenceEdit(QWidget):
-	referenceChanged = Signal(str)
+class ObjectEdit(QWidget):
+	objectChanged = Signal(str)
 
 	@Property(QColor)
 	def buttonColor(self):
@@ -85,9 +85,9 @@ class ReferenceEdit(QWidget):
 
 	def mousePressEvent(self, evt):
 		if self._btnHovered:
-			print('>>>> pick reference')
+			print('>>>> pick object')
 		else:
-			print('>>>> ping reference')
+			print('>>>> ping object')
 
 	def enterEvent(self, evt):
 		super().enterEvent(evt)
