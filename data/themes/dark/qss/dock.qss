@@ -75,6 +75,10 @@ ads--CDockWidgetTab {
 	qproperty-iconSize: 16px;
 }
 
+ads--CDockWidgetTab:hover {
+	background: #555;
+}
+
 ads--CDockWidgetTab[hasIcon="true"] {
 	margin-left: -2px;
 }

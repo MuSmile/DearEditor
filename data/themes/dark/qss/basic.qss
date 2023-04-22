@@ -80,7 +80,7 @@ ColorEdit:hover { border: 1px solid #777; }
 ColorEdit:focus { border: 1px solid #5ae; }
 ColorEdit:read-only { background: gray; }
 
-ReferenceEdit {
+ObjectEdit {
 	min-height: 18px;
 	max-height: 18px;
 	font-size: 12px;
@@ -97,9 +97,9 @@ ReferenceEdit {
 	qproperty-buttonColor: #444;
 	qproperty-buttonColorHovered: #666;
 }
-ReferenceEdit:hover { border: 1px solid #777; }
-ReferenceEdit:focus { border: 1px solid #5ae; }
-ReferenceEdit:read-only { background: gray; }
+ObjectEdit:hover { border: 1px solid #777; }
+ObjectEdit:focus { border: 1px solid #5ae; }
+ObjectEdit:read-only { background: gray; }
 
 
 QTextEdit {
@@ -368,7 +368,7 @@ CollapsibleWidget { qproperty-duration: 60; }
 	margin-right: 3px;
 }
 ColorEdit#datagrid-field,
-ReferenceEdit#datagrid-field,
+ObjectEdit#datagrid-field,
 PathLineEdit#datagrid-field {
 	qproperty-marginLeft: 3;
 	qproperty-marginRight: 3;
@@ -557,9 +557,9 @@ Breadcrumb > QPushButton#path:pressed {
 
 Breadcrumb > QPushButton#current,
 Breadcrumb > QPushButton#current:pressed {
-	font-weight: bold;
+	/*font-weight: bold;*/
 	background: none;
-	color: #ccc;
+	color: #eee;
 }
 
 
@@ -579,7 +579,7 @@ MenuPopupToolButton > QToolButton {
 	background-color: none;
 }
 MenuPopupToolButton > QToolButton:hover {
-	background-color: #666;
+	background-color: #56708c;
 }
 MenuPopupToolButton > QToolButton:pressed {
 	background-color: #46607c;

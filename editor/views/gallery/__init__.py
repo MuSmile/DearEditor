@@ -3,9 +3,9 @@ from PySide6.QtGui import *
 from PySide6.QtWidgets import *
 from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
-from editor.models.editor.data_grid import DataGrid
-from editor.widgets.complex.datagrid_view import DataGridView
+from editor.models.editor.property_model import PropertyModel, PropertyType, GroupType
 from editor.widgets.complex.sliding_stacked import SlidingStackedWidget
+from editor.widgets.drawers import DataGridDrawer
 from editor.widgets.basic.button import MenuPopupToolButton, ButtonGroup
 from editor.widgets.basic.slider import RangeSlider, Slider
 from editor.widgets.basic.progress_bar import ProgressBar
@@ -772,26 +772,26 @@ class GalleryView(DockView):
 		datagridLayout.setSpacing(50)
 		datagridLayout.setAlignment(Qt.AlignLeft)
 
-		model = DataGrid()
-		model.append('int var1', 'int')
-		model.append('int var2', 'int')
-		model.append('group var1', 'reference', group = 'test_group1', group_type = 'box_group' )
-		model.append('title var1', 'color', group = 'test_group2', group_type = 'title_group' )
-		model.append('int var3', 'int')
-		model.append('path var1', 'path')
-		model.append('path var2', 'path')
-		model.append('float var1', 'float')
-		model.append('float var2', 'float')
-		model.append('string var1', 'string')
-		model.append('string var2', 'string')
-		model.append('group var2', 'reference', group = 'test_group1', group_type = 'box_group' )
-		model.append('title var2', 'color', group = 'test_group2', group_type = 'title_group' )
-		model.buildGroups()
+		model = PropertyModel()
+		model.append('int var1', PropertyType.Int)
+		model.append('int var2', PropertyType.Int)
+		model.append('group var1', PropertyType.Object, group = 'test_group1', group_type = GroupType.BoxGroup)
+		model.append('title var1', PropertyType.Color, group = 'test_group2', group_type = GroupType.TitleGroup)
+		model.append('int var3', PropertyType.Int)
+		# model.append('path var1', PropertyType.Path)
+		# model.append('path var2', PropertyType.Path)
+		model.append('float var1', PropertyType.Float)
+		model.append('float var2', PropertyType.Float)
+		model.append('string var1', PropertyType.String)
+		model.append('string var2', PropertyType.String)
+		model.append('group var2', PropertyType.Object, group = 'test_group1', group_type = GroupType.BoxGroup)
+		model.append('title var2', PropertyType.Color, group = 'test_group2', group_type = GroupType.TitleGroup)
+		model.commit()
 
-		view = DataGridView()
-		view.setDataGrid(model)
+		drawer = DataGridDrawer()
+		drawer.setPropertyModel(model)
 
-		datagridLayout.addWidget(view)
+		datagridLayout.addWidget(drawer)
 		
 		layout.addLayout(datagridLayout)
 

@@ -19,7 +19,7 @@ class PropertyType(Enum):
 	List       = 20
 	Dict       = 21
 
-class PropertyGroupType(Enum):
+class GroupType(Enum):
 	Unknown       = 0
 	SimpleGroup   = 1
 	TitleGroup    = 2
@@ -77,7 +77,7 @@ class PropertyGroup:
 
 	def meta(self, key, defvalue = None):
 		return self.metas[key] if key in self.metas else defvalue
-		
+
 	def priority(self): return self.meta('priority', 'auto')
 
 
@@ -96,7 +96,7 @@ class PropertyModel:
 		groupTable = {}
 		for p in self.properties:
 			if not p.group(): continue
-			groupId = p.group() + '::' + p.groupType()
+			groupId = p.group() + '::' + str(p.groupType())[10:]
 			if groupId in groupTable: groupTable[ groupId ].append(p)
 			else: groupTable[ groupId ] = [ p ]
 
@@ -104,7 +104,7 @@ class PropertyModel:
 
 		for groupId in groupTable:
 			groupName, groupType = groupId.split('::')
-			group = PropertyGroup(groupName, groupType)
+			group = PropertyGroup(groupName, GroupType[ groupType ])
 			beginPos = self.properties.index(groupTable[groupId][0])
 			self.properties.insert(beginPos, group)
 			for p in groupTable[ groupId ]:

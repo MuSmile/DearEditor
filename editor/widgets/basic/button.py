@@ -29,9 +29,15 @@ class MenuPopupToolButton(QToolButton):
 		self.setCheckable(True)
 
 		self.menuBtn = QToolButton(self)
-		self.menuBtn.clicked.connect(self.showMenu)
+		self.menuBtn.clicked.connect(self.showPopupMenu)
+		# self.menuBtn.clicked.connect(self.showMenu)
 		
 		self.addTestMenu()
+
+	def showPopupMenu(self):
+		pos = self.rect().bottomLeft()
+		pos.setY(pos.y() + 1)
+		self.menu().popup(self.mapToGlobal(pos))
 
 	def resizeEvent(self, evt):
 		option = QStyleOptionToolButton()
