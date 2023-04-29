@@ -34,12 +34,8 @@ class ProjectView(DockView):
 		assetView = self.createAssetView(self)
 		folderView = self.createFolderView(self)
 
-		navBar = QScrollArea(self)
-		navBar.setObjectName('navbar')
-		navBar.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-		navBar.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 		breadcrumb = Breadcrumb(['Hello', 'World', 'Foo', 'BAR'], self)
-		navBar.setWidget(breadcrumb)
+		breadcrumb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
 		statusBar = QFrame(self)
 		statusBar.setObjectName('statusbar')
@@ -64,7 +60,7 @@ class ProjectView(DockView):
 		contentLayout = QVBoxLayout(contentContainer)
 		contentLayout.setContentsMargins(0, 0, 0, 0)
 		contentLayout.setSpacing(0)
-		contentLayout.addWidget(navBar)
+		contentLayout.addWidget(breadcrumb)
 		contentLayout.addWidget(folderView)
 		contentLayout.addWidget(statusBar)
 

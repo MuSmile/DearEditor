@@ -97,7 +97,7 @@ class DataGridLayout(QGridLayout):
 		self.addRowSpan(wgt)
 		if name: wgt.setObjectName(name)
 
-class DataGridDrawer(QWidget):
+class DataGridView(QWidget):
 	def __init__(self, parent = None):
 		super().__init__(parent)
 		self.setLayout(DataGridLayout())

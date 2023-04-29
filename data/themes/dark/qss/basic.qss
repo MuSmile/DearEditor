@@ -527,39 +527,17 @@ ProjectView QFrame#statusbar > Slider {
 
 Breadcrumb {
 	min-height: 20px;
-	max-height: 20px;
-}
+	font-size: 12px;
 
-Breadcrumb > QPushButton {
-	background: none;
-	border: none;
-	border-radius: 0px;
 	color: #ccc;
-	padding: 2px;
-}
-Breadcrumb > QPushButton:focus {
-	color: #eee;
-}
+	background: #4e4e4e;
+	border-bottom: 1px solid #222;
 
-Breadcrumb > QPushButton#separator {
-	width: 12px;
-	font-size: 13px;
-	padding-bottom: 3px;
-}
-Breadcrumb > QPushButton#path:hover {
-	background: none;
-	color: #ccc;
-}
-Breadcrumb > QPushButton#path:pressed {
-	background: none;
-	color: #fff;
-}
-
-Breadcrumb > QPushButton#current,
-Breadcrumb > QPushButton#current:pressed {
-	/*font-weight: bold;*/
-	background: none;
-	color: #eee;
+	qproperty-spacing: 1;
+	qproperty-paddingH: 6;
+	qproperty-paddingV: 2;
+	qproperty-highlightColor: #eee;
+	qproperty-separatorHoverColor: #888;
 }
 
 

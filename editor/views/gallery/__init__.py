@@ -5,7 +5,7 @@ from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.complex.tree_stacked import TreeStackedWidget
 from editor.models.editor.property_model import PropertyModel, PropertyType, GroupType
 from editor.widgets.complex.sliding_stacked import SlidingStackedWidget
-from editor.widgets.drawers import DataGridDrawer
+from editor.widgets.drawers import DataGridView
 from editor.widgets.basic.button import MenuPopupToolButton, ButtonGroup
 from editor.widgets.basic.slider import RangeSlider, Slider
 from editor.widgets.basic.progress_bar import ProgressBar
@@ -97,6 +97,10 @@ class GalleryView(DockView):
 		pushBtn4 = QPushButton(getThemeIcon('project.png'), 'all')
 		pushBtn4.setMenu(createTestMenu(pushBtn4))
 
+		pushBtn1.setFixedHeight(25)
+		pushBtn2.setFixedHeight(25)
+		pushBtn3.setFixedHeight(25)
+		pushBtn4.setFixedHeight(25)
 		pushBtn1.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		pushBtn2.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 		pushBtn3.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -132,6 +136,11 @@ class GalleryView(DockView):
 		toolBtn5 = MenuPopupToolButton()
 		toolBtn5.setText('popup')
 
+		toolBtn1.setFixedHeight(25)
+		toolBtn2.setFixedHeight(25)
+		toolBtn3.setFixedHeight(25)
+		toolBtn4.setFixedHeight(25)
+		toolBtn5.setFixedHeight(25)
 		toolBtn1.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 		toolBtn2.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
 		toolBtn3.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
@@ -788,7 +797,7 @@ class GalleryView(DockView):
 		model.append('title var2', PropertyType.Color, group = 'test_group2', group_type = GroupType.TitleGroup)
 		model.commit()
 
-		drawer = DataGridDrawer()
+		drawer = DataGridView()
 		drawer.setPropertyModel(model)
 
 		datagridLayout.addWidget(drawer)
