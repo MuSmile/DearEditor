@@ -12,12 +12,16 @@ from editor.common.math import lerp, locAt
 
 
 class LayoutSlider(Slider):
+	def __init__(self, parent = None):
+		super().__init__(parent)
+		self.threshold = 0.2
+
 	def validateValue(self):
 		self.blockSignals(True)
 		mini = self.minimum()
 		maxi = self.maximum()
 		value = self.value()
-		if value < lerp(mini, maxi, 0.2): self.setValue(mini)
+		if value < lerp(mini, maxi, self.threshold): self.setValue(mini)
 		self.blockSignals(False)
 		self.update()
 
@@ -33,7 +37,7 @@ class LayoutSlider(Slider):
 		mini = self.minimum()
 		maxi = self.maximum()
 		value = self.value()
-		begin = lerp(mini, maxi, 0.2)
+		begin = lerp(mini, maxi, self.threshold)
 		return -1 if value < begin else locAt(begin, maxi, value)
 
 
@@ -61,6 +65,7 @@ class ProjectView(DockView):
 		assetView = self.createAssetView(self)
 		folderView = self.createFolderView(self)
 		def currentChanged(current, previous):
+			if not current.isValid(): return
 			item = assetView.model().itemFromIndex(current)
 			if item.itemType() != ItemType.Normal: return
 			folderView.model().setFolder(item.itemData())

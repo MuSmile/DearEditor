@@ -626,11 +626,12 @@ class TreeView(QTreeView):
 		indentation = self.indentation()
 		branchRect = QRect(l - indentation + self.treePaddingLeft, t, indentation, h)
 		if branchRect.contains(pos): return
-		
+
 		blockEdit = len(self.selectedIndexes()) > 1
 		if blockEdit: self.setEditTriggers(QTreeView.NoEditTriggers)
 		super().mouseReleaseEvent(evt)
 		if blockEdit: self.setEditTriggers(QTreeView.SelectedClicked)
+		if not self.hoveredIndex.isValid(): self.setCurrentIndex(QModelIndex())
 
 	def mouseDoubleClickEvent(self, evt):
 		if self.testClickBranchArrow(evt, True): return
