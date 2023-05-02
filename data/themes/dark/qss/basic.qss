@@ -375,7 +375,7 @@ PathLineEdit#datagrid-field {
 }
 QSlider#datagrid-field
 {
-	min-height: 22px;
+	min-height: 25px;
 	margin-bottom: 1px;
 }
 QSlider#datagrid-field::groove:horizontal {
@@ -447,7 +447,10 @@ DataGridView #group_space{
 	min-height: 10px;
 	max-height: 10px;
 }
-
+DataGridView TitleGroup {
+	qproperty-marginLeft: 6;
+	qproperty-marginRight: 4;
+}
 
 ButtonGroup > QAbstractButton#left {
 	border-top-right-radius: 0px;

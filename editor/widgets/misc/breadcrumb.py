@@ -59,7 +59,7 @@ class Breadcrumb(QWidget):
 		self._hoveredIndex = idx
 		self.update()
 
-	def resizeEvent(self, evt):
+	def calculatePathRects(self):
 		spacing, paddingV = self._spacing, self._paddingV
 		h = self.height() - paddingV * 2
 		fm = self.fontMetrics()
@@ -75,6 +75,9 @@ class Breadcrumb(QWidget):
 		name = self._pathList[ -1 ]
 		w = fm.horizontalAdvance(name)
 		self._nameRects.append( QRect(currx, paddingV, w, h) )
+
+	def resizeEvent(self, evt):
+		self.calculatePathRects()
 
 	def mouseMoveEvent(self, evt):
 		pos = evt.pos()

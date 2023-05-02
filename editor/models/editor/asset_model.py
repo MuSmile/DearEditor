@@ -129,21 +129,21 @@ class AssetModel(BasicModel):
 
 	def addPath(self, path):
 		path = os.path.realpath(path)
-		self.appendRow(self.affirmItem(path))
+		self.appendRow(self.affirmAssetItem(path))
 
-	def affirmItem(self, path):
+	def affirmAssetItem(self, path):
 		item = AssetItem(ItemType.Normal, path)
 		entries = [entry for entry in os.scandir(path) if self.acceptEntry(entry)]
 		if self.folderOnly:
 			entries.sort(key = lambda entry: entry.path)
-			for sub in entries: item.appendRow(self.affirmItem(sub.path))
+			for sub in entries: item.appendRow(self.affirmAssetItem(sub.path))
 		else:
 			files, dirs = [], []
 			for entry in entries:
 				list = files if entry.is_file() else dirs
 				list.append(entry)
 			dirs.sort(key = lambda entry: entry.path)
-			for d in dirs: item.appendRow(self.affirmItem(d.path))
+			for d in dirs: item.appendRow(self.affirmAssetItem(d.path))
 			files.sort(key = lambda entry: entry.path)
 			for f in files: item.appendRow(AssetItem(ItemType.Normal, f.path))
 		return item

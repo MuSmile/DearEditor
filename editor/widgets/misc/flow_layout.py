@@ -92,9 +92,10 @@ class FlowLayout(QLayout):
 			x, h = nextX, max(h, itemH)
 
 class GridFlowLayout(FlowLayout):
-	def __init__(self, itemSize = 64, parent = None):
+	def __init__(self, itemWidth = 64, itemHeight = 80, parent = None):
 		super().__init__(parent)
-		self._itemSize = itemSize
+		self._itemWidth = itemWidth
+		self._itemHeight = itemHeight
 
 	def sizeHint(self):
 		ml, mt, mr, mb = self.getContentsMargins()
@@ -106,15 +107,15 @@ class GridFlowLayout(FlowLayout):
 
 	def minimumSize(self):
 		ml, mt, mr, mb = self.getContentsMargins()
-		return QSize(self._itemSize + ml + mr, self._itemSize + mt + mb)
+		return QSize(self._itemWidth + ml + mr, self._itemHeight + mt + mb)
 
 	def heightForWidth(self, width):
 		ml, mt, mr, mb = self.getContentsMargins()
 		spaceX, spaceY = self._spacings
 
-		cols = (width - ml - mr + spaceX) // (self._itemSize + spaceX)
+		cols = (width - ml - mr + spaceX) // (self._itemWidth + spaceX)
 		rows = math.ceil(len(self._itemList) / cols)
-		return rows * self._itemSize + (rows - 1) * spaceY + mt + mb
+		return rows * self._itemHeight + (rows - 1) * spaceY + mt + mb
 
 	def doLayout(self, rect):
 		ml, mt, mr, mb = self.getContentsMargins()
@@ -122,28 +123,33 @@ class GridFlowLayout(FlowLayout):
 		spaceX, spaceY = self._spacings
 
 		count = len(self._itemList)
-		cols = (width + spaceX) // (self._itemSize + spaceX)
+		cols = (width + spaceX) // (self._itemWidth + spaceX)
 		rows = math.ceil(count / cols)
 
 		if cols > 1 and rows > 1:
 			marginFac = 0.5
-			delta = (width - cols * self._itemSize - (cols - 1) * spaceX) / (cols - 1 + marginFac * 2)
+			delta = (width - cols * self._itemWidth - (cols - 1) * spaceX) / (cols - 1 + marginFac * 2)
 			spaceX += delta
 			ml += delta * marginFac
 
 		elif cols == 1:
-			ml = max(ml, (rect.width() - self._itemSize) / 2)
+			ml = max(ml, (rect.width() - self._itemWidth) / 2)
 
 		rx, ry = rect.x(), rect.y()
 		for i in range(count):
 			row = i // cols
 			col = i % cols
 
-			x = rx + ml + col * self._itemSize + col * spaceX
-			y = ry + mt + row * self._itemSize + row * spaceY
+			x = rx + ml + col * self._itemWidth + col * spaceX
+			y = ry + mt + row * self._itemHeight + row * spaceY
 
 			item = self._itemList[ i ]
-			item.setGeometry(QRect(x, y, self._itemSize, self._itemSize))
+			item.setGeometry(QRect(x, y, self._itemWidth, self._itemHeight))
+
+	def setFixedItemSize(self, width, height):
+		for item in self._itemList: item.widget().setFixedSize(width, height)
+		self._itemWidth = width
+		self._itemHeight = height
 
 
 if __name__ == '__main__':
@@ -175,13 +181,13 @@ if __name__ == '__main__':
 	flowLayout = GridFlowLayout()
 	flowLayout.setContentsMargins(10, 10, 10, 10)
 	flowLayout.setContentsSpacings(10, 10)
-	flowLayout.setFixedItemSize(64)
 	for i in range(20): flowLayout.addWidget(QPushButton(f'Btn_{i}'))
+	flowLayout.setFixedItemSize(64, 80)
 
 	slider = QSlider(Qt.Horizontal)
 	slider.setMinimum(32)
 	slider.setMaximum(128)
-	slider.valueChanged.connect(flowLayout.setFixedItemSize)
+	slider.valueChanged.connect(lambda v: flowLayout.setFixedItemSize(v, v*80/64))
 	
 	win = QWidget()
 	layout = QVBoxLayout()

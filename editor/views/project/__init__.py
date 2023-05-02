@@ -1,13 +1,40 @@
 import os
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QWidget, QFrame, QSplitter, QVBoxLayout, QHBoxLayout, QScrollArea, QLabel, QSizePolicy
-from editor.models.editor.asset_model import AssetModel, FolderModel
+from editor.models.editor.asset_model import AssetModel, FolderModel, ItemType
 from editor.widgets.basic.slider import Slider
 from editor.widgets.basic.line_edit import SearchLineEdit
 from editor.widgets.complex.tree_view import TreeView
 from editor.widgets.misc.breadcrumb import Breadcrumb
 from editor.view_manager import DockView, dockView
 from editor.common.icon_cache import getThemePixmap
+from editor.common.math import lerp, locAt
+
+
+class LayoutSlider(Slider):
+	def validateValue(self):
+		self.blockSignals(True)
+		mini = self.minimum()
+		maxi = self.maximum()
+		value = self.value()
+		if value < lerp(mini, maxi, 0.2): self.setValue(mini)
+		self.blockSignals(False)
+		self.update()
+
+	def mouseReleaseEvent(self, evt):
+		super().mouseReleaseEvent(evt)
+		self.validateValue()
+
+	def keyReleaseEvent(self, evt):
+		super().keyReleaseEvent(evt)
+		self.validateValue()
+
+	def normalizedValue(self):
+		mini = self.minimum()
+		maxi = self.maximum()
+		value = self.value()
+		begin = lerp(mini, maxi, 0.2)
+		return -1 if value < begin else locAt(begin, maxi, value)
 
 
 @dockView('Project', icon = 'project.png')
@@ -33,6 +60,11 @@ class ProjectView(DockView):
 		splitter = QSplitter(self)
 		assetView = self.createAssetView(self)
 		folderView = self.createFolderView(self)
+		def currentChanged(current, previous):
+			item = assetView.model().itemFromIndex(current)
+			if item.itemType() != ItemType.Normal: return
+			folderView.model().setFolder(item.itemData())
+		assetView.selectionModel().currentChanged.connect(currentChanged)
 
 		breadcrumb = Breadcrumb(['Hello', 'World', 'Foo', 'BAR'], self)
 		breadcrumb.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
@@ -48,7 +80,7 @@ class ProjectView(DockView):
 		icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 		label = QLabel('test/test/test.txt')
 		label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-		slider = Slider()
+		slider = LayoutSlider()
 		slider.setFocusPolicy(Qt.ClickFocus)
 		slider.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
 		statusLayout.addWidget(icon)
@@ -80,7 +112,6 @@ class ProjectView(DockView):
 
 		base = os.environ[ 'DEAR_BASE_PATH' ]
 		model.addPath(base)
-		# view.expandAll()
 		view.expand(model.index(0, 0))
 		view.expand(model.index(2, 0))
 		return view
@@ -92,6 +123,4 @@ class ProjectView(DockView):
 
 		base = os.environ[ 'DEAR_BASE_PATH' ]
 		model.setFolder(base)
-		# view.expandAll()
-		# view.setRootIndex(model.index(0, 0))
 		return view

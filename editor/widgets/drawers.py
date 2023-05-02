@@ -166,7 +166,7 @@ def _createTitleGroupDrawer(group, parent):
 	layout = DataGridLayout()
 	layout.initLayout(group.properties)
 	group = TitleGroup(smartString(group.name), layout)
-	group.setHorizontalMargins(6, 4)
+	# group.setHorizontalMargins(6, 4)
 	return group
 
 @drawerCreator(GroupType.BoxGroup)
